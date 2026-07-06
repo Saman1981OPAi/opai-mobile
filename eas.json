@@ -27,11 +27,7 @@
   },
   "submit": {
     "production": {
-      "ios": {
-        "appleId": "Admin@opaiapp.com",
-        "ascAppId": "",
-        "appleTeamId": ""
-      }
+      "ios": {}
     }
   }
 }

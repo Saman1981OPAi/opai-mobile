@@ -58,6 +58,7 @@ pnpm submit:ios
 ```
 
 Apple requires an active Apple Developer Program account, an App Store Connect app record, and authentication during build/signing and upload.
+Apple account email addresses are not stored in the application config or displayed inside the iOS app.
 
 ## Validation
 
