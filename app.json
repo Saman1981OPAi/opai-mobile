@@ -4,16 +4,27 @@
     "slug": "opai-police",
     "version": "0.1.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "opai",
     "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#05070B"
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.opaiapp.police"
+      "bundleIdentifier": "com.opaiapp.police",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.opaiapp.police",
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#05070B"
       }
     },

@@ -48,6 +48,17 @@ pnpm install
 pnpm start
 ```
 
+## Apple Build & Upload
+
+This project is prepared for EAS Build and App Store Connect upload.
+
+```bash
+pnpm build:ios
+pnpm submit:ios
+```
+
+Apple requires an active Apple Developer Program account, an App Store Connect app record, and authentication during build/signing and upload.
+
 ## Validation
 
 ```bash
