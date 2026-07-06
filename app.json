@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "OPAi Police",
+    "slug": "opai-police",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "opai",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.opaiapp.police"
+    },
+    "android": {
+      "package": "com.opaiapp.police",
+      "adaptiveIcon": {
+        "backgroundColor": "#05070B"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "product": "OPAi Police",
+      "domain": "opaiapp.com"
+    }
+  }
+}

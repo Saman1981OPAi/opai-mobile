@@ -1,0 +1,27 @@
+{
+  "name": "opai-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cross-platform OPAi Police mobile application for iOS and Android.",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "^57.0.2",
+    "expo-status-bar": "^57.0.0",
+    "react": "19.2.7",
+    "react-native": "0.86.0",
+    "react-native-safe-area-context": "^5.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "babel-preset-expo": "^57.0.1",
+    "typescript": "^5.9.0"
+  }
+}
