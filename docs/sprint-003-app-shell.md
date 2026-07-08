@@ -49,7 +49,7 @@ Convert the Sprint 002 static UI foundation into a clickable local prototype for
 
 - Dark blue/black premium interface.
 - Police blue accent.
-- PTSD ribbon green accent.
+- PTSD awareness accent uses `#7FFFD4`.
 - Maple leaf and shield-inspired OPAi branding.
 - No official police service logos.
 - No government badges.

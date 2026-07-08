@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   wrap: {
     alignItems: "center",
     backgroundColor: "rgba(24,73,52,0.42)",
-    borderColor: "rgba(110,219,143,0.28)",
+    borderColor: "rgba(127,255,212,0.28)",
     borderRadius: radius.lg,
     borderWidth: 1,
     flexDirection: "row",

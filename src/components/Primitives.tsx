@@ -138,8 +138,8 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,90,95,0.40)"
   },
   pill_green: {
-    backgroundColor: "rgba(110,219,143,0.12)",
-    borderColor: "rgba(110,219,143,0.38)"
+    backgroundColor: "rgba(127,255,212,0.12)",
+    borderColor: "rgba(127,255,212,0.38)"
   },
   pill_neutral: {
     backgroundColor: "rgba(255,255,255,0.07)",

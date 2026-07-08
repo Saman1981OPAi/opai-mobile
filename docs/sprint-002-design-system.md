@@ -7,7 +7,7 @@ Create a reusable OPAi mobile design foundation before backend, database, authen
 ## Scope Completed
 
 - Added reusable OPAi design tokens for color, spacing, radius, typography, shadows, icon sizing, and layout breakpoints.
-- Added a dark blue/black OPAi theme with primary blue accents and PTSD ribbon green.
+- Added a dark blue/black OPAi theme with primary blue accents and the `#7FFFD4` PTSD awareness accent.
 - Added custom maple leaf and shield-style brand components without using official police service logos, government badges, or protected insignia.
 - Added reusable mobile UI components:
   - `AppHeader`

@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   card: {
     alignItems: "center",
     backgroundColor: "rgba(24,73,52,0.52)",
-    borderColor: "rgba(110,219,143,0.30)",
+    borderColor: "rgba(127,255,212,0.30)",
     borderRadius: radius.xl,
     borderWidth: 1,
     flexDirection: "row",
