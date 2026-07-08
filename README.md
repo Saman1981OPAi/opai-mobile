@@ -20,6 +20,24 @@ Current priority:
 
 Android support stays in the codebase and cross-platform compatibility must be preserved. Immediate review, testing, screenshots, and launch work should prioritize iOS. Do not prioritize Android-specific store assets, Google Play release workflows, or Android production deployment until the D-U-N-S Number is received.
 
+## App Store Readiness
+
+Sprint 005 adds an iOS App Store readiness and compliance pass. The app remains in testing/pre-launch and does not claim to be an official police service app.
+
+Legal and support references:
+
+- Privacy Policy: `https://opaiapp.com/privacy`
+- Terms of Use: `https://opaiapp.com/terms`
+- Contact: `https://opaiapp.com/contact`
+- Support: `https://opaiapp.com/support`
+
+Production URLs must be verified before final App Store submission. See:
+
+- `docs/app-store-compliance.md`
+- `docs/app-privacy-notes.md`
+- `docs/screenshot-asset-requirements.md`
+- `docs/sprint-005-ios-app-store-readiness.md`
+
 ## Current MVP Scope
 
 This repository starts the mobile app foundation and screen architecture. It does not build the complete production backend yet.
@@ -119,6 +137,12 @@ secondary module navigation, local placeholder data, and prototype-only interact
 
 Sprint 004 adds the authentication UI foundation and local mock auth state model. See
 `docs/sprint-004-authentication-foundation.md`.
+
+## Sprint 005 iOS App Store Readiness
+
+Sprint 005 audits iOS App Store compliance, app privacy planning, screenshot asset requirements,
+required disclaimers, and testing/pre-launch language. Android remains compatible but paused for
+Google Play production release until the D-U-N-S Number for Ebrahimi Holdings is received.
 
 ## Product Principles
 
