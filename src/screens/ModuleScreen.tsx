@@ -29,14 +29,17 @@ import {
   translationModes
 } from "@/data/uiMockups";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
+import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
 
 type ModuleScreenProps = {
   module: AppModule;
   onSelectModule: (module: ModuleId) => void;
+  onSignOut: () => void;
+  profile: MockUserProfile | null;
 };
 
-export function ModuleScreen({ module, onSelectModule }: ModuleScreenProps) {
+export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: ModuleScreenProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= layout.tabletBreakpoint;
   const [selectedItem, setSelectedItem] = useState("Home");
@@ -147,6 +150,8 @@ export function ModuleScreen({ module, onSelectModule }: ModuleScreenProps) {
         isTablet={isTablet}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
+        onSignOut={onSignOut}
+        profile={profile}
         selectedItem={selectedItem}
       />
     );
@@ -633,11 +638,15 @@ function SettingsScreen({
   isTablet,
   onSelectItem,
   onSelectModule,
+  onSignOut,
+  profile,
   selectedItem
 }: {
   isTablet: boolean;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  onSignOut: () => void;
+  profile: MockUserProfile | null;
   selectedItem: string;
 }) {
   return (
@@ -652,6 +661,17 @@ function SettingsScreen({
       </View>
 
       <SectionHeader icon="cog-outline" title="Settings Menu" />
+      <View style={styles.profilePanel}>
+        <MaterialCommunityIcons name="account-circle-outline" size={42} color={colors.primaryBlue} />
+        <View style={styles.profileCopy}>
+          <Text style={styles.profileName}>
+            {profile ? `${profile.firstName} ${profile.lastName}` : "Mock User"}
+          </Text>
+          <Text style={styles.profileMeta}>
+            {profile?.role ?? "Canadian Police Officer"} - {profile?.preferredLanguage ?? "English"}
+          </Text>
+        </View>
+      </View>
       <View style={styles.stack}>
         {settingsItems.map((item) => (
           <ReminderCard
@@ -662,6 +682,9 @@ function SettingsScreen({
           />
         ))}
       </View>
+      <SecondaryButton label="Mock Sign Out" onPress={onSignOut}>
+        <Ionicons name="log-out-outline" size={20} color={colors.primaryBlue} />
+      </SecondaryButton>
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
     </ScreenFrame>
@@ -820,6 +843,29 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.76,
     transform: [{ translateY: 1 }]
+  },
+  profileCopy: {
+    flex: 1
+  },
+  profileMeta: {
+    color: colors.textMuted,
+    fontSize: typography.small,
+    lineHeight: 20
+  },
+  profileName: {
+    color: colors.textPrimary,
+    fontSize: typography.h3,
+    fontWeight: "900"
+  },
+  profilePanel: {
+    alignItems: "center",
+    backgroundColor: "rgba(7,23,42,0.72)",
+    borderColor: "rgba(127,255,212,0.26)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.md,
+    padding: spacing.md
   },
   secondaryMenu: {
     gap: spacing.sm,

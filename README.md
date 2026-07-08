@@ -61,6 +61,11 @@ Sprint 003 keeps the app fully local. The clickable prototype uses placeholder d
 not connect to backend services, OpenAI APIs, databases, authentication, payments, or real user
 accounts.
 
+Sprint 004 adds a local mock authentication foundation. It includes signed-out auth screens,
+consent gates, a biometric placeholder, a mock profile, and mock sign-out. It still does not
+connect to backend services, network APIs, OpenAI, databases, payments, subscriptions, or real
+accounts.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -95,6 +100,11 @@ Calendar. See `docs/sprint-002-design-system.md`.
 Sprint 003 connects the mobile app shell into a clickable local prototype with bottom navigation,
 secondary module navigation, local placeholder data, and prototype-only interactions. See
 `docs/sprint-003-app-shell.md`.
+
+## Sprint 004 Authentication Foundation
+
+Sprint 004 adds the authentication UI foundation and local mock auth state model. See
+`docs/sprint-004-authentication-foundation.md`.
 
 ## Product Principles
 
