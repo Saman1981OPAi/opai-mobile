@@ -1,14 +1,20 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type AIInputBarProps = {
+  onPress?: () => void;
   placeholder?: string;
 };
 
-export function AIInputBar({ placeholder = "Ask OPAi..." }: AIInputBarProps) {
+export function AIInputBar({ onPress, placeholder = "Ask OPAi..." }: AIInputBarProps) {
   return (
-    <View style={styles.wrap} accessibilityLabel="Static AI input preview">
+    <Pressable
+      accessibilityLabel="Static AI input preview"
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.wrap, pressed ? styles.pressed : null]}
+    >
       <View style={styles.spark}>
         <MaterialCommunityIcons name="auto-fix" size={22} color={colors.accentBlue} />
       </View>
@@ -16,7 +22,7 @@ export function AIInputBar({ placeholder = "Ask OPAi..." }: AIInputBarProps) {
       <View style={styles.send}>
         <Ionicons name="arrow-up" size={22} color={colors.primaryBlue} />
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -25,6 +31,10 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     flex: 1,
     fontSize: 18
+  },
+  pressed: {
+    opacity: 0.76,
+    transform: [{ translateY: 1 }]
   },
   send: {
     alignItems: "center",

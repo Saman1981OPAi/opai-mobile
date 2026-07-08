@@ -17,7 +17,10 @@ export const homeFeatures: Feature[] = [
   { id: "ai", icon: "message-text-outline", title: "AI", subtitle: "Ask" },
   { id: "translation", icon: "translate", title: "Translate", subtitle: "Voice" },
   { id: "calendar", icon: "calendar-month-outline", title: "Calendar", subtitle: "Events" },
-  { id: "court", icon: "scale-balance", title: "Court", subtitle: "Dates" }
+  { id: "court", icon: "scale-balance", title: "Court", subtitle: "Dates" },
+  { id: "training", icon: "school-outline", title: "Training", subtitle: "Renewals" },
+  { id: "notes", icon: "folder-outline", title: "Files", subtitle: "Notes" },
+  { id: "settings", icon: "cog-outline", title: "Settings", subtitle: "Prefs" }
 ];
 
 export const shiftReminders = [
@@ -81,4 +84,54 @@ export const calendarEvents = [
     time: "14:00",
     title: "Follow-Up"
   }
+];
+
+export const secondaryModules: Feature[] = [
+  { id: "court", icon: "scale-balance", title: "Court", subtitle: "Reminders" },
+  { id: "training", icon: "school-outline", title: "Training", subtitle: "Qualifications" },
+  { id: "notes", icon: "folder-outline", title: "Notes", subtitle: "Files" },
+  { id: "settings", icon: "cog-outline", title: "Settings", subtitle: "Preferences" }
+];
+
+export const courtReminders = [
+  { icon: "scale-balance" as MciIcon, title: "Court Appearance", subtitle: "R. v. Johnson - 09:00" },
+  { icon: "file-document-check-outline" as MciIcon, title: "Disclosure Review", subtitle: "Before tomorrow" },
+  { icon: "account-voice" as MciIcon, title: "Witness Follow-Up", subtitle: "Statement confirmation" }
+];
+
+export const trainingReminders = [
+  { icon: "target" as MciIcon, title: "Firearms", subtitle: "Annual requalification" },
+  { icon: "shield-alert-outline" as MciIcon, title: "Use of Force", subtitle: "Renewal window" },
+  { icon: "medical-bag" as MciIcon, title: "First Aid", subtitle: "Certificate review" }
+];
+
+export const followUpReminders = [
+  { icon: "clipboard-check-outline" as MciIcon, title: "Witness Statement", subtitle: "Incident #25-01873" },
+  { icon: "camera-outline" as MciIcon, title: "Evidence Photos", subtitle: "Attach before draft" },
+  { icon: "calendar-clock" as MciIcon, title: "Supervisor Review", subtitle: "Placeholder task" }
+];
+
+export const incidentExamples = [
+  { icon: "car-emergency" as MciIcon, title: "Traffic Stop", subtitle: "Local example" },
+  { icon: "home-alert-outline" as MciIcon, title: "Disturbance", subtitle: "Placeholder flow" },
+  { icon: "walk" as MciIcon, title: "Foot Patrol", subtitle: "Notes template" }
+];
+
+export const translationExamples = [
+  { icon: "translate" as MciIcon, title: "English to French", subtitle: "Sample phrase" },
+  { icon: "microphone-outline" as MciIcon, title: "Voice Prompt", subtitle: "Tap to preview" },
+  { icon: "camera-outline" as MciIcon, title: "Sign OCR", subtitle: "Camera placeholder" }
+];
+
+export const notesFiles = [
+  { icon: "note-text-outline" as MciIcon, title: "Shift Notes", subtitle: "3 local samples" },
+  { icon: "image-outline" as MciIcon, title: "Photos", subtitle: "Evidence placeholders" },
+  { icon: "folder-lock-outline" as MciIcon, title: "Case Folder", subtitle: "Offline mock" }
+];
+
+export const settingsItems = [
+  { icon: "bell-outline" as MciIcon, title: "Notifications", subtitle: "Prototype only" },
+  { icon: "shield-lock-outline" as MciIcon, title: "Privacy", subtitle: "Consent controls later" },
+  { icon: "palette-outline" as MciIcon, title: "Appearance", subtitle: "Dark theme" },
+  { icon: "information-outline" as MciIcon, title: "About Testing", subtitle: "Pre-launch build" }
 ];

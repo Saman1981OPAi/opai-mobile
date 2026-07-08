@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   testingBadge: {
-    borderColor: "rgba(110,219,143,0.35)"
+    borderColor: "rgba(127,255,212,0.35)"
   },
   testingText: {
     color: colors.ptsdGreen,
