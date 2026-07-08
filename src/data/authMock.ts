@@ -1,4 +1,5 @@
 import type { ConsentKey, ConsentState, MockUserProfile } from "@/types/auth";
+import { requiredDisclaimers } from "@/data/compliance";
 
 export const emptyConsentState: ConsentState = {
   aiDisclaimer: false,
@@ -11,24 +12,22 @@ export const consentItems: Array<{ key: ConsentKey; title: string; description: 
   {
     key: "terms",
     title: "Terms of Use",
-    description: "OPAi Police is a productivity and AI assistance tool."
+    description: requiredDisclaimers[0]
   },
   {
     key: "privacy",
     title: "Privacy Policy",
-    description:
-      "OPAi Police is not a replacement for official police systems, supervision, service policy, legal advice, medical advice, or professional judgment."
+    description: requiredDisclaimers[1]
   },
   {
     key: "aiDisclaimer",
     title: "AI Disclaimer",
-    description: "AI-generated responses may be incomplete or inaccurate and must be verified."
+    description: requiredDisclaimers[2]
   },
   {
     key: "ptsdDisclaimer",
     title: "PTSD Awareness Disclaimer",
-    description:
-      "PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, or crisis intervention."
+    description: requiredDisclaimers[3]
   }
 ];
 

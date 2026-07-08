@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { legalLinks } from "@/data/compliance";
 import type { ModuleId } from "@/types/navigation";
 
 export type MciIcon = ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -131,7 +132,10 @@ export const notesFiles = [
 
 export const settingsItems = [
   { icon: "bell-outline" as MciIcon, title: "Notifications", subtitle: "Prototype only" },
-  { icon: "shield-lock-outline" as MciIcon, title: "Privacy", subtitle: "Consent controls later" },
+  { icon: "shield-lock-outline" as MciIcon, title: "Privacy Policy", subtitle: legalLinks[0].url },
+  { icon: "file-document-outline" as MciIcon, title: "Terms of Use", subtitle: legalLinks[1].url },
+  { icon: "lifebuoy" as MciIcon, title: "Support", subtitle: legalLinks[3].url },
+  { icon: "alert-circle-outline" as MciIcon, title: "App Disclaimers", subtitle: "Required notices" },
   { icon: "palette-outline" as MciIcon, title: "Appearance", subtitle: "Dark theme" },
   { icon: "information-outline" as MciIcon, title: "About Testing", subtitle: "Pre-launch build" }
 ];

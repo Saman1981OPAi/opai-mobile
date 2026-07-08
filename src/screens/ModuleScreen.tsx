@@ -12,6 +12,7 @@ import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { legalLinks, requiredDisclaimers } from "@/data/compliance";
 import {
   aiTools,
   calendarEvents,
@@ -685,6 +686,14 @@ function SettingsScreen({
       <SecondaryButton label="Mock Sign Out" onPress={onSignOut}>
         <Ionicons name="log-out-outline" size={20} color={colors.primaryBlue} />
       </SecondaryButton>
+      <View style={styles.legalPanel}>
+        <Text style={styles.legalTitle}>Legal and support references</Text>
+        {legalLinks.map((link) => (
+          <Text key={link.url} numberOfLines={1} style={styles.legalLink}>
+            {link.label}: {link.url}
+          </Text>
+        ))}
+      </View>
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
     </ScreenFrame>
@@ -737,8 +746,9 @@ function PrototypeSelection({ label }: { label: string }) {
 function CoreDisclaimer() {
   return (
     <View style={styles.disclaimerStack}>
-      <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool. It does not replace official systems, supervision, service policy, legal advice, medical advice, or professional judgment." />
-      <DisclaimerBanner message="AI-generated responses may be incomplete or inaccurate and must be verified. PTSD awareness content is educational only and is not diagnosis, treatment, therapy, or crisis intervention." />
+      {requiredDisclaimers.map((message) => (
+        <DisclaimerBanner key={message} message={message} />
+      ))}
     </View>
   );
 }
@@ -843,6 +853,24 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.76,
     transform: [{ translateY: 1 }]
+  },
+  legalLink: {
+    color: colors.textMuted,
+    fontSize: typography.caption,
+    fontWeight: "700"
+  },
+  legalPanel: {
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.md
+  },
+  legalTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.small,
+    fontWeight: "900"
   },
   profileCopy: {
     flex: 1
