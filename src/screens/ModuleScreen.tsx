@@ -1,9 +1,26 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { ActionButton, Card, Pill, SectionTitle } from "@/components/Primitives";
-import { aiActions, calendarItems, incidentFields, privacySettings, shiftReminders, translationModes } from "@/data/workflows";
-import { modules } from "@/data/modules";
-import { colors, radius, spacing, typography } from "@/theme/tokens";
-import type { AppModule, ModuleId, ReminderItem } from "@/types/navigation";
+import type { ReactNode } from "react";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { AIInputBar } from "@/components/ui/AIInputBar";
+import { AppHeader } from "@/components/ui/AppHeader";
+import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
+import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { EventCard } from "@/components/ui/EventCard";
+import { FeatureCard } from "@/components/ui/FeatureCard";
+import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
+import { ReminderCard } from "@/components/ui/ReminderCard";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import {
+  aiTools,
+  calendarEvents,
+  homeFeatures,
+  incidentSteps,
+  shiftReminders,
+  translationModes
+} from "@/data/uiMockups";
+import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
+import type { AppModule, ModuleId } from "@/types/navigation";
 
 type ModuleScreenProps = {
   module: AppModule;
@@ -11,386 +28,350 @@ type ModuleScreenProps = {
 };
 
 export function ModuleScreen({ module, onSelectModule }: ModuleScreenProps) {
-  switch (module.id) {
-    case "dashboard":
-      return <DashboardScreen onSelectModule={onSelectModule} />;
-    case "shift":
-      return <ShiftScreen />;
-    case "incident":
-      return <IncidentScreen />;
-    case "translation":
-      return <TranslationScreen />;
-    case "calendar":
-      return <CalendarScreen />;
-    case "ai":
-      return <AiScreen />;
-    case "court":
-      return <CourtScreen />;
-    case "training":
-      return <TrainingScreen />;
-    case "notes":
-      return <NotesScreen />;
-    case "notifications":
-      return <NotificationsScreen />;
-    case "settings":
-      return <SettingsScreen />;
-    default:
-      return null;
-  }
-}
+  const { width } = useWindowDimensions();
+  const isTablet = width >= layout.tabletBreakpoint;
 
-function DashboardScreen({ onSelectModule }: { onSelectModule: (module: ModuleId) => void }) {
-  const topModules = modules.filter((module) => ["shift", "incident", "translation", "calendar"].includes(module.id));
-  const secondaryModules = modules.filter((module) => ["court", "training", "notes", "notifications", "settings"].includes(module.id));
+  if (module.id === "dashboard") {
+    return <HomeDashboardScreen isTablet={isTablet} onSelectModule={onSelectModule} />;
+  }
+
+  if (module.id === "shift") {
+    return <StartShiftScreen isTablet={isTablet} />;
+  }
+
+  if (module.id === "incident") {
+    return <NewIncidentScreen isTablet={isTablet} />;
+  }
+
+  if (module.id === "ai") {
+    return <AIAssistantScreen isTablet={isTablet} onSelectModule={onSelectModule} />;
+  }
+
+  if (module.id === "translation") {
+    return <TranslationScreen isTablet={isTablet} />;
+  }
+
+  if (module.id === "calendar") {
+    return <CalendarScreen isTablet={isTablet} />;
+  }
 
   return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Dashboard" title="Good morning. Your operational view is ready." />
-      <View style={styles.grid}>
-        {topModules.map((module) => (
-          <Pressable
-            accessibilityRole="button"
-            key={module.id}
-            onPress={() => onSelectModule(module.id)}
-            style={({ pressed }) => [styles.moduleTile, pressed ? styles.pressed : null]}
-          >
-            <Text style={styles.moduleIcon}>{module.icon}</Text>
-            <Text style={styles.moduleTitle}>{module.shortLabel}</Text>
-            <Text style={styles.moduleSummary} numberOfLines={3}>{module.summary}</Text>
-          </Pressable>
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title={module.shortLabel} />
+      <EmptyState
+        icon="progress-wrench"
+        title={`${module.shortLabel} preview`}
+        message="This module is planned for a later sprint. Sprint 002 keeps it as a static placeholder."
+      />
+      <DisclaimerBanner />
+    </ScreenFrame>
+  );
+}
+
+function ScreenFrame({ children, isTablet }: { children: ReactNode; isTablet: boolean }) {
+  return (
+    <View style={styles.screen}>
+      <View style={[styles.content, isTablet ? styles.contentTablet : null]}>{children}</View>
+    </View>
+  );
+}
+
+function HomeDashboardScreen({
+  isTablet,
+  onSelectModule
+}: {
+  isTablet: boolean;
+  onSelectModule: (module: ModuleId) => void;
+}) {
+  return (
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title="Home" />
+      <View style={[styles.hero, isTablet ? styles.heroTablet : null]}>
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroTitle}>AI partner on duty.</Text>
+          <Text style={styles.heroSub}>Reports. Translation. Reminders.</Text>
+        </View>
+        <View style={styles.heroIcon}>
+          <MaterialCommunityIcons name="shield-check-outline" size={42} color={colors.primaryBlue} />
+        </View>
+      </View>
+
+      <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
+        {homeFeatures.map((feature) => (
+          <FeatureCard
+            compact={isTablet}
+            icon={feature.icon}
+            key={feature.id}
+            onPress={() => onSelectModule(feature.id)}
+            subtitle={feature.subtitle}
+            title={feature.title}
+          />
         ))}
       </View>
-      <Card eyebrow="More tools" title="Officer support modules">
-        <View style={styles.compactGrid}>
-          {secondaryModules.map((module) => (
-            <Pressable
-              accessibilityRole="button"
-              key={module.id}
-              onPress={() => onSelectModule(module.id)}
-              style={({ pressed }) => [styles.compactTile, pressed ? styles.pressed : null]}
-            >
-              <Text style={styles.compactIcon}>{module.icon}</Text>
-              <Text style={styles.compactTitle}>{module.shortLabel}</Text>
-            </Pressable>
-          ))}
+
+      <SectionHeader action="View All" icon="calendar-outline" title="Upcoming" />
+      <View style={styles.stack}>
+        {calendarEvents.map((event) => (
+          <EventCard key={event.title} {...event} />
+        ))}
+      </View>
+
+      <PTSDRibbonCard />
+      <AIInputBar placeholder="Ask OPAi..." />
+      <DisclaimerBanner />
+    </ScreenFrame>
+  );
+}
+
+function StartShiftScreen({ isTablet }: { isTablet: boolean }) {
+  return (
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title="Start My Shift" />
+      <View style={styles.centerHero}>
+        <Text style={styles.heroTitle}>
+          Start Every Shift <Text style={styles.blueText}>Prepared</Text>
+        </Text>
+        <Text style={styles.heroSub}>Reminders only. Not mandatory.</Text>
+      </View>
+
+      <SectionHeader icon="shield-check-outline" title="Shift Reminders" />
+      <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
+        {shiftReminders.map((reminder) => (
+          <ReminderCard key={reminder.title} {...reminder} />
+        ))}
+      </View>
+
+      <PrimaryButton label="I'm Ready">
+        <MaterialCommunityIcons name="leaf-maple" size={24} color={colors.textPrimary} />
+      </PrimaryButton>
+      <DisclaimerBanner message="Supportive reminder preview only. This is not a mandatory checklist." />
+    </ScreenFrame>
+  );
+}
+
+function NewIncidentScreen({ isTablet }: { isTablet: boolean }) {
+  return (
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title="New Incident" />
+      <View style={styles.hero}>
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroTitle}>Capture key details.</Text>
+          <Text style={styles.heroSub}>Static report workflow preview.</Text>
         </View>
-      </Card>
-      <Card eyebrow="Readiness summary" title="Today needs attention">
-        <SummaryRow label="Court" value="1 date" tone="danger" />
-        <SummaryRow label="Training" value="2 deadlines" tone="warning" />
-        <SummaryRow label="Follow-ups" value="4 open" tone="blue" />
-      </Card>
-    </View>
+        <MaterialCommunityIcons name="file-plus-outline" size={48} color={colors.primaryBlue} />
+      </View>
+
+      <SectionHeader icon="clipboard-text-outline" title="Report Sections" />
+      <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
+        {incidentSteps.map((step) => (
+          <FeatureCard compact={isTablet} icon={step.icon} key={step.title} subtitle={step.subtitle} title={step.title} />
+        ))}
+      </View>
+
+      <SecondaryButton label="Draft Preview">
+        <MaterialCommunityIcons name="pencil-outline" size={20} color={colors.primaryBlue} />
+      </SecondaryButton>
+      <DisclaimerBanner message="No data is saved in Sprint 002. Incident screens use placeholder content only." />
+    </ScreenFrame>
   );
 }
 
-function ShiftScreen() {
+function AIAssistantScreen({
+  isTablet,
+  onSelectModule
+}: {
+  isTablet: boolean;
+  onSelectModule: (module: ModuleId) => void;
+}) {
   return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Reminder screen" title="Start My Shift" />
-      <Text style={styles.lead}>
-        These reminders are optional support prompts. They do not force answers, create reports, or add administrative burden.
-      </Text>
-      {shiftReminders.map((item) => (
-        <ReminderRow key={item.id} item={item} />
-      ))}
-    </View>
-  );
-}
-
-function IncidentScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Guided workflow" title="New Incident" />
-      <Card title="Incident capture">
-        <Text style={styles.body}>Organize incident material first. Draft reports only after officer review.</Text>
-        <View style={styles.listGrid}>
-          {incidentFields.map((field) => (
-            <View key={field} style={styles.listItem}>
-              <Text style={styles.listBullet}>+</Text>
-              <Text style={styles.listText}>{field}</Text>
-            </View>
-          ))}
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title="AI Assistant" />
+      <View style={styles.aiPanel}>
+        <View style={styles.aiOrb}>
+          <MaterialCommunityIcons name="brain" size={44} color={colors.primaryBlue} />
         </View>
-        <ActionButton label="Start guided incident" />
-      </Card>
-    </View>
-  );
-}
-
-function TranslationScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Police-context tools" title="Translation" />
-      {translationModes.map((mode) => (
-        <Card key={mode} title={mode}>
-          <Text style={styles.body}>Prepared for secure translation workflows with clear consent for voice, camera, files, and OCR.</Text>
-        </Card>
-      ))}
-    </View>
-  );
-}
-
-function CalendarScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="AI-assisted scheduling" title="Calendar" />
-      <ScheduleList />
-    </View>
-  );
-}
-
-function AiScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Active assistant" title="Police-focused AI actions" />
-      <Card title="Suggested actions">
-        <View style={styles.actionGrid}>
-          {aiActions.map((action) => (
-            <View key={action} style={styles.aiAction}>
-              <Text style={styles.aiActionText}>{action}</Text>
-            </View>
-          ))}
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroTitle}>OPAi AI</Text>
+          <Text style={styles.heroSub}>Talk. Ask. Draft.</Text>
         </View>
-      </Card>
-      <Card eyebrow="Review required" title="AI assists. Officers decide.">
-        <Text style={styles.body}>Drafting, legal research, summaries, and translations must remain reviewable before operational use.</Text>
-      </Card>
-    </View>
+      </View>
+
+      <View style={styles.actionRow}>
+        <SecondaryButton label="Talk">
+          <MaterialCommunityIcons name="microphone-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton label="Report" onPress={() => onSelectModule("incident")}>
+          <MaterialCommunityIcons name="file-plus-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+      </View>
+
+      <SectionHeader icon="brain" title="AI Tools" />
+      <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
+        {aiTools.map((tool) => (
+          <ReminderCard key={tool.title} {...tool} />
+        ))}
+      </View>
+
+      <AIInputBar placeholder="Voice or text command..." />
+      <DisclaimerBanner message="Static UI only. AI calls and data processing start in a later sprint." />
+    </ScreenFrame>
   );
 }
 
-function CourtScreen() {
+function TranslationScreen({ isTablet }: { isTablet: boolean }) {
   return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Critical reminders" title="Court" />
-      <Card title="Next appearance">
-        <SummaryRow label="Date" value="Today" tone="danger" />
-        <SummaryRow label="Time" value="13:30" tone="danger" />
-        <SummaryRow label="Preparation" value="Review notes and report" tone="blue" />
-        <ActionButton label="Open court assistant" variant="secondary" />
-      </Card>
-    </View>
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title="Translation" />
+      <View style={styles.hero}>
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroTitle}>Communicate clearly.</Text>
+          <Text style={styles.heroSub}>Text, voice, camera, document.</Text>
+        </View>
+        <MaterialCommunityIcons name="translate" size={48} color={colors.primaryBlue} />
+      </View>
+
+      <SectionHeader icon="translate" title="Modes" />
+      <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
+        {translationModes.map((mode) => (
+          <FeatureCard compact={isTablet} icon={mode.icon} key={mode.title} subtitle={mode.subtitle} title={mode.title} />
+        ))}
+      </View>
+
+      <AIInputBar placeholder="Enter text to translate..." />
+      <DisclaimerBanner message="Translation is a static preview. Police-context translation logic is not connected yet." />
+    </ScreenFrame>
   );
 }
 
-function TrainingScreen() {
-  const items = ["Annual firearms", "Use of Force", "CEW", "CPR / First Aid", "Policy review"];
-
+function CalendarScreen({ isTablet }: { isTablet: boolean }) {
   return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Training & Requalification" title="Stay ahead of deadlines" />
-      {items.map((item, index) => (
-        <Card key={item} title={item}>
-          <SummaryRow label="Status" value={index < 2 ? "Due soon" : "Tracked"} tone={index < 2 ? "warning" : "blue"} />
-        </Card>
-      ))}
-    </View>
+    <ScreenFrame isTablet={isTablet}>
+      <AppHeader title="Calendar" />
+      <View style={styles.hero}>
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroTitle}>Know what is next.</Text>
+          <Text style={styles.heroSub}>Court, training, follow-ups.</Text>
+        </View>
+        <Ionicons name="calendar-outline" size={48} color={colors.primaryBlue} />
+      </View>
+
+      <SectionHeader icon="calendar-month-outline" title="Today" />
+      <View style={styles.stack}>
+        {calendarEvents.map((event) => (
+          <EventCard key={event.title} {...event} />
+        ))}
+      </View>
+
+      <SecondaryButton label="Connect Calendar Later">
+        <Ionicons name="lock-closed-outline" size={20} color={colors.primaryBlue} />
+      </SecondaryButton>
+      <DisclaimerBanner message="Calendar sync requires explicit authorization and is not connected in Sprint 002." />
+    </ScreenFrame>
   );
-}
-
-function NotesScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Case material" title="Notes & Files" />
-      <Card title="Secure file organization">
-        <Text style={styles.body}>Prepare for notes, photos, documents, audio, and evidence references with minimal unnecessary storage.</Text>
-        <ActionButton label="Attach file" variant="secondary" />
-      </Card>
-      <Card title="AI note summary">
-        <Text style={styles.body}>Summaries should clearly state which notes or files were used.</Text>
-      </Card>
-    </View>
-  );
-}
-
-function NotificationsScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Reminders" title="Notifications" />
-      <Card title="Reminder types">
-        <SummaryRow label="Standard" value="Shift and follow-up reminders" tone="blue" />
-        <SummaryRow label="Persistent" value="Court, training, qualification" tone="warning" />
-        <SummaryRow label="Call-style" value="Optional critical alerts" tone="danger" />
-      </Card>
-    </View>
-  );
-}
-
-function SettingsScreen() {
-  return (
-    <View style={styles.stack}>
-      <SectionTitle eyebrow="Security & Privacy" title="Consent-led settings" />
-      {privacySettings.map((setting) => (
-        <Card key={setting} title={setting}>
-          <Text style={styles.body}>Make access clear, reversible, and easy to review.</Text>
-        </Card>
-      ))}
-    </View>
-  );
-}
-
-function ScheduleList() {
-  return (
-    <View style={styles.stack}>
-      {calendarItems.map((item) => (
-        <Card key={`${item.title}-${item.time}`} title={item.title}>
-          <SummaryRow label="When" value={item.time} tone={toneForStatus(item.tone)} />
-        </Card>
-      ))}
-    </View>
-  );
-}
-
-function ReminderRow({ item }: { item: ReminderItem }) {
-  return (
-    <Card title={item.title}>
-      <Text style={styles.body}>{item.detail}</Text>
-      <Pill tone={toneForStatus(item.status)}>{labelForStatus(item.status)}</Pill>
-    </Card>
-  );
-}
-
-function SummaryRow({ label, tone, value }: { label: string; value: string; tone: "blue" | "danger" | "neutral" | "warning" }) {
-  return (
-    <View style={styles.summaryRow}>
-      <Text style={styles.summaryLabel}>{label}</Text>
-      <Pill tone={tone}>{value}</Pill>
-    </View>
-  );
-}
-
-function toneForStatus(status: ReminderItem["status"]) {
-  if (status === "urgent") return "danger";
-  if (status === "important") return "warning";
-  return "neutral";
-}
-
-function labelForStatus(status: ReminderItem["status"]) {
-  if (status === "urgent") return "Important";
-  if (status === "important") return "Review";
-  return "Optional";
 }
 
 const styles = StyleSheet.create({
-  actionGrid: {
+  actionRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: spacing.sm
   },
-  aiAction: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    backgroundColor: "rgba(10,132,255,0.10)",
-    paddingHorizontal: 10,
-    paddingVertical: 10
-  },
-  aiActionText: {
-    color: colors.textSecondary,
-    fontSize: typography.caption,
-    fontWeight: "800"
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    lineHeight: 22
-  },
-  compactGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm
-  },
-  compactIcon: {
-    color: colors.primaryBlue,
-    fontSize: typography.caption,
-    fontWeight: "900"
-  },
-  compactTile: {
+  aiOrb: {
     alignItems: "center",
-    backgroundColor: "rgba(10,132,255,0.10)",
-    borderColor: colors.border,
-    borderRadius: radius.sm,
+    backgroundColor: "rgba(10,132,255,0.12)",
+    borderColor: colors.primaryBlue,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    height: 76,
+    justifyContent: "center",
+    width: 76
+  },
+  aiPanel: {
+    alignItems: "center",
+    backgroundColor: "rgba(6,29,56,0.72)",
+    borderColor: "rgba(77,163,255,0.28)",
+    borderRadius: radius.xl,
     borderWidth: 1,
     flexDirection: "row",
-    gap: spacing.xs,
-    minHeight: 42,
-    paddingHorizontal: 10,
-    paddingVertical: 9
+    gap: spacing.md,
+    padding: spacing.md
   },
-  compactTitle: {
-    color: colors.textSecondary,
-    fontSize: typography.caption,
-    fontWeight: "800"
+  blueText: {
+    color: colors.primaryBlue
+  },
+  centerHero: {
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingVertical: spacing.md
+  },
+  content: {
+    gap: spacing.lg,
+    width: "100%"
+  },
+  contentTablet: {
+    alignSelf: "center",
+    maxWidth: layout.contentMaxWidth
   },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.sm
-  },
-  lead: {
-    color: colors.textMuted,
-    fontSize: typography.body,
-    lineHeight: 25
-  },
-  listBullet: {
-    color: colors.ptsdGreen,
-    fontWeight: "900"
-  },
-  listGrid: {
-    gap: spacing.sm
-  },
-  listItem: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.sm
-  },
-  listText: {
-    color: colors.textSecondary,
-    flex: 1,
-    fontSize: typography.small,
-    lineHeight: 21
-  },
-  moduleIcon: {
-    color: colors.accentBlue,
-    fontSize: typography.h2,
-    fontWeight: "900"
-  },
-  moduleSummary: {
-    color: colors.textMuted,
-    fontSize: typography.caption,
-    lineHeight: 17
-  },
-  moduleTile: {
-    width: "48%",
-    minHeight: 150,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    backgroundColor: "rgba(255,255,255,0.06)",
     gap: spacing.sm,
+    justifyContent: "space-between"
+  },
+  gridTablet: {
+    justifyContent: "flex-start"
+  },
+  hero: {
+    alignItems: "center",
+    backgroundColor: "rgba(6,29,56,0.38)",
+    borderColor: "rgba(77,163,255,0.14)",
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.md,
     padding: spacing.md
   },
-  moduleTitle: {
-    color: colors.textPrimary,
-    fontSize: typography.small,
-    fontWeight: "800"
+  heroCopy: {
+    flex: 1
   },
-  pressed: {
-    opacity: 0.76
+  heroIcon: {
+    alignItems: "center",
+    backgroundColor: "rgba(10,132,255,0.12)",
+    borderRadius: radius.xl,
+    height: 68,
+    justifyContent: "center",
+    width: 68
+  },
+  heroSub: {
+    color: colors.textMuted,
+    fontSize: typography.body,
+    lineHeight: 22,
+    marginTop: spacing.xs
+  },
+  heroTablet: {
+    minHeight: 160
+  },
+  heroTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.hero,
+    fontWeight: "900",
+    lineHeight: 39
+  },
+  reminderGrid: {
+    gap: spacing.sm
+  },
+  reminderGridTablet: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap"
+  },
+  screen: {
+    backgroundColor: colors.background,
+    minHeight: "100%",
+    overflow: "hidden",
+    padding: spacing.md,
+    paddingBottom: layout.bottomNavHeight + spacing.lg
   },
   stack: {
-    gap: spacing.md
-  },
-  summaryLabel: {
-    color: colors.textMuted,
-    fontSize: typography.small,
-    fontWeight: "700"
-  },
-  summaryRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: spacing.md
+    gap: spacing.sm
   }
 });
