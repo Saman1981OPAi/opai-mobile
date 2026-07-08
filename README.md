@@ -66,6 +66,17 @@ Apple account email addresses are not stored in the application config or displa
 pnpm typecheck
 ```
 
+## Deployment
+
+Project 015 adds GitHub Actions CI and EAS Build automation for staging and production mobile
+builds. See `docs/deployment.md`.
+
+## Sprint 002 Design System
+
+Sprint 002 introduces reusable OPAi mobile UI tokens, branded components, and static screen
+templates for Home Dashboard, Start My Shift, New Incident, AI Assistant, Translation, and
+Calendar. See `docs/sprint-002-design-system.md`.
+
 ## Product Principles
 
 - Start My Shift is a reminder screen, not a mandatory checklist.

@@ -13,13 +13,24 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api-staging.opaiapp.com/api/v1"
+      },
       "ios": {
         "simulator": false,
         "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
       "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.opaiapp.com/api/v1"
+      },
       "ios": {
         "resourceClass": "m-medium"
       }
@@ -27,7 +38,12 @@
   },
   "submit": {
     "production": {
-      "ios": {}
+      "ios": {
+        "ascAppId": "6788187875"
+      },
+      "android": {
+        "track": "internal"
+      }
     }
   }
 }

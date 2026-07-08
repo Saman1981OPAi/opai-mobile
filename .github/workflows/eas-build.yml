@@ -1,0 +1,89 @@
+name: EAS Mobile Build
+
+on:
+  push:
+    branches: ["main", "staging"]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Build environment"
+        required: true
+        type: choice
+        options: ["staging", "production"]
+        default: "staging"
+      platform:
+        description: "Target platform"
+        required: true
+        type: choice
+        options: ["ios", "android", "all"]
+        default: "ios"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eas-${{ github.ref_name }}-${{ inputs.environment || 'branch' }}-${{ inputs.platform || 'auto' }}
+  cancel-in-progress: true
+
+jobs:
+  build-staging:
+    name: Build staging
+    if: (github.event_name == 'push' && github.ref_name == 'staging') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: EAS staging build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: pnpm exec eas build --platform ${{ inputs.platform || 'ios' }} --profile preview --non-interactive
+
+  build-production:
+    name: Build production
+    if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: EAS production build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: pnpm exec eas build --platform ${{ inputs.platform || 'ios' }} --profile production --non-interactive
