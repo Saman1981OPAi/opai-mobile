@@ -4,6 +4,12 @@
 
 Add the OPAi Police authentication architecture and UI foundation without connecting production authentication, backend services, OpenAI APIs, databases, payments, subscriptions, or police-service integrations.
 
+## Platform Priority
+
+iOS is the active review and launch platform for this sprint. Android support must remain intact for later use, but Android and Google Play submission are paused until the D-U-N-S Number for Ebrahimi Holdings is received.
+
+Sprint 004 should therefore prioritize iOS review, App Store readiness, shared architecture, documentation, and security planning while avoiding Android-specific store release work.
+
 ## Scope Completed
 
 - Added a signed-out authentication flow before the Sprint 003 app shell.

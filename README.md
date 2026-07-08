@@ -1,10 +1,24 @@
 # OPAi Mobile
 
-Cross-platform OPAi Police mobile application for iOS and Android.
+Cross-platform OPAi Police mobile application for iOS and Android, with current launch priority on iOS.
 
 ## Objective
 
 Build a shared-codebase mobile app for OPAi Police using React Native, TypeScript, and Expo. The app uses a Nori-inspired active AI navigation structure while implementing law-enforcement workflows, AI assistance, translation tools, scheduling, reminders, and PTSD awareness.
+
+## Current Platform Priority
+
+Android and Google Play submission are paused until the D-U-N-S Number for Ebrahimi Holdings is received.
+
+Current priority:
+
+1. iOS app development
+2. Website and public launch materials
+3. App Store readiness
+4. Shared design system and architecture
+5. Documentation and security planning
+
+Android support stays in the codebase and cross-platform compatibility must be preserved. Immediate review, testing, screenshots, and launch work should prioritize iOS. Do not prioritize Android-specific store assets, Google Play release workflows, or Android production deployment until the D-U-N-S Number is received.
 
 ## Current MVP Scope
 
