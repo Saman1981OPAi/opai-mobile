@@ -1,10 +1,24 @@
 # OPAi Mobile
 
-Cross-platform OPAi Police mobile application for iOS and Android.
+Cross-platform OPAi Police mobile application for iOS and Android, with current launch priority on iOS.
 
 ## Objective
 
 Build a shared-codebase mobile app for OPAi Police using React Native, TypeScript, and Expo. The app uses a Nori-inspired active AI navigation structure while implementing law-enforcement workflows, AI assistance, translation tools, scheduling, reminders, and PTSD awareness.
+
+## Current Platform Priority
+
+Android and Google Play submission are paused until the D-U-N-S Number for Ebrahimi Holdings is received.
+
+Current priority:
+
+1. iOS app development
+2. Website and public launch materials
+3. App Store readiness
+4. Shared design system and architecture
+5. Documentation and security planning
+
+Android support stays in the codebase and cross-platform compatibility must be preserved. Immediate review, testing, screenshots, and launch work should prioritize iOS. Do not prioritize Android-specific store assets, Google Play release workflows, or Android production deployment until the D-U-N-S Number is received.
 
 ## Current MVP Scope
 
@@ -61,6 +75,11 @@ Sprint 003 keeps the app fully local. The clickable prototype uses placeholder d
 not connect to backend services, OpenAI APIs, databases, authentication, payments, or real user
 accounts.
 
+Sprint 004 adds a local mock authentication foundation. It includes signed-out auth screens,
+consent gates, a biometric placeholder, a mock profile, and mock sign-out. It still does not
+connect to backend services, network APIs, OpenAI, databases, payments, subscriptions, or real
+accounts.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -95,6 +114,11 @@ Calendar. See `docs/sprint-002-design-system.md`.
 Sprint 003 connects the mobile app shell into a clickable local prototype with bottom navigation,
 secondary module navigation, local placeholder data, and prototype-only interactions. See
 `docs/sprint-003-app-shell.md`.
+
+## Sprint 004 Authentication Foundation
+
+Sprint 004 adds the authentication UI foundation and local mock auth state model. See
+`docs/sprint-004-authentication-foundation.md`.
 
 ## Product Principles
 

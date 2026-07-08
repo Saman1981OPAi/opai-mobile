@@ -4,6 +4,20 @@
 
 The first mobile foundation is an Expo React Native app with a shared TypeScript codebase for iOS and Android.
 
+## Current Platform Priority
+
+iOS is the active launch platform. Android remains supported in the shared codebase, but Android and Google Play submission are paused until the D-U-N-S Number for Ebrahimi Holdings is received.
+
+Immediate review, testing, screenshots, release planning, and store-readiness work should prioritize:
+
+1. iOS app development
+2. Website and public launch materials
+3. App Store readiness
+4. Shared design system and architecture
+5. Documentation and security planning
+
+Do not remove Android support, delete Android configuration, or break cross-platform compatibility. Do not prioritize Android-specific store assets, Google Play release workflows, or Android production deployment until the D-U-N-S Number is received.
+
 Current layers:
 
 - `App.tsx`: app entry and active module state.

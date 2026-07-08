@@ -1,0 +1,741 @@
+import { useMemo, useState } from "react";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View
+} from "react-native";
+import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
+import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
+import { consentItems, emptyConsentState, mockUserProfile } from "@/data/authMock";
+import { colors, layout, radius, shadows, spacing, typography } from "@/theme/tokens";
+import type { AuthStatus, ConsentKey, ConsentState, MockUserProfile } from "@/types/auth";
+
+type AuthScreen =
+  | "welcome"
+  | "signIn"
+  | "createAccount"
+  | "forgotPassword"
+  | "verification"
+  | "biometric"
+  | "consent"
+  | "success";
+
+type AuthFlowProps = {
+  authStatus: AuthStatus;
+  onAuthenticated: (profile: MockUserProfile) => void;
+  onAuthStatusChange: (status: AuthStatus) => void;
+};
+
+export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: AuthFlowProps) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= layout.tabletBreakpoint;
+  const [screen, setScreen] = useState<AuthScreen>("welcome");
+  const [email, setEmail] = useState(mockUserProfile.email);
+  const [code, setCode] = useState("");
+  const [consent, setConsent] = useState<ConsentState>(emptyConsentState);
+
+  const allConsentAccepted = useMemo(
+    () => Object.values(consent).every(Boolean),
+    [consent]
+  );
+
+  const goToConsent = () => {
+    onAuthStatusChange("onboardingRequired");
+    setScreen("consent");
+  };
+
+  const completeConsent = () => {
+    if (!allConsentAccepted) {
+      return;
+    }
+
+    setScreen("success");
+  };
+
+  const enterApp = () => {
+    onAuthenticated({
+      ...mockUserProfile,
+      biometricEnabled: authStatus === "biometricPrompt",
+      email,
+      privacyConsentAccepted: consent.privacy,
+      termsAccepted: consent.terms
+    });
+  };
+
+  return (
+    <ScrollView
+      contentContainerStyle={[styles.page, isTablet ? styles.pageTablet : null]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={[styles.authCard, isTablet ? styles.authCardTablet : null]}>
+        <BrandIntro compact={screen !== "welcome"} />
+
+        {screen === "welcome" ? (
+          <WelcomeScreen
+            onBiometric={() => {
+              onAuthStatusChange("biometricPrompt");
+              setScreen("biometric");
+            }}
+            onCreateAccount={() => setScreen("createAccount")}
+            onSignIn={() => setScreen("signIn")}
+          />
+        ) : null}
+
+        {screen === "signIn" ? (
+          <SignInScreen
+            email={email}
+            onBack={() => setScreen("welcome")}
+            onBiometric={() => {
+              onAuthStatusChange("biometricPrompt");
+              setScreen("biometric");
+            }}
+            onEmailChange={setEmail}
+            onForgotPassword={() => setScreen("forgotPassword")}
+            onSignIn={() => {
+              onAuthStatusChange("signingIn");
+              setScreen("verification");
+            }}
+          />
+        ) : null}
+
+        {screen === "createAccount" ? (
+          <CreateAccountScreen
+            email={email}
+            onBack={() => setScreen("welcome")}
+            onEmailChange={setEmail}
+            onSubmit={() => {
+              onAuthStatusChange("signingIn");
+              setScreen("verification");
+            }}
+          />
+        ) : null}
+
+        {screen === "forgotPassword" ? (
+          <ForgotPasswordScreen
+            email={email}
+            onBack={() => setScreen("signIn")}
+            onEmailChange={setEmail}
+            onSubmit={() => onAuthStatusChange("passwordResetRequested")}
+            resetRequested={authStatus === "passwordResetRequested"}
+          />
+        ) : null}
+
+        {screen === "verification" ? (
+          <VerificationScreen
+            code={code}
+            onBack={() => setScreen("signIn")}
+            onCodeChange={setCode}
+            onVerify={goToConsent}
+          />
+        ) : null}
+
+        {screen === "biometric" ? (
+          <BiometricScreen
+            onBack={() => setScreen("welcome")}
+            onContinue={goToConsent}
+          />
+        ) : null}
+
+        {screen === "consent" ? (
+          <ConsentScreen
+            allConsentAccepted={allConsentAccepted}
+            consent={consent}
+            onBack={() => setScreen("welcome")}
+            onContinue={completeConsent}
+            onToggle={(key) => setConsent((current) => ({ ...current, [key]: !current[key] }))}
+          />
+        ) : null}
+
+        {screen === "success" ? (
+          <SuccessScreen onEnterApp={enterApp} />
+        ) : null}
+
+        <StatusBadge status={authStatus} />
+      </View>
+    </ScrollView>
+  );
+}
+
+function BrandIntro({ compact }: { compact: boolean }) {
+  return (
+    <View style={[styles.brand, compact ? styles.brandCompact : null]}>
+      <View style={styles.brandMark}>
+        <MaterialCommunityIcons name="shield-check-outline" size={36} color={colors.primaryBlue} />
+      </View>
+      <View style={styles.brandCopy}>
+        <Text style={styles.brandTitle}>OPAi Police</Text>
+        <Text style={styles.brandSub}>Authentication foundation</Text>
+      </View>
+      <View style={styles.testingPill}>
+        <Text style={styles.testingPillText}>Testing</Text>
+      </View>
+    </View>
+  );
+}
+
+function WelcomeScreen({
+  onBiometric,
+  onCreateAccount,
+  onSignIn
+}: {
+  onBiometric: () => void;
+  onCreateAccount: () => void;
+  onSignIn: () => void;
+}) {
+  return (
+    <View style={styles.stack}>
+      <Text style={styles.heroTitle}>Secure access, built carefully.</Text>
+      <Text style={styles.heroSub}>Mock authentication only. No production systems are connected.</Text>
+      <View style={styles.buttonStack}>
+        <PrimaryButton label="Sign In" onPress={onSignIn}>
+          <Ionicons name="log-in-outline" size={22} color={colors.textPrimary} />
+        </PrimaryButton>
+        <SecondaryButton label="Create Account" onPress={onCreateAccount}>
+          <Ionicons name="person-add-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton label="Biometric Placeholder" onPress={onBiometric}>
+          <MaterialCommunityIcons name="face-recognition" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+      </View>
+      <DisclaimerBanner message="Sprint 004 uses local mock authentication only. No backend, network, OpenAI, payment, or police-service connection is active." />
+    </View>
+  );
+}
+
+function SignInScreen({
+  email,
+  onBack,
+  onBiometric,
+  onEmailChange,
+  onForgotPassword,
+  onSignIn
+}: {
+  email: string;
+  onBack: () => void;
+  onBiometric: () => void;
+  onEmailChange: (value: string) => void;
+  onForgotPassword: () => void;
+  onSignIn: () => void;
+}) {
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading icon="lock-outline" title="Sign In" subtitle="Use mock credentials for local testing." />
+      <Field
+        autoCapitalize="none"
+        icon="email-outline"
+        keyboardType="email-address"
+        label="Email"
+        onChangeText={onEmailChange}
+        value={email}
+      />
+      <Field icon="key-outline" label="Password" placeholder="Mock password" secureTextEntry value="" />
+      <PrimaryButton label="Continue" onPress={onSignIn}>
+        <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+      <View style={styles.inlineActions}>
+        <TextButton label="Forgot Password" onPress={onForgotPassword} />
+        <TextButton label="Use Biometrics" onPress={onBiometric} />
+      </View>
+      <TextButton label="Back" onPress={onBack} />
+    </View>
+  );
+}
+
+function CreateAccountScreen({
+  email,
+  onBack,
+  onEmailChange,
+  onSubmit
+}: {
+  email: string;
+  onBack: () => void;
+  onEmailChange: (value: string) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading icon="account-plus-outline" title="Create Account" subtitle="Placeholder profile for review." />
+      <View style={styles.fieldGrid}>
+        <Field icon="account-outline" label="First Name" value="Sam" />
+        <Field icon="account-outline" label="Last Name" value="Officer" />
+      </View>
+      <Field
+        autoCapitalize="none"
+        icon="email-outline"
+        keyboardType="email-address"
+        label="Email"
+        onChangeText={onEmailChange}
+        value={email}
+      />
+      <Field icon="briefcase-outline" label="Role" value="Canadian Police Officer" />
+      <PrimaryButton label="Create Mock Account" onPress={onSubmit}>
+        <Ionicons name="checkmark-circle-outline" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+      <TextButton label="Back" onPress={onBack} />
+    </View>
+  );
+}
+
+function ForgotPasswordScreen({
+  email,
+  onBack,
+  onEmailChange,
+  onSubmit,
+  resetRequested
+}: {
+  email: string;
+  onBack: () => void;
+  onEmailChange: (value: string) => void;
+  onSubmit: () => void;
+  resetRequested: boolean;
+}) {
+  if (resetRequested) {
+    return (
+      <View style={styles.stack}>
+        <ScreenHeading
+          icon="email-check-outline"
+          title="Reset Requested"
+          subtitle="Mock password reset state is active."
+        />
+        <DisclaimerBanner message="No email was sent. Production password reset will require secure backend email verification." />
+        <PrimaryButton label="Back to Sign In" onPress={onBack}>
+          <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
+        </PrimaryButton>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading icon="lock-reset" title="Password Reset" subtitle="Local placeholder only." />
+      <Field
+        autoCapitalize="none"
+        icon="email-outline"
+        keyboardType="email-address"
+        label="Email"
+        onChangeText={onEmailChange}
+        value={email}
+      />
+      <PrimaryButton label="Request Reset" onPress={onSubmit}>
+        <Ionicons name="mail-unread-outline" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+      <DisclaimerBanner message="Password reset architecture is reserved for a secure backend. This screen does not send email." />
+      <TextButton label="Back" onPress={onBack} />
+    </View>
+  );
+}
+
+function VerificationScreen({
+  code,
+  onBack,
+  onCodeChange,
+  onVerify
+}: {
+  code: string;
+  onBack: () => void;
+  onCodeChange: (value: string) => void;
+  onVerify: () => void;
+}) {
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading icon="shield-key-outline" title="Verify" subtitle="Enter the mock code to continue." />
+      <Field
+        icon="numeric"
+        keyboardType="number-pad"
+        label="Code"
+        onChangeText={onCodeChange}
+        placeholder="000000"
+        value={code}
+      />
+      <PrimaryButton label="Verify Code" onPress={onVerify}>
+        <Ionicons name="shield-checkmark-outline" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+      <TextButton label="Back" onPress={onBack} />
+    </View>
+  );
+}
+
+function BiometricScreen({ onBack, onContinue }: { onBack: () => void; onContinue: () => void }) {
+  return (
+    <View style={styles.stack}>
+      <View style={styles.biometricOrb}>
+        <MaterialCommunityIcons name="face-recognition" size={54} color={colors.primaryBlue} />
+      </View>
+      <ScreenHeading
+        icon="fingerprint"
+        title="Biometric Unlock"
+        subtitle="Face ID, Touch ID, and device biometrics are placeholders in this sprint."
+      />
+      <PrimaryButton label="Continue Locally" onPress={onContinue}>
+        <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+      <SecondaryButton label="Use Email Instead" onPress={onBack}>
+        <Ionicons name="mail-outline" size={20} color={colors.primaryBlue} />
+      </SecondaryButton>
+    </View>
+  );
+}
+
+function ConsentScreen({
+  allConsentAccepted,
+  consent,
+  onBack,
+  onContinue,
+  onToggle
+}: {
+  allConsentAccepted: boolean;
+  consent: ConsentState;
+  onBack: () => void;
+  onContinue: () => void;
+  onToggle: (key: ConsentKey) => void;
+}) {
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading icon="file-check-outline" title="Review Consent" subtitle="Required before entering the prototype." />
+      <View style={styles.consentStack}>
+        {consentItems.map((item) => (
+          <Pressable
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: consent[item.key] }}
+            key={item.key}
+            onPress={() => onToggle(item.key)}
+            style={({ pressed }) => [
+              styles.consentRow,
+              consent[item.key] ? styles.consentRowActive : null,
+              pressed ? styles.pressed : null
+            ]}
+          >
+            <Ionicons
+              name={consent[item.key] ? "checkmark-circle" : "ellipse-outline"}
+              size={24}
+              color={consent[item.key] ? colors.ptsdGreen : colors.textMuted}
+            />
+            <View style={styles.consentCopy}>
+              <Text style={styles.consentTitle}>{item.title}</Text>
+              <Text style={styles.consentDescription}>{item.description}</Text>
+            </View>
+          </Pressable>
+        ))}
+      </View>
+      <PrimaryButton label={allConsentAccepted ? "Accept & Continue" : "Accept All Required Items"} onPress={onContinue}>
+        <Ionicons name="checkmark-done-outline" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+      {!allConsentAccepted ? (
+        <Text style={styles.helperText}>All four consent items are required for mock app access.</Text>
+      ) : null}
+      <TextButton label="Back" onPress={onBack} />
+    </View>
+  );
+}
+
+function SuccessScreen({ onEnterApp }: { onEnterApp: () => void }) {
+  return (
+    <View style={styles.stack}>
+      <View style={styles.successIcon}>
+        <Ionicons name="checkmark" size={42} color={colors.background} />
+      </View>
+      <ScreenHeading icon="shield-check-outline" title="Account Ready" subtitle="Mock onboarding is complete." />
+      <PrimaryButton label="Enter OPAi" onPress={onEnterApp}>
+        <MaterialCommunityIcons name="shield-check-outline" size={22} color={colors.textPrimary} />
+      </PrimaryButton>
+    </View>
+  );
+}
+
+function ScreenHeading({
+  icon,
+  subtitle,
+  title
+}: {
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  subtitle: string;
+  title: string;
+}) {
+  return (
+    <View style={styles.headingRow}>
+      <MaterialCommunityIcons name={icon} size={24} color={colors.primaryBlue} />
+      <View style={styles.headingCopy}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <Text style={styles.sectionSub}>{subtitle}</Text>
+      </View>
+    </View>
+  );
+}
+
+function Field({
+  icon,
+  label,
+  ...inputProps
+}: {
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  keyboardType?: "default" | "email-address" | "number-pad";
+  label: string;
+  onChangeText?: (value: string) => void;
+  placeholder?: string;
+  secureTextEntry?: boolean;
+  value: string;
+}) {
+  return (
+    <View style={styles.field}>
+      <MaterialCommunityIcons name={icon} size={22} color={colors.primaryBlue} />
+      <View style={styles.fieldCopy}>
+        <Text style={styles.fieldLabel}>{label}</Text>
+        <TextInput
+          placeholderTextColor={colors.textSubtle}
+          selectionColor={colors.primaryBlue}
+          style={styles.input}
+          {...inputProps}
+        />
+      </View>
+    </View>
+  );
+}
+
+function TextButton({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [pressed ? styles.pressed : null]}>
+      <Text style={styles.textButton}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function StatusBadge({ status }: { status: AuthStatus }) {
+  return (
+    <View style={styles.statusBadge}>
+      <Ionicons name="radio-button-on" size={14} color={colors.ptsdGreen} />
+      <Text style={styles.statusText}>Mock auth state: {status}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  authCard: {
+    ...shadows.card,
+    backgroundColor: "rgba(7,23,42,0.84)",
+    borderColor: "rgba(77,163,255,0.26)",
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    gap: spacing.lg,
+    padding: spacing.md,
+    width: "100%"
+  },
+  authCardTablet: {
+    maxWidth: 640
+  },
+  biometricOrb: {
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: "rgba(10,132,255,0.12)",
+    borderColor: colors.primaryBlue,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    height: 104,
+    justifyContent: "center",
+    width: 104
+  },
+  brand: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.md
+  },
+  brandCompact: {
+    paddingBottom: spacing.xs
+  },
+  brandCopy: {
+    flex: 1
+  },
+  brandMark: {
+    alignItems: "center",
+    backgroundColor: "rgba(10,132,255,0.10)",
+    borderColor: "rgba(127,255,212,0.32)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    height: 58,
+    justifyContent: "center",
+    width: 58
+  },
+  brandSub: {
+    color: colors.textMuted,
+    fontSize: typography.small,
+    fontWeight: "700"
+  },
+  brandTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.h1,
+    fontWeight: "900"
+  },
+  buttonStack: {
+    gap: spacing.sm
+  },
+  consentCopy: {
+    flex: 1,
+    gap: spacing.xs
+  },
+  consentDescription: {
+    color: colors.textMuted,
+    fontSize: typography.small,
+    lineHeight: 20
+  },
+  consentRow: {
+    alignItems: "flex-start",
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.sm,
+    padding: spacing.md
+  },
+  consentRowActive: {
+    backgroundColor: "rgba(127,255,212,0.09)",
+    borderColor: "rgba(127,255,212,0.42)"
+  },
+  consentStack: {
+    gap: spacing.sm
+  },
+  consentTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.body,
+    fontWeight: "900"
+  },
+  field: {
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderColor: "rgba(77,163,255,0.22)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.sm,
+    minHeight: 62,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm
+  },
+  fieldCopy: {
+    flex: 1
+  },
+  fieldGrid: {
+    gap: spacing.sm
+  },
+  fieldLabel: {
+    color: colors.textMuted,
+    fontSize: typography.caption,
+    fontWeight: "800",
+    textTransform: "uppercase"
+  },
+  headingCopy: {
+    flex: 1
+  },
+  headingRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: spacing.sm
+  },
+  helperText: {
+    color: colors.textMuted,
+    fontSize: typography.small,
+    textAlign: "center"
+  },
+  heroSub: {
+    color: colors.textMuted,
+    fontSize: typography.body,
+    lineHeight: 23
+  },
+  heroTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.title,
+    fontWeight: "900",
+    lineHeight: 34
+  },
+  inlineActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.md,
+    justifyContent: "center"
+  },
+  input: {
+    color: colors.textPrimary,
+    fontSize: typography.body,
+    fontWeight: "800",
+    margin: 0,
+    padding: 0
+  },
+  page: {
+    alignItems: "center",
+    backgroundColor: colors.background,
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: spacing.md
+  },
+  pageTablet: {
+    paddingVertical: spacing.xxl
+  },
+  pressed: {
+    opacity: 0.74,
+    transform: [{ translateY: 1 }]
+  },
+  sectionSub: {
+    color: colors.textMuted,
+    fontSize: typography.small,
+    lineHeight: 20
+  },
+  sectionTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.h2,
+    fontWeight: "900"
+  },
+  stack: {
+    gap: spacing.md
+  },
+  statusBadge: {
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: "rgba(127,255,212,0.08)",
+    borderColor: "rgba(127,255,212,0.28)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm
+  },
+  statusText: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    fontWeight: "800"
+  },
+  successIcon: {
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: colors.ptsdGreen,
+    borderRadius: radius.full,
+    height: 76,
+    justifyContent: "center",
+    width: 76
+  },
+  testingPill: {
+    backgroundColor: "rgba(127,255,212,0.10)",
+    borderColor: "rgba(127,255,212,0.34)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs
+  },
+  testingPillText: {
+    color: colors.ptsdGreen,
+    fontSize: typography.caption,
+    fontWeight: "900"
+  },
+  textButton: {
+    color: colors.accentBlue,
+    fontSize: typography.small,
+    fontWeight: "900",
+    textAlign: "center"
+  }
+});
