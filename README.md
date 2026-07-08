@@ -80,6 +80,11 @@ consent gates, a biometric placeholder, a mock profile, and mock sign-out. It st
 connect to backend services, network APIs, OpenAI, databases, payments, subscriptions, or real
 accounts.
 
+Sprint 007 adds device-local persistence for offline prototype data using AsyncStorage. It stores
+mock auth state, consent, preferences, reminder settings, incident draft examples, notes/file
+metadata, calendar/court/training examples, and mock AI/translation history. Do not enter real
+police records, evidence, confidential information, or sensitive personal information.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -134,6 +139,14 @@ payment system, police-service integration, or production secret. See:
 - `docs/security-privacy-model.md`
 - `docs/error-handling.md`
 - `docs/sprint-006-backend-planning-api-contract.md`
+
+## Sprint 007 Local Persistence
+
+Sprint 007 adds an offline local persistence layer for prototype-only data. See:
+
+- `docs/local-persistence-architecture.md`
+- `docs/sprint-007-local-persistence.md`
+- `docs/offline-prototype-limitations.md`
 
 ## Product Principles
 

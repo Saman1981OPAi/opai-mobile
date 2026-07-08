@@ -1,9 +1,10 @@
 import { shiftReminders } from "@/data/uiMockups";
 import { mockApiClient } from "@/services/mockApiClient";
+import type { LocalAppData } from "@/storage/storageTypes";
 
 export const shiftService = {
-  getReminders() {
-    return mockApiClient.get(shiftReminders).data;
+  getReminders(localData?: LocalAppData) {
+    return mockApiClient.get(localData?.shiftReminders ?? shiftReminders).data;
   },
   createSession() {
     return mockApiClient.post({

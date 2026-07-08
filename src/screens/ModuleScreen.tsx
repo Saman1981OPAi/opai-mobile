@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { AIInputBar } from "@/components/ui/AIInputBar";
 import { AppHeader } from "@/components/ui/AppHeader";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
@@ -19,7 +19,7 @@ import { courtService } from "@/services/courtService";
 import { dashboardService } from "@/services/dashboardService";
 import { incidentService } from "@/services/incidentService";
 import { notesService } from "@/services/notesService";
-import { shiftService } from "@/services/shiftService";
+import type { LocalAppData } from "@/storage/storageTypes";
 import { trainingService } from "@/services/trainingService";
 import { translationService } from "@/services/translationService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
@@ -27,22 +27,83 @@ import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
 
 type ModuleScreenProps = {
+  localData: LocalAppData;
   module: AppModule;
+  onClearLocalData: () => Promise<void>;
+  onResetDemoData: () => Promise<void>;
   onSelectModule: (module: ModuleId) => void;
   onSignOut: () => void;
+  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   profile: MockUserProfile | null;
 };
 
-export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: ModuleScreenProps) {
+export function ModuleScreen({
+  localData,
+  module,
+  onClearLocalData,
+  onResetDemoData,
+  onSelectModule,
+  onSignOut,
+  onUpdateLocalData,
+  profile
+}: ModuleScreenProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= layout.tabletBreakpoint;
   const [selectedItem, setSelectedItem] = useState("Home");
   const selectItem = (label: string) => setSelectedItem(label);
+  const timestamp = () => new Date().toISOString();
+
+  const toggleShiftReminder = (id: string) => {
+    onUpdateLocalData((current) => ({
+      ...current,
+      shiftReminders: current.shiftReminders.map((reminder) =>
+        reminder.id === id ? { ...reminder, enabled: !reminder.enabled } : reminder
+      ),
+      updatedAt: timestamp()
+    }));
+  };
+
+  const addAiHistory = (prompt: string) => {
+    onUpdateLocalData((current) => ({
+      ...current,
+      aiHistory: [
+        {
+          createdAt: timestamp(),
+          id: `ai-history-${Date.now()}`,
+          mode: "ai" as const,
+          prompt,
+          response: "Mock local response only. Verify future AI output before relying on it.",
+          title: "Local AI Preview"
+        },
+        ...current.aiHistory
+      ].slice(0, 12),
+      updatedAt: timestamp()
+    }));
+  };
+
+  const addTranslationHistory = (prompt: string) => {
+    onUpdateLocalData((current) => ({
+      ...current,
+      translationHistory: [
+        {
+          createdAt: timestamp(),
+          id: `translation-history-${Date.now()}`,
+          mode: "translation" as const,
+          prompt,
+          response: "Mock local translation only. Production translation is not connected.",
+          title: "Local Translation Preview"
+        },
+        ...current.translationHistory
+      ].slice(0, 12),
+      updatedAt: timestamp()
+    }));
+  };
 
   if (module.id === "dashboard") {
     return (
       <HomeDashboardScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -54,8 +115,10 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <StartShiftScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
+        onToggleReminder={toggleShiftReminder}
         selectedItem={selectedItem}
       />
     );
@@ -65,6 +128,7 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <NewIncidentScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -76,6 +140,8 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <AIAssistantScreen
         isTablet={isTablet}
+        localData={localData}
+        onAddHistory={addAiHistory}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -87,6 +153,8 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <TranslationScreen
         isTablet={isTablet}
+        localData={localData}
+        onAddHistory={addTranslationHistory}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -98,6 +166,7 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <CalendarScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -109,6 +178,7 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <CourtScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -120,6 +190,7 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <TrainingScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -131,6 +202,7 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <NotesFilesScreen
         isTablet={isTablet}
+        localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         selectedItem={selectedItem}
@@ -142,9 +214,13 @@ export function ModuleScreen({ module, onSelectModule, onSignOut, profile }: Mod
     return (
       <SettingsScreen
         isTablet={isTablet}
+        localData={localData}
+        onClearLocalData={onClearLocalData}
+        onResetDemoData={onResetDemoData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
         onSignOut={onSignOut}
+        onUpdateLocalData={onUpdateLocalData}
         profile={profile}
         selectedItem={selectedItem}
       />
@@ -191,16 +267,18 @@ function ScreenFrame({
 
 function HomeDashboardScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
-  const dashboard = dashboardService.getDashboard();
+  const dashboard = dashboardService.getDashboard(localData);
 
   return (
     <ScreenFrame activeModule="dashboard" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -249,16 +327,20 @@ function HomeDashboardScreen({
 
 function StartShiftScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
+  onToggleReminder,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  onToggleReminder: (id: string) => void;
   selectedItem: string;
 }) {
-  const reminders = shiftService.getReminders();
+  const reminders = localData.shiftReminders;
 
   return (
     <ScreenFrame activeModule="shift" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -274,10 +356,15 @@ function StartShiftScreen({
       <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
         {reminders.map((reminder) => (
           <ReminderCard
-            active={selectedItem === reminder.title}
-            key={reminder.title}
-            onPress={() => onSelectItem(reminder.title)}
-            {...reminder}
+            active={selectedItem === reminder.title || !reminder.enabled}
+            icon={reminder.icon}
+            key={reminder.id}
+            onPress={() => {
+              onSelectItem(reminder.title);
+              onToggleReminder(reminder.id);
+            }}
+            subtitle={reminder.enabled ? reminder.subtitle : "Disabled locally"}
+            title={reminder.title}
           />
         ))}
       </View>
@@ -294,17 +381,19 @@ function StartShiftScreen({
 
 function NewIncidentScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
   const steps = incidentService.getWorkflowSteps();
-  const examples = incidentService.getExamples();
+  const examples = incidentService.getExamples(localData);
 
   return (
     <ScreenFrame activeModule="incident" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -347,7 +436,8 @@ function NewIncidentScreen({
         <MaterialCommunityIcons name="pencil-outline" size={20} color={colors.primaryBlue} />
       </SecondaryButton>
       <PrototypeSelection label={selectedItem} />
-      <DisclaimerBanner message="No data is saved in Sprint 003. Incident screens use placeholder content only." />
+      <DisclaimerBanner message="Incident drafts are local prototype data only. Do not enter real police records, evidence, confidential information, or sensitive personal information." />
+      <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
   );
@@ -355,11 +445,15 @@ function NewIncidentScreen({
 
 function AIAssistantScreen({
   isTablet,
+  localData,
+  onAddHistory,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
+  onAddHistory: (prompt: string) => void;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
@@ -400,9 +494,30 @@ function AIAssistantScreen({
         ))}
       </View>
 
-      <AIInputBar onPress={() => onSelectItem("AI input preview")} placeholder="Voice or text command..." />
+      <SectionHeader icon="history" title="Local Demo History" />
+      <View style={styles.stack}>
+        {localData.aiHistory.map((item) => (
+          <ReminderCard
+            active={selectedItem === item.title}
+            icon="history"
+            key={item.id}
+            onPress={() => onSelectItem(item.title)}
+            subtitle={item.response}
+            title={item.title}
+          />
+        ))}
+      </View>
+
+      <AIInputBar
+        onPress={() => {
+          onSelectItem("AI input preview");
+          onAddHistory("Voice or text command");
+        }}
+        placeholder="Voice or text command..."
+      />
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="Static UI only. AI calls and data processing start in a later sprint." />
+      <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
   );
@@ -410,11 +525,15 @@ function AIAssistantScreen({
 
 function TranslationScreen({
   isTablet,
+  localData,
+  onAddHistory,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
+  onAddHistory: (prompt: string) => void;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
@@ -459,9 +578,30 @@ function TranslationScreen({
         ))}
       </View>
 
-      <AIInputBar onPress={() => onSelectItem("Translation input")} placeholder="Enter text to translate..." />
+      <SectionHeader icon="history" title="Local Translation History" />
+      <View style={styles.stack}>
+        {localData.translationHistory.map((item) => (
+          <ReminderCard
+            active={selectedItem === item.title}
+            icon="history"
+            key={item.id}
+            onPress={() => onSelectItem(item.title)}
+            subtitle={item.response}
+            title={item.title}
+          />
+        ))}
+      </View>
+
+      <AIInputBar
+        onPress={() => {
+          onSelectItem("Translation input");
+          onAddHistory("Enter text to translate");
+        }}
+        placeholder="Enter text to translate..."
+      />
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="Translation is a static preview. Police-context translation logic is not connected yet." />
+      <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
   );
@@ -469,17 +609,19 @@ function TranslationScreen({
 
 function CalendarScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
-  const events = calendarService.getEvents();
-  const followUps = calendarService.getFollowUps();
+  const events = calendarService.getEvents(localData);
+  const followUps = calendarService.getFollowUps(localData);
 
   return (
     <ScreenFrame activeModule="calendar" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -528,16 +670,18 @@ function CalendarScreen({
 
 function CourtScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
-  const reminders = courtService.getEvents();
+  const reminders = courtService.getEvents(localData);
 
   return (
     <ScreenFrame activeModule="court" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -569,16 +713,18 @@ function CourtScreen({
 
 function TrainingScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
-  const reminders = trainingService.getRequalification();
+  const reminders = trainingService.getRequalification(localData);
 
   return (
     <ScreenFrame activeModule="training" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -610,16 +756,18 @@ function TrainingScreen({
 
 function NotesFilesScreen({
   isTablet,
+  localData,
   onSelectItem,
   onSelectModule,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
-  const items = notesService.getNotesAndFiles();
+  const items = notesService.getNotesAndFiles(localData);
 
   return (
     <ScreenFrame activeModule="notes" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -644,6 +792,7 @@ function NotesFilesScreen({
         ))}
       </View>
       <PrototypeSelection label={selectedItem} />
+      <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
   );
@@ -651,19 +800,94 @@ function NotesFilesScreen({
 
 function SettingsScreen({
   isTablet,
+  localData,
+  onClearLocalData,
+  onResetDemoData,
   onSelectItem,
   onSelectModule,
   onSignOut,
+  onUpdateLocalData,
   profile,
   selectedItem
 }: {
   isTablet: boolean;
+  localData: LocalAppData;
+  onClearLocalData: () => Promise<void>;
+  onResetDemoData: () => Promise<void>;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
   onSignOut: () => void;
+  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   profile: MockUserProfile | null;
   selectedItem: string;
 }) {
+  const togglePreference = (
+    key: "biometricEnabled" | "notificationsEnabled" | "ptsdRemindersEnabled"
+  ) => {
+    onUpdateLocalData((current) => {
+      const nextValue = !current.preferences[key];
+      return {
+        ...current,
+        auth: {
+          ...current.auth,
+          biometricPreference:
+            key === "biometricEnabled" ? (nextValue ? "deviceBiometrics" : "disabled") : current.auth.biometricPreference,
+          notificationPreferences:
+            key === "notificationsEnabled"
+              ? {
+                  courtReminders: nextValue,
+                  shiftReminders: nextValue,
+                  trainingReminders: nextValue,
+                  wellnessReminders: nextValue
+                }
+              : current.auth.notificationPreferences,
+          profile: current.auth.profile
+            ? {
+                ...current.auth.profile,
+                biometricEnabled: key === "biometricEnabled" ? nextValue : current.auth.profile.biometricEnabled,
+                notificationPreferences:
+                  key === "notificationsEnabled"
+                    ? {
+                        courtReminders: nextValue,
+                        shiftReminders: nextValue,
+                        trainingReminders: nextValue,
+                        wellnessReminders: nextValue
+                      }
+                    : current.auth.profile.notificationPreferences
+              }
+            : null
+        },
+        preferences: {
+          ...current.preferences,
+          [key]: nextValue
+        },
+        updatedAt: new Date().toISOString()
+      };
+    });
+  };
+
+  const confirmResetDemoData = () => {
+    Alert.alert(
+      "Reset Demo Data",
+      "This will restore default prototype reminders, drafts, notes, and history while keeping the current mock sign-in.",
+      [
+        { style: "cancel", text: "Cancel" },
+        { onPress: onResetDemoData, text: "Reset" }
+      ]
+    );
+  };
+
+  const confirmClearLocalData = () => {
+    Alert.alert(
+      "Clear Local Data",
+      "This will remove local prototype data, sign out, and return to the Welcome screen.",
+      [
+        { style: "cancel", text: "Cancel" },
+        { onPress: onClearLocalData, style: "destructive", text: "Clear" }
+      ]
+    );
+  };
+
   return (
     <ScreenFrame activeModule="settings" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Settings" />
@@ -687,6 +911,52 @@ function SettingsScreen({
           </Text>
         </View>
       </View>
+      <LocalPrototypeWarning />
+      <View style={styles.localDataPanel}>
+        <View style={styles.localDataHeader}>
+          <MaterialCommunityIcons name="database-outline" size={24} color={colors.ptsdGreen} />
+          <View style={styles.profileCopy}>
+            <Text style={styles.profileName}>Local Prototype Storage</Text>
+            <Text style={styles.profileMeta}>
+              {localData.incidentDrafts.length} drafts - {localData.shiftReminders.length} reminders - updated{" "}
+              {new Date(localData.updatedAt).toLocaleDateString()}
+            </Text>
+          </View>
+        </View>
+        <SecondaryButton label="Reset Demo Data" onPress={confirmResetDemoData}>
+          <MaterialCommunityIcons name="backup-restore" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton label="Clear Local Data" onPress={confirmClearLocalData}>
+          <MaterialCommunityIcons name="delete-outline" size={20} color={colors.danger} />
+        </SecondaryButton>
+      </View>
+      <View style={styles.localDataPanel}>
+        <View style={styles.localDataHeader}>
+          <MaterialCommunityIcons name="tune-variant" size={24} color={colors.primaryBlue} />
+          <View style={styles.profileCopy}>
+            <Text style={styles.profileName}>Persisted Preferences</Text>
+            <Text style={styles.profileMeta}>Local placeholders only. No production device permissions are changed.</Text>
+          </View>
+        </View>
+        <SecondaryButton
+          label={`Notifications ${localData.preferences.notificationsEnabled ? "On" : "Off"}`}
+          onPress={() => togglePreference("notificationsEnabled")}
+        >
+          <MaterialCommunityIcons name="bell-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton
+          label={`Biometrics ${localData.preferences.biometricEnabled ? "On" : "Off"}`}
+          onPress={() => togglePreference("biometricEnabled")}
+        >
+          <MaterialCommunityIcons name="fingerprint" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton
+          label={`PTSD Reminders ${localData.preferences.ptsdRemindersEnabled ? "On" : "Off"}`}
+          onPress={() => togglePreference("ptsdRemindersEnabled")}
+        >
+          <MaterialCommunityIcons name="ribbon" size={20} color={colors.ptsdGreen} />
+        </SecondaryButton>
+      </View>
       <View style={styles.stack}>
         {settingsItems.map((item) => (
           <ReminderCard
@@ -703,6 +973,12 @@ function SettingsScreen({
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
     </ScreenFrame>
+  );
+}
+
+function LocalPrototypeWarning() {
+  return (
+    <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Data in this prototype may be stored locally on this device for demonstration purposes. Do not enter real police records, real evidence, confidential information, or sensitive personal information. Future production versions will use secure backend storage, encryption, access controls, and privacy-by-design protections." />
   );
 }
 
@@ -828,6 +1104,19 @@ const styles = StyleSheet.create({
     height: 68,
     justifyContent: "center",
     width: 68
+  },
+  localDataHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.sm
+  },
+  localDataPanel: {
+    backgroundColor: "rgba(7,23,42,0.72)",
+    borderColor: "rgba(127,255,212,0.28)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.sm,
+    padding: spacing.md
   },
   heroSub: {
     color: colors.textMuted,

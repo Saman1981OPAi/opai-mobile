@@ -1,11 +1,12 @@
 import { calendarEvents, followUpReminders } from "@/data/uiMockups";
 import { mockApiClient } from "@/services/mockApiClient";
+import type { LocalAppData } from "@/storage/storageTypes";
 
 export const calendarService = {
-  getEvents() {
-    return mockApiClient.get(calendarEvents).data;
+  getEvents(localData?: LocalAppData) {
+    return mockApiClient.get(localData?.calendarEvents ?? calendarEvents).data;
   },
-  getFollowUps() {
-    return mockApiClient.get(followUpReminders).data;
+  getFollowUps(localData?: LocalAppData) {
+    return mockApiClient.get(localData?.followUpReminders ?? followUpReminders).data;
   }
 };
