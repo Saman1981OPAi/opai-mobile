@@ -1,24 +1,31 @@
 import type { ComponentProps } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type ReminderCardProps = {
   icon: ComponentProps<typeof MaterialCommunityIcons>["name"];
+  active?: boolean;
+  onPress?: () => void;
   title: string;
   subtitle: string;
 };
 
-export function ReminderCard({ icon, subtitle, title }: ReminderCardProps) {
+export function ReminderCard({ active = false, icon, onPress, subtitle, title }: ReminderCardProps) {
   return (
-    <View style={styles.card}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, active ? styles.cardActive : null, pressed ? styles.pressed : null]}
+    >
       <MaterialCommunityIcons name={icon} size={31} color={colors.primaryBlue} />
       <View style={styles.copy}>
         <Text numberOfLines={1} style={styles.title}>{title}</Text>
         <Text numberOfLines={1} style={styles.subtitle}>{subtitle}</Text>
       </View>
       <Ionicons name="chevron-forward" size={22} color={colors.accentBlue} />
-    </View>
+    </Pressable>
   );
 }
 
@@ -35,6 +42,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm
   },
+  cardActive: {
+    backgroundColor: "rgba(10,132,255,0.18)",
+    borderColor: colors.primaryBlue
+  },
   copy: {
     flex: 1
   },
@@ -42,6 +53,10 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 13,
     marginTop: 3
+  },
+  pressed: {
+    opacity: 0.76,
+    transform: [{ translateY: 1 }]
   },
   title: {
     color: colors.textPrimary,

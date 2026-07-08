@@ -48,6 +48,19 @@ pnpm install
 pnpm start
 ```
 
+Local prototype options:
+
+```bash
+pnpm ios
+pnpm android
+pnpm web
+pnpm typecheck
+```
+
+Sprint 003 keeps the app fully local. The clickable prototype uses placeholder data only and does
+not connect to backend services, OpenAI APIs, databases, authentication, payments, or real user
+accounts.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -77,10 +90,19 @@ Sprint 002 introduces reusable OPAi mobile UI tokens, branded components, and st
 templates for Home Dashboard, Start My Shift, New Incident, AI Assistant, Translation, and
 Calendar. See `docs/sprint-002-design-system.md`.
 
+## Sprint 003 App Shell
+
+Sprint 003 connects the mobile app shell into a clickable local prototype with bottom navigation,
+secondary module navigation, local placeholder data, and prototype-only interactions. See
+`docs/sprint-003-app-shell.md`.
+
 ## Product Principles
 
 - Start My Shift is a reminder screen, not a mandatory checklist.
-- AI output assists officers; it does not replace officer judgment.
+- AI output assists officers; it does not replace official police systems, supervision, service
+  policy, legal advice, medical advice, or professional judgment.
 - Privacy, consent, and minimal sensitive-data storage are core requirements.
 - Notifications must support court, training, requalification, and shift reminders.
 - PTSD awareness is part of the mission and must be handled with dignity.
+- PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, or
+  crisis intervention.
