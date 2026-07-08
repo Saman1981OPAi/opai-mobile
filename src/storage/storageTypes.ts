@@ -1,0 +1,100 @@
+import type { MciIcon } from "@/data/uiMockups";
+import type { AuthStatus, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
+
+export type LocalAuthSession = {
+  status: AuthStatus;
+  profile: MockUserProfile | null;
+  consent: ConsentState;
+  biometricPreference: "disabled" | "faceId" | "touchId" | "deviceBiometrics";
+  notificationPreferences: NotificationPreferences;
+  lastSignedInAt: string | null;
+};
+
+export type LocalPreferences = {
+  preferredLanguage: string;
+  biometricEnabled: boolean;
+  notificationsEnabled: boolean;
+  theme: "dark";
+  ptsdRemindersEnabled: boolean;
+  consentStatus: ConsentState;
+};
+
+export type LocalReminderCard = {
+  id: string;
+  icon: MciIcon;
+  title: string;
+  subtitle: string;
+  enabled: boolean;
+  category: "shift" | "court" | "training" | "followUp";
+};
+
+export type LocalCalendarEvent = {
+  id: string;
+  accent: string;
+  date: string;
+  icon: MciIcon;
+  meta: string;
+  time: string;
+  title: string;
+  reminderEnabled: boolean;
+  kind: "court" | "training" | "followUp" | "meeting" | "shift";
+};
+
+export type LocalAttachmentMetadata = {
+  id: string;
+  fileName: string;
+  fileType: "photo" | "document" | "audio" | "reference";
+  addedAt: string;
+  localOnly: true;
+};
+
+export type LocalIncidentDraft = {
+  id: string;
+  incidentType: string;
+  date: string;
+  time: string;
+  location: string;
+  involvedPersons: string[];
+  witnesses: string[];
+  notes: string;
+  attachments: LocalAttachmentMetadata[];
+  status: "draft" | "reviewed" | "archived";
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type LocalNoteFileMetadata = {
+  id: string;
+  icon: MciIcon;
+  title: string;
+  subtitle: string;
+  fileType: "note" | "photo" | "folder" | "audio" | "document";
+  referenceOnly: true;
+  updatedAt: string;
+};
+
+export type LocalDemoHistoryItem = {
+  id: string;
+  mode: "ai" | "translation";
+  title: string;
+  prompt: string;
+  response: string;
+  createdAt: string;
+};
+
+export type LocalAppData = {
+  version: number;
+  seededAt: string;
+  updatedAt: string;
+  auth: LocalAuthSession;
+  preferences: LocalPreferences;
+  shiftReminders: LocalReminderCard[];
+  incidentDrafts: LocalIncidentDraft[];
+  notesFiles: LocalNoteFileMetadata[];
+  calendarEvents: LocalCalendarEvent[];
+  courtReminders: LocalReminderCard[];
+  trainingReminders: LocalReminderCard[];
+  followUpReminders: LocalReminderCard[];
+  aiHistory: LocalDemoHistoryItem[];
+  translationHistory: LocalDemoHistoryItem[];
+};

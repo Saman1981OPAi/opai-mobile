@@ -1,8 +1,9 @@
 import { notesFiles } from "@/data/uiMockups";
 import { mockApiClient } from "@/services/mockApiClient";
+import type { LocalAppData } from "@/storage/storageTypes";
 
 export const notesService = {
-  getNotesAndFiles() {
-    return mockApiClient.get(notesFiles).data;
+  getNotesAndFiles(localData?: LocalAppData) {
+    return mockApiClient.get(localData?.notesFiles ?? notesFiles).data;
   }
 };
