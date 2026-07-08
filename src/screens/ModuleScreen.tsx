@@ -12,22 +12,16 @@ import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import {
-  aiTools,
-  calendarEvents,
-  courtReminders,
-  followUpReminders,
-  homeFeatures,
-  incidentExamples,
-  incidentSteps,
-  notesFiles,
-  secondaryModules,
-  settingsItems,
-  shiftReminders,
-  trainingReminders,
-  translationExamples,
-  translationModes
-} from "@/data/uiMockups";
+import { secondaryModules, settingsItems } from "@/data/uiMockups";
+import { aiService } from "@/services/aiService";
+import { calendarService } from "@/services/calendarService";
+import { courtService } from "@/services/courtService";
+import { dashboardService } from "@/services/dashboardService";
+import { incidentService } from "@/services/incidentService";
+import { notesService } from "@/services/notesService";
+import { shiftService } from "@/services/shiftService";
+import { trainingService } from "@/services/trainingService";
+import { translationService } from "@/services/translationService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
 import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
@@ -206,6 +200,8 @@ function HomeDashboardScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const dashboard = dashboardService.getDashboard();
+
   return (
     <ScreenFrame activeModule="dashboard" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Home" />
@@ -220,7 +216,7 @@ function HomeDashboardScreen({
       </View>
 
       <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
-        {homeFeatures.map((feature) => (
+        {dashboard.features.map((feature) => (
           <FeatureCard
             compact={isTablet}
             icon={feature.icon}
@@ -234,7 +230,7 @@ function HomeDashboardScreen({
 
       <SectionHeader action="View All" icon="calendar-outline" title="Upcoming" />
       <View style={styles.stack}>
-        {calendarEvents.map((event) => (
+        {dashboard.upcoming.map((event) => (
           <EventCard
             key={event.title}
             onPress={() => onSelectItem(event.title)}
@@ -262,6 +258,8 @@ function StartShiftScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const reminders = shiftService.getReminders();
+
   return (
     <ScreenFrame activeModule="shift" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Start My Shift" />
@@ -274,7 +272,7 @@ function StartShiftScreen({
 
       <SectionHeader icon="shield-check-outline" title="Shift Reminders" />
       <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
-        {shiftReminders.map((reminder) => (
+        {reminders.map((reminder) => (
           <ReminderCard
             active={selectedItem === reminder.title}
             key={reminder.title}
@@ -305,6 +303,9 @@ function NewIncidentScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const steps = incidentService.getWorkflowSteps();
+  const examples = incidentService.getExamples();
+
   return (
     <ScreenFrame activeModule="incident" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="New Incident" />
@@ -318,7 +319,7 @@ function NewIncidentScreen({
 
       <SectionHeader icon="clipboard-text-outline" title="Report Sections" />
       <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
-        {incidentSteps.map((step) => (
+        {steps.map((step) => (
           <FeatureCard
             compact={isTablet}
             icon={step.icon}
@@ -332,7 +333,7 @@ function NewIncidentScreen({
 
       <SectionHeader icon="file-document-outline" title="Examples" />
       <View style={styles.stack}>
-        {incidentExamples.map((item) => (
+        {examples.map((item) => (
           <ReminderCard
             active={selectedItem === item.title}
             key={item.title}
@@ -363,6 +364,8 @@ function AIAssistantScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const tools = aiService.getSuggestedActions();
+
   return (
     <ScreenFrame activeModule="ai" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="AI Assistant" />
@@ -387,7 +390,7 @@ function AIAssistantScreen({
 
       <SectionHeader icon="brain" title="AI Tools" />
       <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
-        {aiTools.map((tool) => (
+        {tools.map((tool) => (
           <ReminderCard
             active={selectedItem === tool.title}
             key={tool.title}
@@ -416,6 +419,9 @@ function TranslationScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const modes = translationService.getModes();
+  const examples = translationService.getExamples();
+
   return (
     <ScreenFrame activeModule="translation" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Translation" />
@@ -429,7 +435,7 @@ function TranslationScreen({
 
       <SectionHeader icon="translate" title="Modes" />
       <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
-        {translationModes.map((mode) => (
+        {modes.map((mode) => (
           <FeatureCard
             compact={isTablet}
             icon={mode.icon}
@@ -443,7 +449,7 @@ function TranslationScreen({
 
       <SectionHeader icon="message-text-outline" title="Examples" />
       <View style={styles.stack}>
-        {translationExamples.map((item) => (
+        {examples.map((item) => (
           <ReminderCard
             active={selectedItem === item.title}
             key={item.title}
@@ -472,6 +478,9 @@ function CalendarScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const events = calendarService.getEvents();
+  const followUps = calendarService.getFollowUps();
+
   return (
     <ScreenFrame activeModule="calendar" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Calendar" />
@@ -485,7 +494,7 @@ function CalendarScreen({
 
       <SectionHeader icon="calendar-month-outline" title="Today" />
       <View style={styles.stack}>
-        {calendarEvents.map((event) => (
+        {events.map((event) => (
           <EventCard
             active={selectedItem === event.title}
             key={event.title}
@@ -497,7 +506,7 @@ function CalendarScreen({
 
       <SectionHeader icon="clipboard-check-outline" title="Follow-Ups" />
       <View style={styles.stack}>
-        {followUpReminders.map((item) => (
+        {followUps.map((item) => (
           <ReminderCard
             active={selectedItem === item.title}
             key={item.title}
@@ -528,6 +537,8 @@ function CourtScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const reminders = courtService.getEvents();
+
   return (
     <ScreenFrame activeModule="court" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Court" />
@@ -541,7 +552,7 @@ function CourtScreen({
 
       <SectionHeader icon="scale-balance" title="Court Reminders" />
       <View style={styles.stack}>
-        {courtReminders.map((item) => (
+        {reminders.map((item) => (
           <ReminderCard
             active={selectedItem === item.title}
             key={item.title}
@@ -567,6 +578,8 @@ function TrainingScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const reminders = trainingService.getRequalification();
+
   return (
     <ScreenFrame activeModule="training" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Training" />
@@ -580,7 +593,7 @@ function TrainingScreen({
 
       <SectionHeader icon="target" title="Requalification" />
       <View style={styles.stack}>
-        {trainingReminders.map((item) => (
+        {reminders.map((item) => (
           <ReminderCard
             active={selectedItem === item.title}
             key={item.title}
@@ -606,6 +619,8 @@ function NotesFilesScreen({
   onSelectModule: (module: ModuleId) => void;
   selectedItem: string;
 }) {
+  const items = notesService.getNotesAndFiles();
+
   return (
     <ScreenFrame activeModule="notes" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Notes & Files" />
@@ -619,7 +634,7 @@ function NotesFilesScreen({
 
       <SectionHeader icon="folder-outline" title="Local Samples" />
       <View style={styles.stack}>
-        {notesFiles.map((item) => (
+        {items.map((item) => (
           <ReminderCard
             active={selectedItem === item.title}
             key={item.title}
