@@ -120,6 +120,21 @@ secondary module navigation, local placeholder data, and prototype-only interact
 Sprint 004 adds the authentication UI foundation and local mock auth state model. See
 `docs/sprint-004-authentication-foundation.md`.
 
+## Sprint 006 Backend Planning and API Contract
+
+Sprint 006 adds backend architecture planning, a secure API contract, TypeScript-style data model
+planning, environment configuration notes, security/privacy rules, error handling standards, and a
+mock local service layer. The app still does not connect to a real backend, database, OpenAI API,
+payment system, police-service integration, or production secret. See:
+
+- `docs/backend-architecture.md`
+- `docs/api-contract.md`
+- `docs/data-models.md`
+- `docs/environment-configuration.md`
+- `docs/security-privacy-model.md`
+- `docs/error-handling.md`
+- `docs/sprint-006-backend-planning-api-contract.md`
+
 ## Product Principles
 
 - Start My Shift is a reminder screen, not a mandatory checklist.
