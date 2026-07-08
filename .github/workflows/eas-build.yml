@@ -1,8 +1,6 @@
 name: EAS Mobile Build
 
 on:
-  push:
-    branches: ["main", "staging"]
   workflow_dispatch:
     inputs:
       environment:
@@ -28,7 +26,7 @@ concurrency:
 jobs:
   build-staging:
     name: Build staging
-    if: (github.event_name == 'push' && github.ref_name == 'staging') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'staging'
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -52,6 +50,15 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Verify Expo token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error title=Missing EXPO_TOKEN::Add an Expo access token as the EXPO_TOKEN secret before running EAS builds."
+            exit 1
+          fi
+
       - name: EAS staging build
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -59,7 +66,7 @@ jobs:
 
   build-production:
     name: Build production
-    if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -82,6 +89,15 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Verify Expo token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error title=Missing EXPO_TOKEN::Add an Expo access token as the EXPO_TOKEN secret before running EAS builds."
+            exit 1
+          fi
 
       - name: EAS production build
         env:
