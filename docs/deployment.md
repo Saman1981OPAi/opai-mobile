@@ -1,6 +1,8 @@
 # Project 015: Mobile Deployment
 
-The mobile app uses Expo EAS Build through GitHub Actions.
+The mobile app uses Expo EAS Build through GitHub Actions. EAS builds are currently manual-only so
+main-branch documentation and planning merges do not trigger failed production build emails while
+the required Expo credentials are being finalized.
 
 ## Current Launch Priority
 
@@ -21,6 +23,10 @@ Production submission currently requires Apple credentials configured in Expo/EA
 through the secure GitHub environment. Google Play credentials should not be treated as an active
 launch requirement until Android submission resumes.
 
+If `EXPO_TOKEN` is missing, the workflow stops during the Expo token preflight step with a clear
+configuration error. Add an Expo access token as the `EXPO_TOKEN` GitHub Actions secret before
+running a manual EAS build.
+
 ## Commands
 
 ```bash
@@ -31,6 +37,7 @@ pnpm exec eas build --platform ios --profile production
 
 ## Notes
 
+- The workflow is triggered manually with `workflow_dispatch`.
 - The workflow defaults manual builds to iOS because iOS is the current launch priority.
 - Android support remains in the codebase for future compatibility.
 - Android production builds and Google Play release activity should wait until the D-U-N-S Number is received.
