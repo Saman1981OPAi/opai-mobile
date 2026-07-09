@@ -10,6 +10,7 @@ import type {
   LocalNoteFileMetadata,
   LocalReminderCard
 } from "@/storage/storageTypes";
+import type { IncidentNotes } from "@/types/incident";
 import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
 import type {
   CalendarWorkflowEvent,
@@ -354,6 +355,17 @@ function createReminderCards(): {
 function createIncidentDrafts(): LocalIncidentDraft[] {
   const createdAt = nowIso();
   return incidentExamples.map((example, index) => ({
+    attachmentMetadata: [
+      {
+        addedAt: createdAt,
+        attachmentType: index === 0 ? "Photo" : index === 1 ? "Document" : "Audio",
+        description: "Metadata-only placeholder. No real file is stored.",
+        fileName: `${example.title.toLowerCase().replace(/\s+/g, "-")}-reference.txt`,
+        id: `incident-metadata-${index + 1}`,
+        metadataOnly: true,
+        notes: "Local prototype metadata only."
+      }
+    ],
     attachments: [
       {
         addedAt: createdAt,
@@ -365,15 +377,38 @@ function createIncidentDrafts(): LocalIncidentDraft[] {
     ],
     createdAt,
     date: "2026-07-08",
+    followUpRequired: index === 1,
     id: `draft-${index + 1}`,
     incidentType: example.title,
+    incidentNotes: createDefaultIncidentNotes("Prototype-only draft. Do not enter real police records or sensitive personal information."),
     involvedPersons: ["Placeholder person"],
     location: "Local demo location",
     notes: "Prototype-only draft. Do not enter real police records or sensitive personal information.",
-    status: "draft",
+    occurrenceCategory: index === 0 ? "Public Safety" : index === 1 ? "Property" : "General",
+    personsInvolved: [
+      {
+        email: "",
+        id: `person-draft-${index + 1}`,
+        name: "Placeholder person",
+        notes: "No real personal information.",
+        phone: "",
+        role: "Other"
+      }
+    ],
+    priority: index === 1 ? "High" : "Medium",
+    status: index === 1 ? "followUpRequired" : "draft",
     time: index === 0 ? "09:15" : index === 1 ? "12:40" : "17:05",
     updatedAt: createdAt,
-    witnesses: ["Placeholder witness"]
+    witnesses: ["Placeholder witness"],
+    witnessDetails: [
+      {
+        contact: "",
+        followUpRequired: index === 1,
+        id: `witness-draft-${index + 1}`,
+        name: "Placeholder witness",
+        statementSummary: "Placeholder witness summary only."
+      }
+    ]
   }));
 }
 
@@ -414,6 +449,58 @@ function createHistory(): {
       }
     ]
   };
+}
+
+function createDefaultIncidentNotes(seed = "Prototype-only draft. Do not enter real police records or sensitive personal information."): IncidentNotes {
+  return {
+    disclosureNotes: "Disclosure placeholder only.",
+    followUpNotes: "No follow-up notes added.",
+    narrativeDraft: seed,
+    observations: "Observation placeholder.",
+    officerNotes: seed
+  };
+}
+
+export function normalizeIncidentDraft(draft: LocalIncidentDraft): LocalIncidentDraft {
+  const now = nowIso();
+  const fallbackNotes = draft.notes || "Prototype-only draft. Do not enter real police records or sensitive personal information.";
+
+  return {
+    ...draft,
+    attachmentMetadata: draft.attachmentMetadata ?? draft.attachments.map((attachment) => ({
+      addedAt: attachment.addedAt,
+      attachmentType: attachment.fileType === "audio" ? "Audio" : attachment.fileType === "document" ? "Document" : attachment.fileType === "video" ? "Video" : "Other",
+      description: "Metadata-only placeholder.",
+      fileName: attachment.fileName,
+      id: attachment.id,
+      metadataOnly: true,
+      notes: "No real file is stored."
+    })),
+    followUpRequired: draft.followUpRequired ?? draft.status === "followUpRequired",
+    incidentNotes: draft.incidentNotes ?? createDefaultIncidentNotes(fallbackNotes),
+    occurrenceCategory: draft.occurrenceCategory ?? "General",
+    personsInvolved: draft.personsInvolved ?? draft.involvedPersons.map((name, index) => ({
+      email: "",
+      id: `person-${draft.id}-${index + 1}`,
+      name,
+      notes: "Placeholder person only.",
+      phone: "",
+      role: "Other"
+    })),
+    priority: draft.priority ?? "Medium",
+    updatedAt: draft.updatedAt ?? now,
+    witnessDetails: draft.witnessDetails ?? draft.witnesses.map((name, index) => ({
+      contact: "",
+      followUpRequired: false,
+      id: `witness-${draft.id}-${index + 1}`,
+      name,
+      statementSummary: "Placeholder witness summary only."
+    }))
+  };
+}
+
+export function normalizeIncidentDrafts(drafts: LocalIncidentDraft[] | undefined): LocalIncidentDraft[] {
+  return (drafts ?? createIncidentDrafts()).map(normalizeIncidentDraft);
 }
 
 export function createDefaultLocalAppData(authOverride?: LocalAuthSession): LocalAppData {

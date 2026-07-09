@@ -96,6 +96,12 @@ Follow-Up reminders. These workflows use placeholder/offline data and the Sprint
 notification scheduler only. External calendar sync, backend APIs, databases, OpenAI, payments,
 subscriptions, police-service integrations, and production secrets remain out of scope.
 
+Sprint 010 expands New Incident into a structured local/offline incident drafting workflow with
+multi-step basics, persons, witnesses, notes, attachment metadata, review/save actions, follow-up
+reminder creation, local calendar placeholders, and an AI-ready placeholder. It still does not
+connect to backend APIs, databases, OpenAI, real evidence upload, cloud sync, police-service
+systems, payments, subscriptions, analytics, advertising, or production secrets.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -178,6 +184,15 @@ events, requalification deadlines, and follow-up reminders. See:
 - `docs/training-requalification-workflow.md`
 - `docs/follow-up-reminder-workflow.md`
 - `docs/sprint-009-calendar-court-training-workflow.md`
+
+## Sprint 010 New Incident Workflow
+
+Sprint 010 adds structured local incident drafting. See:
+
+- `docs/incident-workflow.md`
+- `docs/incident-data-model.md`
+- `docs/incident-privacy-limitations.md`
+- `docs/sprint-010-new-incident-workflow.md`
 
 ## Product Principles
 
