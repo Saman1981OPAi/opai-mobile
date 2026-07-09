@@ -12,6 +12,7 @@ import type {
 } from "@/storage/storageTypes";
 import type { IncidentNotes } from "@/types/incident";
 import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type { TranslationPreferences, TranslationRecord } from "@/types/translation";
 import type {
   CalendarWorkflowEvent,
   CourtWorkflowEvent,
@@ -424,7 +425,7 @@ function createNotesFiles(): LocalNoteFileMetadata[] {
 
 function createHistory(): {
   aiHistory: LocalDemoHistoryItem[];
-  translationHistory: LocalDemoHistoryItem[];
+  translationHistory: TranslationRecord[];
 } {
   const createdAt = nowIso();
   return {
@@ -442,13 +443,60 @@ function createHistory(): {
       {
         createdAt,
         id: "translation-history-1",
-        mode: "translation",
-        prompt: "English to French sample",
-        response: "Mock translation preview only.",
-        title: "Demo Translation"
+        mode: "text",
+        notes: "Mock translation preview only.",
+        relatedIncidentId: "",
+        sourceLanguage: "English",
+        sourceText: "English to French sample",
+        targetLanguage: "French",
+        translatedText: "[Mock Translation] This feature is currently in testing. Future versions may provide real-time translation support."
       }
     ]
   };
+}
+
+export function createDefaultTranslationPreferences(): TranslationPreferences {
+  return {
+    lastUpdatedAt: nowIso(),
+    preferredSourceLanguage: "English",
+    preferredTargetLanguage: "French",
+    saveToHistory: true
+  };
+}
+
+type LegacyTranslationHistoryItem = {
+  createdAt?: string;
+  id?: string;
+  mode?: TranslationRecord["mode"] | LocalDemoHistoryItem["mode"];
+  notes?: string;
+  prompt?: string;
+  relatedIncidentId?: string;
+  response?: string;
+  sourceLanguage?: TranslationRecord["sourceLanguage"];
+  sourceText?: string;
+  targetLanguage?: TranslationRecord["targetLanguage"];
+  title?: string;
+  translatedText?: string;
+};
+
+export function normalizeTranslationHistory(history: LegacyTranslationHistoryItem[] | undefined): TranslationRecord[] {
+  const createdAt = nowIso();
+  const items: LegacyTranslationHistoryItem[] = history ?? createHistory().translationHistory;
+
+  return items.map((item, index) => ({
+    createdAt: item.createdAt ?? createdAt,
+    id: item.id ?? `translation-history-${index + 1}`,
+    mode: item.mode === "ai" || item.mode === "translation" || item.mode === undefined ? "text" : item.mode,
+    notes: item.notes ?? item.title ?? "Local mock translation.",
+    relatedIncidentId: item.relatedIncidentId ?? "",
+    sourceLanguage: item.sourceLanguage ?? "English",
+    sourceText: item.sourceText ?? item.prompt ?? "Mock translation source",
+    targetLanguage: item.targetLanguage ?? "French",
+    translatedText:
+      item.translatedText ??
+      item.response ??
+      "[Mock Translation] This feature is currently in testing. Future versions may provide real-time translation support."
+  }));
 }
 
 function createDefaultIncidentNotes(seed = "Prototype-only draft. Do not enter real police records or sensitive personal information."): IncidentNotes {
@@ -534,6 +582,7 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     trainingReminders: reminders.trainingReminders,
     trainingWorkflowEvents: createDefaultTrainingWorkflowEvents(),
     translationHistory: history.translationHistory,
+    translationPreferences: createDefaultTranslationPreferences(),
     scheduledReminders: createDefaultScheduledReminders(),
     updatedAt: seededAt,
     version: CURRENT_STORAGE_VERSION
