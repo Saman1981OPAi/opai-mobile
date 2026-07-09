@@ -11,8 +11,20 @@ import type {
   LocalReminderCard
 } from "@/storage/storageTypes";
 import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type {
+  CalendarWorkflowEvent,
+  CourtWorkflowEvent,
+  FollowUpWorkflowReminder,
+  RequalificationWorkflowReminder,
+  TrainingWorkflowEvent
+} from "@/types/workflow";
 
 const nowIso = () => new Date().toISOString();
+const dateOffset = (days: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+};
 
 const defaultNotificationPreferences = {
   courtReminders: true,
@@ -79,6 +91,197 @@ export function createDefaultScheduledReminders(): ScheduledReminder[] {
       scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
       title: "Training Reminder",
       type: "trainingReminder",
+      updatedAt: createdAt
+    }
+  ];
+}
+
+export function createDefaultCalendarWorkflowEvents(): CalendarWorkflowEvent[] {
+  const createdAt = nowIso();
+
+  return [
+    {
+      createdAt,
+      date: dateOffset(0),
+      id: "calendar-workflow-court-prep",
+      location: "Provincial Court - Courtroom 3",
+      notes: "Prototype event. Confirm official schedule through authorized systems.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Hour",
+      status: "upcoming",
+      time: "09:00",
+      title: "Court appearance",
+      type: "Court",
+      updatedAt: createdAt
+    },
+    {
+      createdAt,
+      date: dateOffset(1),
+      id: "calendar-workflow-training",
+      location: "Training Unit",
+      notes: "Local placeholder only.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Day",
+      status: "upcoming",
+      time: "13:30",
+      title: "Scenario training",
+      type: "Training",
+      updatedAt: createdAt
+    },
+    {
+      createdAt,
+      date: dateOffset(2),
+      id: "calendar-workflow-follow-up",
+      location: "Local task list",
+      notes: "Follow-up reminder placeholder.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Hour",
+      status: "upcoming",
+      time: "15:00",
+      title: "Follow-up review",
+      type: "Follow-up",
+      updatedAt: createdAt
+    }
+  ];
+}
+
+export function createDefaultCourtWorkflowEvents(): CourtWorkflowEvent[] {
+  const createdAt = nowIso();
+
+  return [
+    {
+      courtName: "Provincial Court",
+      courtroom: "Courtroom 3",
+      createdAt,
+      date: dateOffset(0),
+      fileReference: "Demo-25-01873",
+      id: "court-workflow-appearance",
+      location: "Local courthouse",
+      matterName: "Court appearance",
+      notes: "Prototype court reminder. Verify official court information through authorized systems.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Hour",
+      status: "upcoming",
+      time: "09:00",
+      updatedAt: createdAt
+    },
+    {
+      courtName: "Provincial Court",
+      courtroom: "Virtual link",
+      createdAt,
+      date: dateOffset(4),
+      fileReference: "Demo-25-02241",
+      id: "court-workflow-disclosure",
+      location: "Remote appearance",
+      matterName: "Disclosure review",
+      notes: "Local placeholder only.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Day",
+      status: "upcoming",
+      time: "10:30",
+      updatedAt: createdAt
+    }
+  ];
+}
+
+export function createDefaultTrainingWorkflowEvents(): TrainingWorkflowEvent[] {
+  const createdAt = nowIso();
+
+  return [
+    {
+      category: "Scenario Training",
+      createdAt,
+      date: dateOffset(1),
+      id: "training-workflow-scenario",
+      instructorOrUnit: "Training Unit",
+      location: "Training Centre",
+      notes: "Prototype training item. Confirm official training details through authorized systems.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Day",
+      status: "upcoming",
+      time: "13:30",
+      title: "Scenario training",
+      updatedAt: createdAt
+    },
+    {
+      category: "Use of Force",
+      createdAt,
+      date: dateOffset(6),
+      id: "training-workflow-uof",
+      instructorOrUnit: "Use of Force Instructor",
+      location: "Training Centre",
+      notes: "Local placeholder only.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Week",
+      status: "upcoming",
+      time: "08:00",
+      title: "Use of Force refresher",
+      updatedAt: createdAt
+    }
+  ];
+}
+
+export function createDefaultRequalificationWorkflowReminders(): RequalificationWorkflowReminder[] {
+  const createdAt = nowIso();
+
+  return [
+    {
+      category: "Annual Firearms Qualification",
+      createdAt,
+      dueDate: dateOffset(21),
+      expiryDate: dateOffset(45),
+      id: "requalification-workflow-firearms",
+      notes: "Due soon example for local testing.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Week",
+      status: "dueSoon",
+      title: "Firearms qualification",
+      updatedAt: createdAt
+    },
+    {
+      category: "CEW Requalification",
+      createdAt,
+      dueDate: dateOffset(60),
+      expiryDate: dateOffset(90),
+      id: "requalification-workflow-cew",
+      notes: "Future deadline example.",
+      reminderEnabled: true,
+      reminderLeadTime: "1Week",
+      status: "valid",
+      title: "CEW requalification",
+      updatedAt: createdAt
+    }
+  ];
+}
+
+export function createDefaultFollowUpWorkflowReminders(): FollowUpWorkflowReminder[] {
+  const createdAt = nowIso();
+
+  return [
+    {
+      createdAt,
+      dueDate: dateOffset(0),
+      id: "follow-up-workflow-statement",
+      notes: "Demo follow-up reminder. Do not enter real personal information.",
+      priority: "high",
+      relatedIncidentId: "draft-1",
+      reminderEnabled: true,
+      reminderLeadTime: "1Hour",
+      status: "open",
+      title: "Witness statement follow-up",
+      updatedAt: createdAt
+    },
+    {
+      createdAt,
+      dueDate: dateOffset(2),
+      id: "follow-up-workflow-report",
+      notes: "Local placeholder only.",
+      priority: "medium",
+      relatedIncidentId: "draft-2",
+      reminderEnabled: true,
+      reminderLeadTime: "1Day",
+      status: "open",
+      title: "Draft report review",
       updatedAt: createdAt
     }
   ];
@@ -222,7 +425,10 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     aiHistory: history.aiHistory,
     auth: authOverride ?? createAuthSession(),
     calendarEvents: createCalendarEvents(),
+    calendarWorkflowEvents: createDefaultCalendarWorkflowEvents(),
     courtReminders: reminders.courtReminders,
+    courtWorkflowEvents: createDefaultCourtWorkflowEvents(),
+    followUpWorkflowReminders: createDefaultFollowUpWorkflowReminders(),
     followUpReminders: reminders.followUpReminders,
     incidentDrafts: createIncidentDrafts(),
     notesFiles: createNotesFiles(),
@@ -237,7 +443,9 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     },
     seededAt,
     shiftReminders: createDefaultShiftReminders(),
+    requalificationWorkflowReminders: createDefaultRequalificationWorkflowReminders(),
     trainingReminders: reminders.trainingReminders,
+    trainingWorkflowEvents: createDefaultTrainingWorkflowEvents(),
     translationHistory: history.translationHistory,
     scheduledReminders: createDefaultScheduledReminders(),
     updatedAt: seededAt,
