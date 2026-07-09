@@ -24,8 +24,9 @@ Prepare the OPAi Police iOS release-candidate package and finalize App Store-fac
 - App name: OPAi Police
 - App version: `0.1.0-beta`
 - Native Expo version: `0.1.0`
-- Build: `17`
-- Release channel: iOS Internal Beta / Release Candidate
+- Current build: `18`
+- Original Sprint 017 build: `17`
+- Release channel: Internal Beta / Release Candidate Hardening
 - Status: Testing / Pre-Launch
 - Platform priority: iOS-first
 

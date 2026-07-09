@@ -3632,6 +3632,8 @@ function SettingsScreen({
       const candidates = notificationService.buildScheduledReminderMetadata(localData).slice(0, 8);
       const scheduled: ScheduledReminder[] = [];
 
+      await notificationService.cancelAll();
+
       for (const reminder of candidates) {
         scheduled.push(await notificationService.scheduleReminder(reminder));
       }
@@ -3641,7 +3643,7 @@ function SettingsScreen({
         scheduledReminders: scheduled,
         updatedAt: new Date().toISOString()
       }));
-      Alert.alert("Local Reminders Scheduled", `${scheduled.length} prototype reminders were scheduled locally.`);
+      Alert.alert("Local Reminders Scheduled", `${scheduled.length} prototype reminders were scheduled locally. Previous prototype notifications were replaced.`);
     } catch {
       Alert.alert("Local Reminders", "Could not schedule local reminders. Check device notification permission.");
     }
