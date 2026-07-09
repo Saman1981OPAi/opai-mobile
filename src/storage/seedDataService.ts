@@ -5,11 +5,11 @@ import type {
   LocalAppData,
   LocalAuthSession,
   LocalCalendarEvent,
-  LocalDemoHistoryItem,
   LocalIncidentDraft,
   LocalNoteFileMetadata,
   LocalReminderCard
 } from "@/storage/storageTypes";
+import type { AICategoryId, AIConversation, AIPreferences } from "@/types/ai";
 import type { IncidentNotes } from "@/types/incident";
 import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
 import type { TranslationPreferences, TranslationRecord } from "@/types/translation";
@@ -424,19 +424,19 @@ function createNotesFiles(): LocalNoteFileMetadata[] {
 }
 
 function createHistory(): {
-  aiHistory: LocalDemoHistoryItem[];
+  aiHistory: AIConversation[];
   translationHistory: TranslationRecord[];
 } {
   const createdAt = nowIso();
   return {
     aiHistory: [
       {
+        category: "incident_summary",
         createdAt,
         id: "ai-history-1",
-        mode: "ai",
+        mockResponse: "[Mock AI Response] Future AI output must be verified. This local prototype does not generate real AI content.",
         prompt: "Summarize local demo notes",
-        response: "Mock AI response only. Future AI output must be verified.",
-        title: "Demo AI Summary"
+        updatedAt: createdAt
       }
     ],
     translationHistory: [
@@ -464,10 +464,67 @@ export function createDefaultTranslationPreferences(): TranslationPreferences {
   };
 }
 
+export function createDefaultAIPreferences(): AIPreferences {
+  return {
+    lastSelectedCategory: "general",
+    lastUpdatedAt: nowIso(),
+    saveHistory: true
+  };
+}
+
+type LegacyAIHistoryItem = Partial<AIConversation> & {
+  mode?: "ai" | "translation";
+  response?: string;
+  title?: string;
+};
+
+function normalizeAICategory(category?: string): AICategoryId {
+  const allowed: AICategoryId[] = [
+    "general",
+    "report_review",
+    "incident_summary",
+    "follow_up",
+    "court",
+    "calendar",
+    "training",
+    "translation",
+    "legal_reference_placeholder",
+    "policy_placeholder",
+    "wellness"
+  ];
+
+  return allowed.includes(category as AICategoryId) ? category as AICategoryId : "general";
+}
+
+export function normalizeAIHistory(history: LegacyAIHistoryItem[] | undefined): AIConversation[] {
+  const createdAt = nowIso();
+  const items: LegacyAIHistoryItem[] = history ?? createHistory().aiHistory;
+
+  return items.map((item, index) => {
+    const conversation: AIConversation = {
+      category: normalizeAICategory(item.category),
+      createdAt: item.createdAt ?? createdAt,
+      id: item.id ?? `ai-history-${index + 1}`,
+      mockResponse:
+        item.mockResponse ??
+        item.response ??
+        "[Mock AI Response] This local prototype does not generate real AI content. Verify future AI output before relying on it.",
+      prompt: item.prompt ?? item.title ?? "Local mock AI prompt",
+      updatedAt: item.updatedAt ?? item.createdAt ?? createdAt
+    };
+
+    return {
+      ...conversation,
+      ...(item.relatedIncidentId ? { relatedIncidentId: item.relatedIncidentId } : {}),
+      ...(item.relatedNoteId ? { relatedNoteId: item.relatedNoteId } : {})
+    };
+  });
+}
+
 type LegacyTranslationHistoryItem = {
   createdAt?: string;
   id?: string;
-  mode?: TranslationRecord["mode"] | LocalDemoHistoryItem["mode"];
+  mode?: TranslationRecord["mode"] | "ai" | "translation";
   notes?: string;
   prompt?: string;
   relatedIncidentId?: string;
@@ -558,6 +615,7 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
 
   return {
     aiHistory: history.aiHistory,
+    aiPreferences: createDefaultAIPreferences(),
     auth: authOverride ?? createAuthSession(),
     calendarEvents: createCalendarEvents(),
     calendarWorkflowEvents: createDefaultCalendarWorkflowEvents(),

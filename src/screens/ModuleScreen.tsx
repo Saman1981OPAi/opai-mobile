@@ -34,6 +34,7 @@ import type { LocalAppData, LocalIncidentDraft } from "@/storage/storageTypes";
 import { translationService } from "@/services/translationService";
 import { workflowService } from "@/services/workflowService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
+import type { AICategoryId, AIConversation } from "@/types/ai";
 import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
 import type { NotificationCategory, NotificationLeadTime, NotificationPreference, ScheduledReminder } from "@/types/notifications";
@@ -189,24 +190,6 @@ export function ModuleScreen({
     }));
   };
 
-  const addAiHistory = (prompt: string) => {
-    onUpdateLocalData((current) => ({
-      ...current,
-      aiHistory: [
-        {
-          createdAt: timestamp(),
-          id: `ai-history-${Date.now()}`,
-          mode: "ai" as const,
-          prompt,
-          response: "Mock local response only. Verify future AI output before relying on it.",
-          title: "Local AI Preview"
-        },
-        ...current.aiHistory
-      ].slice(0, 12),
-      updatedAt: timestamp()
-    }));
-  };
-
   const addTranslationHistory = (prompt: string) => {
     const createdAt = timestamp();
     onUpdateLocalData((current) => ({
@@ -274,9 +257,9 @@ export function ModuleScreen({
       <AIAssistantScreen
         isTablet={isTablet}
         localData={localData}
-        onAddHistory={addAiHistory}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
+        onUpdateLocalData={onUpdateLocalData}
         selectedItem={selectedItem}
       />
     );
@@ -1087,19 +1070,113 @@ function NewIncidentScreen({
 function AIAssistantScreen({
   isTablet,
   localData,
-  onAddHistory,
   onSelectItem,
   onSelectModule,
+  onUpdateLocalData,
   selectedItem
 }: {
   isTablet: boolean;
   localData: LocalAppData;
-  onAddHistory: (prompt: string) => void;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   selectedItem: string;
 }) {
-  const tools = aiService.getSuggestedActions();
+  const categories = aiService.getAICategories();
+  const actions = aiService.getSuggestedActions();
+  const [selectedCategory, setSelectedCategory] = useState<AICategoryId>(localData.aiPreferences.lastSelectedCategory);
+  const [historyFilter, setHistoryFilter] = useState<AICategoryId | "all">("all");
+  const [prompt, setPrompt] = useState("");
+  const [latestConversation, setLatestConversation] = useState<AIConversation | null>(localData.aiHistory[0] ?? null);
+  const [selectedIncidentId, setSelectedIncidentId] = useState(localData.incidentDrafts[0]?.id ?? "");
+  const selectedCategoryMeta = categories.find((category) => category.id === selectedCategory) ?? {
+    description: "General mock assistance for local prototype workflows.",
+    icon: "chat-processing-outline",
+    id: "general" as const,
+    label: "General Assistant",
+    shortLabel: "General"
+  };
+  const selectedIncident = localData.incidentDrafts.find((draft) => draft.id === selectedIncidentId);
+  const filteredHistory = aiService.getAIHistory(localData, historyFilter);
+
+  const updateAIPreferences = (category: AICategoryId, saveHistory = localData.aiPreferences.saveHistory) => {
+    onUpdateLocalData((current) =>
+      aiService.saveAIPreferences(current, {
+        lastSelectedCategory: category,
+        lastUpdatedAt: new Date().toISOString(),
+        saveHistory
+      })
+    );
+  };
+
+  const runMockPrompt = (nextPrompt: string, category = selectedCategory) => {
+    const trimmedPrompt = nextPrompt.trim();
+
+    if (!trimmedPrompt) {
+      Alert.alert("Mock AI", "Enter a local test prompt first.");
+      return;
+    }
+
+    const request = {
+      category,
+      prompt: trimmedPrompt
+    };
+    const conversation = aiService.sendMockPrompt(selectedIncidentId ? { ...request, relatedIncidentId: selectedIncidentId } : request);
+
+    setLatestConversation(conversation);
+    setPrompt("");
+    onSelectItem(conversation.prompt);
+
+    onUpdateLocalData((current) => {
+      const withPrefs = aiService.saveAIPreferences(current, {
+        lastSelectedCategory: category,
+        lastUpdatedAt: new Date().toISOString(),
+        saveHistory: current.aiPreferences.saveHistory
+      });
+
+      return withPrefs.aiPreferences.saveHistory ? aiService.saveAIConversation(withPrefs, conversation) : withPrefs;
+    });
+  };
+
+  const deleteHistoryItem = (conversationId: string) => {
+    onUpdateLocalData((current) => aiService.deleteAIConversation(current, conversationId));
+  };
+
+  const clearHistory = () => {
+    Alert.alert("Clear AI History", "Clear all local mock AI history from this device?", [
+      { style: "cancel", text: "Cancel" },
+      {
+        onPress: () => {
+          onUpdateLocalData((current) => aiService.clearAIHistory(current));
+          setLatestConversation(null);
+        },
+        style: "destructive",
+        text: "Clear"
+      }
+    ]);
+  };
+
+  const saveLatestToNotes = () => {
+    if (!latestConversation) {
+      Alert.alert("Mock AI", "Create a mock response first.");
+      return;
+    }
+
+    onUpdateLocalData((current) => aiService.saveAIResponseToNote(aiService.saveAIConversation(current, latestConversation), latestConversation));
+    Alert.alert("Saved Locally", "Mock AI response saved as a local note placeholder.");
+  };
+
+  const attachLatestToIncident = () => {
+    if (!latestConversation || !selectedIncidentId) {
+      Alert.alert("Mock AI", "Create a mock response and select a local incident draft first.");
+      return;
+    }
+
+    onUpdateLocalData((current) =>
+      aiService.attachAIResponseToIncidentDraft(aiService.saveAIConversation(current, latestConversation), latestConversation, selectedIncidentId)
+    );
+    Alert.alert("Attached Locally", "Mock AI response attached to the local incident draft placeholder.");
+  };
 
   return (
     <ScreenFrame activeModule="ai" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -1110,54 +1187,230 @@ function AIAssistantScreen({
         </View>
         <View style={styles.heroCopy}>
           <Text style={styles.heroTitle}>OPAi AI</Text>
-          <Text style={styles.heroSub}>Talk. Ask. Draft.</Text>
+          <Text style={styles.heroSub}>Mock assistant. Testing only.</Text>
+        </View>
+        <View style={styles.mockBadge}>
+          <Text style={styles.mockBadgeText}>Mock AI</Text>
         </View>
       </View>
 
-      <View style={styles.actionRow}>
-        <SecondaryButton label="Talk">
-          <MaterialCommunityIcons name="microphone-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <SecondaryButton label="Report" onPress={() => onSelectModule("incident")}>
-          <MaterialCommunityIcons name="file-plus-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
+      <AIPrototypeBanner />
+      <AISafetyNotice />
+
+      <SectionHeader icon="shape-outline" title="Categories" />
+      <View style={styles.filterRow}>
+        {categories.map((category) => (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: selectedCategory === category.id }}
+            key={category.id}
+            onPress={() => {
+              setSelectedCategory(category.id);
+              updateAIPreferences(category.id);
+              onSelectItem(category.label);
+            }}
+            style={({ pressed }) => [
+              styles.categoryChip,
+              selectedCategory === category.id ? styles.categoryChipActive : null,
+              pressed ? styles.pressed : null
+            ]}
+          >
+            <MaterialCommunityIcons name={category.icon} size={18} color={selectedCategory === category.id ? colors.textPrimary : colors.primaryBlue} />
+            <Text numberOfLines={1} style={styles.categoryChipText}>{category.shortLabel}</Text>
+          </Pressable>
+        ))}
+      </View>
+      <View style={styles.reviewPanel}>
+        <Text style={styles.profileName}>{selectedCategoryMeta.label}</Text>
+        <Text style={styles.workflowSubtitle}>{selectedCategoryMeta.description}</Text>
+        {selectedCategoryMeta.placeholderOnly ? (
+          <DisclaimerBanner message="This category is a placeholder only. It does not provide legal advice, policy interpretation, statute lookup, or official direction." />
+        ) : null}
+        {selectedCategoryMeta.wellnessOnly ? <WellnessDisclaimer /> : null}
       </View>
 
-      <SectionHeader icon="brain" title="AI Tools" />
+      <SectionHeader icon="star-four-points-outline" title="Suggested Actions" />
       <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
-        {tools.map((tool) => (
+        {actions.map((action) => (
           <ReminderCard
-            active={selectedItem === tool.title}
-            key={tool.title}
-            onPress={() => onSelectItem(tool.title)}
-            {...tool}
+            active={selectedItem === action.title}
+            icon={action.icon}
+            key={action.id}
+            onPress={() => {
+              setSelectedCategory(action.category);
+              updateAIPreferences(action.category);
+              runMockPrompt(action.prompt, action.category);
+            }}
+            subtitle={action.subtitle}
+            title={action.title}
           />
         ))}
       </View>
+
+      <SectionHeader icon="chat-processing-outline" title="Mock Chat" />
+      <WorkflowFormPanel icon="robot-outline" title="Local Prompt">
+        <View style={styles.formRow}>
+          <WorkflowField
+            label="Prompt"
+            multiline
+            onChangeText={setPrompt}
+            value={prompt}
+          />
+        </View>
+        <View style={styles.formRow}>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Incident Link Placeholder</Text>
+            <View style={styles.filterRow}>
+              {localData.incidentDrafts.slice(0, 4).map((draft) => (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: selectedIncidentId === draft.id }}
+                  key={draft.id}
+                  onPress={() => setSelectedIncidentId(draft.id)}
+                  style={({ pressed }) => [
+                    styles.stepPill,
+                    selectedIncidentId === draft.id ? styles.stepPillActive : null,
+                    pressed ? styles.pressed : null
+                  ]}
+                >
+                  <Text numberOfLines={1} style={styles.stepPillText}>{draft.incidentType}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <Text style={styles.workflowMeta}>
+              {selectedIncident ? `Selected local draft: ${selectedIncident.incidentType}` : "No local incident draft selected."}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.actionRow}>
+          <PrimaryButton label="Send Mock Prompt" onPress={() => runMockPrompt(prompt)}>
+            <MaterialCommunityIcons name="send-outline" size={20} color={colors.textPrimary} />
+          </PrimaryButton>
+          <SecondaryButton
+            label={localData.aiPreferences.saveHistory ? "History On" : "History Off"}
+            onPress={() => {
+              const nextValue = !localData.aiPreferences.saveHistory;
+              updateAIPreferences(selectedCategory, nextValue);
+            }}
+          >
+            <MaterialCommunityIcons name="history" size={20} color={colors.primaryBlue} />
+          </SecondaryButton>
+        </View>
+      </WorkflowFormPanel>
+
+      {latestConversation ? (
+        <View style={styles.chatCard}>
+          <View style={styles.chatBubbleUser}>
+            <Text style={styles.chatLabel}>Prompt</Text>
+            <Text style={styles.chatText}>{latestConversation.prompt}</Text>
+          </View>
+          <View style={styles.chatBubbleAssistant}>
+            <View style={styles.localDataHeader}>
+              <MaterialCommunityIcons name="robot-outline" size={22} color={colors.ptsdGreen} />
+              <Text style={styles.profileName}>Mock Response</Text>
+            </View>
+            <Text style={styles.chatText}>{latestConversation.mockResponse}</Text>
+            <View style={styles.actionRow}>
+              <SecondaryButton label="Save Note" onPress={saveLatestToNotes}>
+                <MaterialCommunityIcons name="note-plus-outline" size={20} color={colors.primaryBlue} />
+              </SecondaryButton>
+              <SecondaryButton label="Attach Draft" onPress={attachLatestToIncident}>
+                <MaterialCommunityIcons name="link-variant" size={20} color={colors.primaryBlue} />
+              </SecondaryButton>
+              <SecondaryButton label="Clear Chat" onPress={() => setLatestConversation(null)}>
+                <MaterialCommunityIcons name="broom" size={20} color={colors.primaryBlue} />
+              </SecondaryButton>
+            </View>
+          </View>
+        </View>
+      ) : (
+        <EmptyState
+          icon="robot-outline"
+          message="Tap a suggested action or enter a local test prompt to see a mock response."
+          title="No active mock chat"
+        />
+      )}
+
+      <DisclaimerBanner message="AI incident support is a prototype productivity aid only. It does not replace official police reports, notebook requirements, RMS, supervision, policy, legal advice, or professional judgment." />
 
       <SectionHeader icon="history" title="Local Demo History" />
-      <View style={styles.stack}>
-        {localData.aiHistory.map((item) => (
-          <ReminderCard
-            active={selectedItem === item.title}
-            icon="history"
-            key={item.id}
-            onPress={() => onSelectItem(item.title)}
-            subtitle={item.response}
-            title={item.title}
-          />
+      <View style={styles.filterRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: historyFilter === "all" }}
+          onPress={() => setHistoryFilter("all")}
+          style={({ pressed }) => [
+            styles.categoryChip,
+            historyFilter === "all" ? styles.categoryChipActive : null,
+            pressed ? styles.pressed : null
+          ]}
+        >
+          <MaterialCommunityIcons name="history" size={18} color={historyFilter === "all" ? colors.textPrimary : colors.primaryBlue} />
+          <Text style={styles.categoryChipText}>All</Text>
+        </Pressable>
+        {categories.slice(0, 6).map((category) => (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: historyFilter === category.id }}
+            key={category.id}
+            onPress={() => setHistoryFilter(category.id)}
+            style={({ pressed }) => [
+              styles.categoryChip,
+              historyFilter === category.id ? styles.categoryChipActive : null,
+              pressed ? styles.pressed : null
+            ]}
+          >
+            <Text numberOfLines={1} style={styles.categoryChipText}>{category.shortLabel}</Text>
+          </Pressable>
         ))}
       </View>
+      <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real statements, real evidence, or official documents into this prototype." />
+      <View style={styles.stack}>
+        {filteredHistory.length > 0 ? (
+          filteredHistory.map((item) => (
+            <View key={item.id} style={styles.workflowCard}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  setLatestConversation(item);
+                  onSelectItem(item.prompt);
+                }}
+                style={({ pressed }) => [styles.workflowCardHeader, pressed ? styles.pressed : null]}
+              >
+                <View style={styles.summaryIcon}>
+                  <MaterialCommunityIcons name="history" size={22} color={colors.primaryBlue} />
+                </View>
+                <View style={styles.profileCopy}>
+                  <Text numberOfLines={1} style={styles.workflowTitle}>{item.prompt}</Text>
+                  <Text numberOfLines={2} style={styles.workflowMeta}>{item.mockResponse}</Text>
+                </View>
+                <Text style={styles.statusBadge}>{categories.find((category) => category.id === item.category)?.shortLabel ?? "AI"}</Text>
+              </Pressable>
+              <View style={styles.workflowCardFooter}>
+                <Text style={styles.reminderStatusText}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+                <Pressable accessibilityRole="button" onPress={() => deleteHistoryItem(item.id)} style={styles.iconAction}>
+                  <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
+                  <Text style={styles.iconActionLabel}>Delete</Text>
+                </Pressable>
+              </View>
+            </View>
+          ))
+        ) : (
+          <EmptyState icon="history" message="Mock AI conversations saved locally will appear here." title="No AI history" />
+        )}
+      </View>
+      <SecondaryButton label="Clear AI History" onPress={clearHistory}>
+        <MaterialCommunityIcons name="delete-sweep-outline" size={20} color={colors.danger} />
+      </SecondaryButton>
 
       <AIInputBar
         onPress={() => {
-          onSelectItem("AI input preview");
-          onAddHistory("Voice or text command");
+          setPrompt("Voice command placeholder");
+          runMockPrompt("Voice command placeholder");
         }}
         placeholder="Voice or text command..."
       />
       <PrototypeSelection label={selectedItem} />
-      <DisclaimerBanner message="Static UI only. AI calls and data processing start in a later sprint." />
       <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
@@ -2911,6 +3164,34 @@ function LocalPrototypeWarning() {
   );
 }
 
+function AIPrototypeBanner() {
+  return (
+    <View style={styles.prototypeBanner}>
+      <MaterialCommunityIcons name="test-tube" size={20} color={colors.ptsdGreen} />
+      <Text style={styles.prototypeBannerText}>
+        AI Assistant is currently in testing. Responses shown in this prototype are mock responses.
+      </Text>
+    </View>
+  );
+}
+
+function AISafetyNotice() {
+  return (
+    <View style={styles.disclaimerStack}>
+      <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool. AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user." />
+      <DisclaimerBanner message="OPAi Police does not replace official police systems, service policy, supervision, training, legal advice, court requirements, or professional judgment." />
+      <DisclaimerBanner message="PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support." />
+      <DisclaimerBanner message="AI Assistant responses in this prototype are mock/local responses only and are not generated by a live AI system." />
+    </View>
+  );
+}
+
+function WellnessDisclaimer() {
+  return (
+    <DisclaimerBanner message="PTSD awareness content is educational and supportive only. It is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support. If you are in immediate danger or crisis, contact local emergency services or a qualified crisis support service." />
+  );
+}
+
 function SecondaryModuleMenu({
   activeModule,
   isTablet,
@@ -3140,10 +3421,63 @@ const styles = StyleSheet.create({
   blueText: {
     color: colors.primaryBlue
   },
+  categoryChip: {
+    alignItems: "center",
+    backgroundColor: "rgba(6,29,56,0.62)",
+    borderColor: "rgba(77,163,255,0.22)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.xs,
+    minHeight: 38,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.xs
+  },
+  categoryChipActive: {
+    backgroundColor: "rgba(10,132,255,0.24)",
+    borderColor: colors.primaryBlue
+  },
+  categoryChipText: {
+    color: colors.textPrimary,
+    fontSize: typography.caption,
+    fontWeight: "900"
+  },
   centerHero: {
     alignItems: "center",
     gap: spacing.xs,
     paddingVertical: spacing.md
+  },
+  chatBubbleAssistant: {
+    backgroundColor: "rgba(127,255,212,0.08)",
+    borderColor: "rgba(127,255,212,0.24)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.sm,
+    padding: spacing.md
+  },
+  chatBubbleUser: {
+    alignSelf: "flex-end",
+    backgroundColor: "rgba(10,132,255,0.18)",
+    borderColor: "rgba(77,163,255,0.3)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    maxWidth: "92%",
+    padding: spacing.md
+  },
+  chatCard: {
+    gap: spacing.sm
+  },
+  chatLabel: {
+    color: colors.ptsdGreen,
+    fontSize: typography.caption,
+    fontWeight: "900",
+    textTransform: "uppercase"
+  },
+  chatText: {
+    color: colors.textSecondary,
+    fontSize: typography.small,
+    fontWeight: "700",
+    lineHeight: 21
   },
   content: {
     gap: spacing.lg,
@@ -3195,6 +3529,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: spacing.sm,
     padding: spacing.md
+  },
+  mockBadge: {
+    backgroundColor: "rgba(127,255,212,0.12)",
+    borderColor: "rgba(127,255,212,0.35)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs
+  },
+  mockBadgeText: {
+    color: colors.ptsdGreen,
+    fontSize: typography.caption,
+    fontWeight: "900",
+    textTransform: "uppercase"
   },
   notificationPreferenceRow: {
     gap: spacing.sm
@@ -3322,6 +3670,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: spacing.md,
     padding: spacing.md
+  },
+  prototypeBanner: {
+    alignItems: "center",
+    backgroundColor: "rgba(127,255,212,0.10)",
+    borderColor: "rgba(127,255,212,0.28)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.sm,
+    padding: spacing.base
+  },
+  prototypeBannerText: {
+    color: colors.textSecondary,
+    flex: 1,
+    fontSize: typography.small,
+    fontWeight: "800",
+    lineHeight: 20
   },
   secondaryMenu: {
     gap: spacing.sm,

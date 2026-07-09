@@ -3,4 +3,4 @@ export const STORAGE_KEYS = {
   storageVersion: "@opai/storage-version"
 } as const;
 
-export const CURRENT_STORAGE_VERSION = 5;
+export const CURRENT_STORAGE_VERSION = 6;

@@ -3,11 +3,13 @@ import {
   createDefaultCalendarWorkflowEvents,
   createDefaultCourtWorkflowEvents,
   createDefaultFollowUpWorkflowReminders,
+  createDefaultAIPreferences,
   createDefaultNotificationPreference,
   createDefaultRequalificationWorkflowReminders,
   createDefaultScheduledReminders,
   createDefaultTranslationPreferences,
   createDefaultTrainingWorkflowEvents,
+  normalizeAIHistory,
   normalizeIncidentDrafts,
   normalizeTranslationHistory
 } from "@/storage/seedDataService";
@@ -17,6 +19,8 @@ export const migrationService = {
   migrate(data: LocalAppData): LocalAppData {
     const migrated = {
       ...data,
+      aiHistory: normalizeAIHistory(data.aiHistory),
+      aiPreferences: data.aiPreferences ?? createDefaultAIPreferences(),
       calendarWorkflowEvents: data.calendarWorkflowEvents ?? createDefaultCalendarWorkflowEvents(),
       courtWorkflowEvents: data.courtWorkflowEvents ?? createDefaultCourtWorkflowEvents(),
       followUpWorkflowReminders: data.followUpWorkflowReminders ?? createDefaultFollowUpWorkflowReminders(),

@@ -1,5 +1,6 @@
 import type { MciIcon } from "@/data/uiMockups";
 import type { AuthStatus, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
+import type { AIConversation, AIPreferences } from "@/types/ai";
 import type {
   IncidentAttachmentMetadata,
   IncidentDraftStatus,
@@ -97,15 +98,6 @@ export type LocalNoteFileMetadata = {
   updatedAt: string;
 };
 
-export type LocalDemoHistoryItem = {
-  id: string;
-  mode: "ai" | "translation";
-  title: string;
-  prompt: string;
-  response: string;
-  createdAt: string;
-};
-
 export type LocalAppData = {
   version: number;
   seededAt: string;
@@ -119,7 +111,8 @@ export type LocalAppData = {
   courtReminders: LocalReminderCard[];
   trainingReminders: LocalReminderCard[];
   followUpReminders: LocalReminderCard[];
-  aiHistory: LocalDemoHistoryItem[];
+  aiHistory: AIConversation[];
+  aiPreferences: AIPreferences;
   translationHistory: TranslationRecord[];
   translationPreferences: TranslationPreferences;
   notificationPreference: NotificationPreference;
