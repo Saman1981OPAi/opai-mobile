@@ -300,6 +300,7 @@ function createAuthSession(): LocalAuthSession {
   return {
     biometricPreference: "disabled",
     consent: emptyConsentState,
+    consentAcceptedAt: {},
     lastSignedInAt: null,
     notificationPreferences: defaultNotificationPreferences,
     profile: null,
