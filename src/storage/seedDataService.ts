@@ -10,6 +10,7 @@ import type {
   LocalNoteFileMetadata,
   LocalReminderCard
 } from "@/storage/storageTypes";
+import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
 
 const nowIso = () => new Date().toISOString();
 
@@ -19,6 +20,69 @@ const defaultNotificationPreferences = {
   trainingReminders: true,
   wellnessReminders: true
 };
+
+const notificationCategories: NotificationCategory[] = [
+  "courtReminder",
+  "trainingReminder",
+  "requalificationReminder",
+  "startShiftReminder",
+  "followUpReminder",
+  "calendarEventReminder",
+  "systemReminder"
+];
+
+export function createDefaultNotificationPreference(): NotificationPreference {
+  const createdAt = nowIso();
+  return {
+    calendarEventRemindersEnabled: true,
+    courtRemindersEnabled: true,
+    enabled: false,
+    followUpRemindersEnabled: true,
+    lastUpdatedAt: createdAt,
+    permissionPromptSeen: false,
+    permissionStatus: "unknown",
+    reminderLeadTimes: notificationCategories.reduce(
+      (leadTimes, category) => ({
+        ...leadTimes,
+        [category]: category === "startShiftReminder" ? "atTime" : "1Hour"
+      }),
+      {} as NotificationPreference["reminderLeadTimes"]
+    ),
+    requalificationRemindersEnabled: true,
+    startShiftRemindersEnabled: true,
+    trainingRemindersEnabled: true
+  };
+}
+
+export function createDefaultScheduledReminders(): ScheduledReminder[] {
+  const createdAt = nowIso();
+  return [
+    {
+      body: "Prototype court reminder. Verify official court information through authorized systems.",
+      createdAt,
+      enabled: true,
+      id: "scheduled-court-demo",
+      relatedEntityId: "court-appearance",
+      relatedEntityType: "court",
+      scheduledAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      title: "Court Reminder",
+      type: "courtReminder",
+      updatedAt: createdAt
+    },
+    {
+      body: "Prototype training reminder. Confirm official training details through authorized systems.",
+      createdAt,
+      enabled: true,
+      id: "scheduled-training-demo",
+      relatedEntityId: "training-1",
+      relatedEntityType: "training",
+      scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      title: "Training Reminder",
+      type: "trainingReminder",
+      updatedAt: createdAt
+    }
+  ];
+}
 
 function createAuthSession(): LocalAuthSession {
   return {
@@ -162,6 +226,7 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     followUpReminders: reminders.followUpReminders,
     incidentDrafts: createIncidentDrafts(),
     notesFiles: createNotesFiles(),
+    notificationPreference: createDefaultNotificationPreference(),
     preferences: {
       biometricEnabled: Boolean(authOverride?.profile?.biometricEnabled),
       consentStatus: authOverride?.consent ?? emptyConsentState,
@@ -174,6 +239,7 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     shiftReminders: createDefaultShiftReminders(),
     trainingReminders: reminders.trainingReminders,
     translationHistory: history.translationHistory,
+    scheduledReminders: createDefaultScheduledReminders(),
     updatedAt: seededAt,
     version: CURRENT_STORAGE_VERSION
   };

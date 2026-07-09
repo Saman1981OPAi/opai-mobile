@@ -85,6 +85,12 @@ mock auth state, consent, preferences, reminder settings, incident draft example
 metadata, calendar/court/training examples, and mock AI/translation history. Do not enter real
 police records, evidence, confidential information, or sensitive personal information.
 
+Sprint 008 adds an iOS-first local notification prototype using `expo-notifications`. It supports
+local-only reminder permission, category preferences, lead-time controls, test notification
+scheduling, demo court/training reminders, and cancel-all behavior. It does not add backend push,
+APNs server integration, Firebase Cloud Messaging, external calendar sync, OpenAI, databases,
+payments, subscriptions, police-service integrations, or production secrets.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -147,6 +153,15 @@ Sprint 007 adds an offline local persistence layer for prototype-only data. See:
 - `docs/local-persistence-architecture.md`
 - `docs/sprint-007-local-persistence.md`
 - `docs/offline-prototype-limitations.md`
+
+## Sprint 008 Local Notifications
+
+Sprint 008 adds local notification scheduling for testing and pre-launch review. See:
+
+- `docs/notification-architecture.md`
+- `docs/notification-permissions.md`
+- `docs/notification-testing.md`
+- `docs/sprint-008-local-notifications.md`
 
 ## Product Principles
 
