@@ -10,6 +10,7 @@ import type {
   IncidentWitness
 } from "@/types/incident";
 import type { NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type { LocalFileMetadataPlaceholder, LocalNoteFolder, LocalStructuredNote } from "@/types/notesFiles";
 import type { TranslationPreferences, TranslationRecord } from "@/types/translation";
 import type {
   CalendarWorkflowEvent,
@@ -107,6 +108,9 @@ export type LocalAppData = {
   shiftReminders: LocalReminderCard[];
   incidentDrafts: LocalIncidentDraft[];
   notesFiles: LocalNoteFileMetadata[];
+  structuredNotes: LocalStructuredNote[];
+  noteFolders: LocalNoteFolder[];
+  fileMetadataPlaceholders: LocalFileMetadataPlaceholder[];
   calendarEvents: LocalCalendarEvent[];
   courtReminders: LocalReminderCard[];
   trainingReminders: LocalReminderCard[];

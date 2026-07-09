@@ -12,6 +12,13 @@ import type {
 import type { AICategoryId, AIConversation, AIPreferences } from "@/types/ai";
 import type { IncidentNotes } from "@/types/incident";
 import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type {
+  LocalFileMetadataCategory,
+  LocalFileMetadataPlaceholder,
+  LocalNoteCategory,
+  LocalNoteFolder,
+  LocalStructuredNote
+} from "@/types/notesFiles";
 import type { TranslationPreferences, TranslationRecord } from "@/types/translation";
 import type {
   CalendarWorkflowEvent,
@@ -423,6 +430,182 @@ function createNotesFiles(): LocalNoteFileMetadata[] {
   }));
 }
 
+export function createDefaultNoteFolders(): LocalNoteFolder[] {
+  const createdAt = nowIso();
+  const folders: Array<Pick<LocalNoteFolder, "color" | "description" | "icon" | "id" | "name">> = [
+    { color: "#7FFFD4", description: "General local prototype notes.", icon: "note-text-outline", id: "folder-general-notes", name: "General Notes" },
+    { color: "#0A84FF", description: "Incident draft notes. Not official RMS.", icon: "file-document-outline", id: "folder-incident-drafts", name: "Incident Drafts" },
+    { color: "#B56CFF", description: "Court preparation placeholders.", icon: "scale-balance", id: "folder-court-preparation", name: "Court Preparation" },
+    { color: "#4DA3FF", description: "Training and requalification support.", icon: "school-outline", id: "folder-training", name: "Training" },
+    { color: "#7FFFD4", description: "Translation-linked prototype notes.", icon: "translate", id: "folder-translation", name: "Translation" },
+    { color: "#0A84FF", description: "Mock AI response notes.", icon: "brain", id: "folder-ai-assistant", name: "AI Assistant" },
+    { color: "#FFD166", description: "Follow-up task notes.", icon: "clipboard-check-outline", id: "folder-follow-ups", name: "Follow-Ups" },
+    { color: "#8A94A6", description: "Archived local prototype items.", icon: "archive-outline", id: "folder-archived", name: "Archived" }
+  ];
+
+  return folders.map((folder) => ({
+    ...folder,
+    archived: false,
+    createdAt,
+    updatedAt: createdAt
+  }));
+}
+
+export function createDefaultStructuredNotes(): LocalStructuredNote[] {
+  const createdAt = nowIso();
+  const notes: Array<Omit<LocalStructuredNote, "createdAt" | "updatedAt">> = [
+    {
+      archived: false,
+      body: "Prototype shift reminder note. Verify official obligations through authorized systems and supervisors.",
+      category: "Start My Shift Note",
+      folderId: "folder-general-notes",
+      id: "note-shift-readiness",
+      linkedCalendarEventId: "calendar-workflow-court-prep",
+      pinned: true,
+      tags: ["shift", "readiness", "prototype"],
+      title: "Shift readiness note"
+    },
+    {
+      archived: false,
+      body: "Local incident organization note only. Do not enter real police records, real evidence, or sensitive personal information.",
+      category: "Incident Note",
+      folderId: "folder-incident-drafts",
+      id: "note-incident-demo",
+      linkedIncidentId: "draft-1",
+      pinned: false,
+      tags: ["incident", "draft", "local"],
+      title: "Incident draft note"
+    },
+    {
+      archived: false,
+      body: "Mock AI response saved as a local note. AI content may be incomplete or inaccurate and must be verified.",
+      category: "AI Assistant Note",
+      folderId: "folder-ai-assistant",
+      id: "note-ai-demo",
+      linkedAIConversationId: "ai-history-1",
+      pinned: false,
+      tags: ["ai", "mock", "verify"],
+      title: "AI response note"
+    },
+    {
+      archived: false,
+      body: "Mock translation-linked note. This is not certified translation, disclosure, evidence, or official interpretation.",
+      category: "Translation Note",
+      folderId: "folder-translation",
+      id: "note-translation-demo",
+      linkedTranslationRecordId: "translation-history-1",
+      pinned: false,
+      tags: ["translation", "mock", "local"],
+      title: "Translation note"
+    }
+  ];
+
+  return notes.map((note) => ({
+    ...note,
+    createdAt,
+    updatedAt: createdAt
+  }));
+}
+
+export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceholder[] {
+  const createdAt = nowIso();
+  const items: Array<Omit<LocalFileMetadataPlaceholder, "createdAt" | "metadataOnly" | "updatedAt">> = [
+    {
+      category: "Photo Metadata",
+      description: "Metadata only. No photo is uploaded, stored, opened, or processed.",
+      fileName: "incident-photo-placeholder.jpg",
+      fileType: "photo",
+      id: "file-meta-photo-demo",
+      linkedIncidentId: "draft-1",
+      linkedNoteId: "note-incident-demo"
+    },
+    {
+      category: "Court Document Placeholder",
+      description: "Court document placeholder metadata only. Verify official court documents through authorized systems.",
+      fileName: "court-preparation-placeholder.pdf",
+      fileType: "document",
+      id: "file-meta-court-demo",
+      linkedCourtEventId: "court-workflow-appearance",
+      linkedNoteId: "note-shift-readiness"
+    },
+    {
+      category: "Translation Document Placeholder",
+      description: "Translation document placeholder metadata only. No document is parsed or uploaded.",
+      fileName: "translation-placeholder.txt",
+      fileType: "document",
+      id: "file-meta-translation-demo",
+      linkedNoteId: "note-translation-demo",
+      linkedTranslationRecordId: "translation-history-1"
+    }
+  ];
+
+  return items.map((item) => ({
+    ...item,
+    createdAt,
+    metadataOnly: true,
+    updatedAt: createdAt
+  }));
+}
+
+export function normalizeStructuredNotes(notes: LocalStructuredNote[] | undefined): LocalStructuredNote[] {
+  const fallback = createDefaultStructuredNotes();
+
+  return (notes ?? fallback).map((note, index) => {
+    const timestamp = nowIso();
+
+    return {
+      ...note,
+      archived: note.archived ?? false,
+      category: note.category ?? ("General Note" as LocalNoteCategory),
+      createdAt: note.createdAt ?? timestamp,
+      id: note.id ?? `note-${index + 1}`,
+      pinned: note.pinned ?? false,
+      tags: note.tags ?? [],
+      updatedAt: note.updatedAt ?? timestamp
+    };
+  });
+}
+
+export function normalizeNoteFolders(folders: LocalNoteFolder[] | undefined): LocalNoteFolder[] {
+  const fallback = createDefaultNoteFolders();
+
+  return (folders ?? fallback).map((folder, index) => {
+    const timestamp = nowIso();
+
+    return {
+      ...folder,
+      archived: folder.archived ?? false,
+      createdAt: folder.createdAt ?? timestamp,
+      description: folder.description ?? "",
+      icon: folder.icon ?? "folder-outline",
+      id: folder.id ?? `folder-${index + 1}`,
+      updatedAt: folder.updatedAt ?? timestamp
+    };
+  });
+}
+
+export function normalizeFileMetadataPlaceholders(
+  metadata: LocalFileMetadataPlaceholder[] | undefined
+): LocalFileMetadataPlaceholder[] {
+  const fallback = createDefaultFileMetadataPlaceholders();
+
+  return (metadata ?? fallback).map((item, index) => {
+    const timestamp = nowIso();
+
+    return {
+      ...item,
+      category: item.category ?? ("Other" as LocalFileMetadataCategory),
+      createdAt: item.createdAt ?? timestamp,
+      description: item.description ?? "Metadata only. No file is uploaded or stored.",
+      fileName: item.fileName ?? "file-placeholder",
+      fileType: item.fileType ?? "other",
+      id: item.id ?? `file-meta-${index + 1}`,
+      metadataOnly: true as const,
+      updatedAt: item.updatedAt ?? timestamp
+    };
+  });
+}
+
 function createHistory(): {
   aiHistory: AIConversation[];
   translationHistory: TranslationRecord[];
@@ -627,6 +810,9 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     followUpReminders: reminders.followUpReminders,
     incidentDrafts: createIncidentDrafts(),
     notesFiles: createNotesFiles(),
+    structuredNotes: createDefaultStructuredNotes(),
+    noteFolders: createDefaultNoteFolders(),
+    fileMetadataPlaceholders: createDefaultFileMetadataPlaceholders(),
     notificationPreference: createDefaultNotificationPreference(),
     preferences: {
       biometricEnabled: Boolean(authOverride?.profile?.biometricEnabled),
