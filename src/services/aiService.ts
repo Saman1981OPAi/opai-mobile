@@ -1,21 +1,23 @@
 import type { LocalAppData, LocalIncidentDraft, LocalNoteFileMetadata } from "@/storage/storageTypes";
-import type { AICategory, AICategoryId, AIConversation, AIPreferences, AISuggestedAction } from "@/types/ai";
+import type { AICategory, AICategoryId, AIConversation, AIPreferences, AIPromptSuggestion, AISuggestedAction } from "@/types/ai";
 import { classifyMockPrompt, getUnsupportedMockMessage, isPlaceholderOnlyClassification } from "@/utils/aiGuardrails";
 
 const nowIso = () => new Date().toISOString();
 
 const categories: AICategory[] = [
-  { description: "General mock assistance for local prototype workflows.", icon: "chat-processing-outline", id: "general", label: "General Assistant", shortLabel: "General" },
+  { description: "General support for local prototype workflows.", icon: "chat-processing-outline", id: "general", label: "General Support", shortLabel: "General" },
+  { description: "Mock non-mandatory readiness reminders for the start of duty.", icon: "shield-check-outline", id: "shift_readiness", label: "Shift Readiness Helper", shortLabel: "Shift" },
   { description: "Mock review checklist for report clarity and completeness.", icon: "file-search-outline", id: "report_review", label: "Report Review", shortLabel: "Report" },
-  { description: "Mock incident organization and summary support.", icon: "file-document-outline", id: "incident_summary", label: "Incident Summary", shortLabel: "Incident" },
+  { description: "Mock incident note organization and summary support.", icon: "file-document-outline", id: "incident_summary", label: "Incident Note Organizer", shortLabel: "Incident" },
   { description: "Mock next-step suggestions for local follow-ups.", icon: "clipboard-check-outline", id: "follow_up", label: "Follow-Up Suggestions", shortLabel: "Follow-Ups" },
-  { description: "Mock court preparation reminders only.", icon: "scale-balance", id: "court", label: "Court Preparation", shortLabel: "Court" },
+  { description: "Mock court preparation reminders only.", icon: "scale-balance", id: "court", label: "Court Reminder Helper", shortLabel: "Court" },
   { description: "Mock calendar and reminder organization.", icon: "calendar-clock-outline", id: "calendar", label: "Calendar Assistant", shortLabel: "Calendar" },
-  { description: "Mock training and requalification awareness support.", icon: "school-outline", id: "training", label: "Training Assistant", shortLabel: "Training" },
+  { description: "Mock training and requalification awareness support.", icon: "school-outline", id: "training", label: "Training / Requalification Helper", shortLabel: "Training" },
   { description: "Mock language workflow support. Not a live translation engine.", icon: "translate", id: "translation", label: "Translation Support", shortLabel: "Translate" },
   { description: "Placeholder only. No legal advice or statute lookup.", icon: "book-search-outline", id: "legal_reference_placeholder", label: "Criminal Code / Legal Reference Placeholder", placeholderOnly: true, shortLabel: "Legal Ref" },
-  { description: "Placeholder only. No policy database is connected.", icon: "shield-search", id: "policy_placeholder", label: "Policy Search Placeholder", placeholderOnly: true, shortLabel: "Policy" },
-  { description: "Supportive awareness messaging only. No medical advice.", icon: "ribbon", id: "wellness", label: "Wellness / PTSD Awareness Support", shortLabel: "Wellness", wellnessOnly: true }
+  { description: "Placeholder only. No policy database is connected.", icon: "shield-search", id: "policy_placeholder", label: "Policy Reminder Placeholder", placeholderOnly: true, shortLabel: "Policy" },
+  { description: "Supportive PTSD and stress awareness messaging only. No medical advice.", icon: "ribbon", id: "ptsd_stress_support", label: "PTSD / Stress Support", shortLabel: "PTSD", wellnessOnly: true },
+  { description: "Supportive check-in prompts only. No medical advice.", icon: "heart-pulse", id: "wellness", label: "Wellness Check-In", shortLabel: "Wellness", wellnessOnly: true }
 ];
 
 const suggestedActions: AISuggestedAction[] = [
@@ -26,12 +28,31 @@ const suggestedActions: AISuggestedAction[] = [
   { category: "general", icon: "folder-text-outline", id: "organize-notes", prompt: "Organize these notes into themes.", subtitle: "Structure", title: "Organize Notes" },
   { category: "incident_summary", icon: "text-box-check-outline", id: "draft-summary", prompt: "Draft a local summary placeholder.", subtitle: "Mock summary", title: "Draft Local Summary" },
   { category: "translation", icon: "translate", id: "translate-support", prompt: "Create a translation support note.", subtitle: "Language aid", title: "Translate Support Note" },
-  { category: "general", icon: "shield-check-outline", id: "shift-reminders", prompt: "Review Start My Shift reminders.", subtitle: "Readiness", title: "Review Shift Reminders" },
+  { category: "shift_readiness", icon: "shield-check-outline", id: "shift-reminders", prompt: "Review Start My Shift reminders.", subtitle: "Readiness", title: "Review Shift Reminders" },
   { category: "training", icon: "school-outline", id: "training-deadline", prompt: "Explain this training deadline.", subtitle: "Awareness", title: "Explain Training Deadline" },
   { category: "calendar", icon: "calendar-plus-outline", id: "calendar-reminder", prompt: "Create a calendar reminder placeholder.", subtitle: "Local reminder", title: "Create Calendar Reminder" },
   { category: "legal_reference_placeholder", icon: "book-search-outline", id: "criminal-code-placeholder", prompt: "Search Criminal Code placeholder.", subtitle: "Placeholder only", title: "Search Criminal Code" },
   { category: "policy_placeholder", icon: "shield-search", id: "policy-placeholder", prompt: "Search policy placeholder.", subtitle: "Placeholder only", title: "Policy Search" },
   { category: "wellness", icon: "ribbon", id: "ptsd-awareness", prompt: "Create a PTSD awareness support message.", subtitle: "Supportive only", title: "PTSD Awareness Message" }
+];
+
+const promptSuggestions: AIPromptSuggestion[] = [
+  { category: "wellness", id: "wellness-check-in", label: "Wellness Check-In", prompt: "Give me a short wellness check-in message for a stressful shift." },
+  { category: "wellness", id: "stigma-free-support", label: "Stigma-Free Words", prompt: "Draft a supportive, stigma-free mental health reminder." },
+  { category: "ptsd_stress_support", id: "ptsd-awareness", label: "PTSD Awareness", prompt: "Create a PTSD awareness support message." },
+  { category: "ptsd_stress_support", id: "stress-grounding", label: "Stress Support", prompt: "Give a short educational stress-support reminder for police work." },
+  { category: "incident_summary", id: "incident-organize-notes", label: "Organize Notes", prompt: "Organize these incident notes into clear sections." },
+  { category: "incident_summary", id: "incident-summary", label: "Summarize Draft", prompt: "Summarize this incident draft in plain language." },
+  { category: "report_review", id: "report-clarity", label: "Review Clarity", prompt: "Review this report for clarity and completeness." },
+  { category: "follow_up", id: "follow-up-tasks", label: "Follow-Ups", prompt: "Suggest follow-up tasks for this incident." },
+  { category: "court", id: "court-reminders", label: "Court Reminders", prompt: "Prepare a court preparation reminder list." },
+  { category: "calendar", id: "calendar-reminder", label: "Reminder", prompt: "Create a calendar reminder placeholder." },
+  { category: "training", id: "training-deadline", label: "Training Due", prompt: "Explain this training or requalification deadline." },
+  { category: "shift_readiness", id: "shift-readiness", label: "Shift Ready", prompt: "Review Start My Shift reminders." },
+  { category: "translation", id: "translation-note", label: "Translation Note", prompt: "Create a translation support note." },
+  { category: "policy_placeholder", id: "policy-reminder", label: "Policy Reminder", prompt: "Create a policy reminder placeholder." },
+  { category: "legal_reference_placeholder", id: "legal-placeholder", label: "Legal Placeholder", prompt: "Search Criminal Code placeholder." },
+  { category: "general", id: "general-support", label: "General Support", prompt: "Organize these notes into themes." }
 ];
 
 function responseFor(category: AICategoryId, prompt: string) {
@@ -41,7 +62,7 @@ function responseFor(category: AICategoryId, prompt: string) {
     return getUnsupportedMockMessage();
   }
 
-  if (category === "wellness") {
+  if (category === "wellness" || category === "ptsd_stress_support") {
     return "[Mock AI Response] This prototype can provide supportive awareness messaging, stigma-reduction language, and reminders to seek appropriate support. PTSD awareness content is educational only and is not diagnosis, treatment, therapy, crisis intervention, or emergency support.";
   }
 
@@ -60,6 +81,10 @@ export const aiService = {
   },
   getSuggestedActions() {
     return suggestedActions;
+  },
+  getPromptSuggestions(category: AICategoryId) {
+    const categoryPrompts = promptSuggestions.filter((item) => item.category === category);
+    return categoryPrompts.length > 0 ? categoryPrompts : promptSuggestions.filter((item) => item.category === "general");
   },
   getAIHistory(localData: LocalAppData, category: AICategoryId | "all" = "all") {
     return category === "all" ? localData.aiHistory : localData.aiHistory.filter((item) => item.category === category);

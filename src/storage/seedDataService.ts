@@ -481,6 +481,7 @@ type LegacyAIHistoryItem = Partial<AIConversation> & {
 function normalizeAICategory(category?: string): AICategoryId {
   const allowed: AICategoryId[] = [
     "general",
+    "shift_readiness",
     "report_review",
     "incident_summary",
     "follow_up",
@@ -490,6 +491,7 @@ function normalizeAICategory(category?: string): AICategoryId {
     "translation",
     "legal_reference_placeholder",
     "policy_placeholder",
+    "ptsd_stress_support",
     "wellness"
   ];
 

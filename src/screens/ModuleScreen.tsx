@@ -1093,11 +1093,12 @@ function AIAssistantScreen({
     description: "General mock assistance for local prototype workflows.",
     icon: "chat-processing-outline",
     id: "general" as const,
-    label: "General Assistant",
+    label: "General Support",
     shortLabel: "General"
   };
   const selectedIncident = localData.incidentDrafts.find((draft) => draft.id === selectedIncidentId);
   const filteredHistory = aiService.getAIHistory(localData, historyFilter);
+  const promptSuggestions = aiService.getPromptSuggestions(selectedCategory);
 
   const updateAIPreferences = (category: AICategoryId, saveHistory = localData.aiPreferences.saveHistory) => {
     onUpdateLocalData((current) =>
@@ -1180,13 +1181,13 @@ function AIAssistantScreen({
 
   return (
     <ScreenFrame activeModule="ai" isTablet={isTablet} onSelectModule={onSelectModule}>
-      <AppHeader title="AI Assistant" />
+      <AppHeader title="OPAi Assistant" />
       <View style={styles.aiPanel}>
         <View style={styles.aiOrb}>
           <MaterialCommunityIcons name="brain" size={44} color={colors.primaryBlue} />
         </View>
         <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>OPAi AI</Text>
+          <Text style={styles.heroTitle}>OPAi Assistant</Text>
           <Text style={styles.heroSub}>Mock assistant. Testing only.</Text>
         </View>
         <View style={styles.mockBadge}>
@@ -1227,6 +1228,25 @@ function AIAssistantScreen({
           <DisclaimerBanner message="This category is a placeholder only. It does not provide legal advice, policy interpretation, statute lookup, or official direction." />
         ) : null}
         {selectedCategoryMeta.wellnessOnly ? <WellnessDisclaimer /> : null}
+      </View>
+
+      <SectionHeader icon="lightbulb-on-outline" title="Prompt Chips" />
+      <View style={styles.reviewPanel}>
+        <Text style={styles.workflowSubtitle}>Tap a local prompt for the selected category. No live AI is connected.</Text>
+        <View style={styles.filterRow}>
+          {promptSuggestions.map((suggestion) => (
+            <Pressable
+              accessibilityLabel={`Run mock prompt: ${suggestion.label}`}
+              accessibilityRole="button"
+              key={suggestion.id}
+              onPress={() => runMockPrompt(suggestion.prompt, suggestion.category)}
+              style={({ pressed }) => [styles.promptChip, pressed ? styles.pressed : null]}
+            >
+              <MaterialCommunityIcons name="lightning-bolt-outline" size={16} color={colors.ptsdGreen} />
+              <Text numberOfLines={1} style={styles.promptChipText}>{suggestion.label}</Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
       <SectionHeader icon="star-four-points-outline" title="Suggested Actions" />
@@ -3178,6 +3198,7 @@ function AIPrototypeBanner() {
 function AISafetyNotice() {
   return (
     <View style={styles.disclaimerStack}>
+      <DisclaimerBanner message="This prototype does not provide legal advice, medical advice, operational direction, or emergency support. Follow service policy, law, training, and supervisor direction." />
       <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool. AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user." />
       <DisclaimerBanner message="OPAi Police does not replace official police systems, service policy, supervision, training, legal advice, court requirements, or professional judgment." />
       <DisclaimerBanner message="PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support." />
@@ -3670,6 +3691,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: spacing.md,
     padding: spacing.md
+  },
+  promptChip: {
+    alignItems: "center",
+    backgroundColor: "rgba(127,255,212,0.08)",
+    borderColor: "rgba(127,255,212,0.28)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.xs,
+    minHeight: 38,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.xs
+  },
+  promptChipText: {
+    color: colors.textPrimary,
+    fontSize: typography.caption,
+    fontWeight: "900",
+    maxWidth: 170
   },
   prototypeBanner: {
     alignItems: "center",

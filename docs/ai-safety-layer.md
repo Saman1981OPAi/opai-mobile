@@ -13,6 +13,7 @@ Sprint 012 introduces reusable local safety copy and prompt guardrail placeholde
 ## Required User-Facing Disclaimers
 
 - OPAi Police is a productivity and AI assistance tool.
+- This prototype does not provide legal advice, medical advice, operational direction, or emergency support. Follow service policy, law, training, and supervisor direction.
 - AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user.
 - OPAi Police does not replace official police systems, service policy, supervision, training, legal advice, court requirements, or professional judgment.
 - PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support.
