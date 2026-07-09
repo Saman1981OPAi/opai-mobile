@@ -3,7 +3,9 @@ import type { ConsentKey, ConsentState, MockUserProfile } from "@/types/auth";
 export const emptyConsentState: ConsentState = {
   aiDisclaimer: false,
   privacy: false,
+  prototypeDisclaimer: false,
   ptsdDisclaimer: false,
+  translationDisclaimer: false,
   terms: false
 };
 
@@ -29,6 +31,16 @@ export const consentItems: Array<{ key: ConsentKey; title: string; description: 
     title: "PTSD Awareness Disclaimer",
     description:
       "PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, or crisis intervention."
+  },
+  {
+    key: "translationDisclaimer",
+    title: "Translation Disclaimer",
+    description: "Translation output may be incomplete, inaccurate, or contextually incorrect and must be verified."
+  },
+  {
+    key: "prototypeDisclaimer",
+    title: "Prototype / Testing Disclaimer",
+    description: "Do not enter real police records, evidence, statements, official documents, or sensitive information."
   }
 ];
 

@@ -1,5 +1,5 @@
 import type { MciIcon } from "@/data/uiMockups";
-import type { AuthStatus, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
+import type { AuthStatus, ConsentAcceptedAt, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
 import type { AIConversation, AIPreferences } from "@/types/ai";
 import type {
   IncidentAttachmentMetadata,
@@ -24,6 +24,7 @@ export type LocalAuthSession = {
   status: AuthStatus;
   profile: MockUserProfile | null;
   consent: ConsentState;
+  consentAcceptedAt?: ConsentAcceptedAt;
   biometricPreference: "disabled" | "faceId" | "touchId" | "deviceBiometrics";
   notificationPreferences: NotificationPreferences;
   lastSignedInAt: string | null;

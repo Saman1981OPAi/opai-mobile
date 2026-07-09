@@ -6,9 +6,16 @@ export type AuthStatus =
   | "biometricPrompt"
   | "passwordResetRequested";
 
-export type ConsentKey = "terms" | "privacy" | "aiDisclaimer" | "ptsdDisclaimer";
+export type ConsentKey =
+  | "terms"
+  | "privacy"
+  | "aiDisclaimer"
+  | "ptsdDisclaimer"
+  | "translationDisclaimer"
+  | "prototypeDisclaimer";
 
 export type ConsentState = Record<ConsentKey, boolean>;
+export type ConsentAcceptedAt = Partial<Record<ConsentKey, string>>;
 
 export type NotificationPreferences = {
   courtReminders: boolean;

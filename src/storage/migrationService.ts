@@ -20,11 +20,26 @@ import {
   normalizeTranslationHistory
 } from "@/storage/seedDataService";
 import type { LocalAppData } from "@/storage/storageTypes";
+import type { ConsentState } from "@/types/auth";
+
+const normalizeConsent = (consent: Partial<ConsentState> | undefined): ConsentState => ({
+  aiDisclaimer: Boolean(consent?.aiDisclaimer),
+  privacy: Boolean(consent?.privacy),
+  prototypeDisclaimer: Boolean(consent?.prototypeDisclaimer),
+  ptsdDisclaimer: Boolean(consent?.ptsdDisclaimer),
+  terms: Boolean(consent?.terms),
+  translationDisclaimer: Boolean(consent?.translationDisclaimer)
+});
 
 export const migrationService = {
   migrate(data: LocalAppData): LocalAppData {
     const migrated = {
       ...data,
+      auth: {
+        ...data.auth,
+        consent: normalizeConsent(data.auth.consent),
+        consentAcceptedAt: data.auth.consentAcceptedAt ?? {}
+      },
       aiHistory: normalizeAIHistory(data.aiHistory),
       aiPreferences: data.aiPreferences ?? createDefaultAIPreferences(),
       calendarWorkflowEvents: data.calendarWorkflowEvents ?? createDefaultCalendarWorkflowEvents(),
@@ -34,6 +49,10 @@ export const migrationService = {
       incidentDrafts: normalizeIncidentDrafts(data.incidentDrafts),
       noteFolders: normalizeNoteFolders(data.noteFolders ?? createDefaultNoteFolders()),
       notificationPreference: data.notificationPreference ?? createDefaultNotificationPreference(),
+      preferences: {
+        ...data.preferences,
+        consentStatus: normalizeConsent(data.preferences.consentStatus)
+      },
       requalificationWorkflowReminders: data.requalificationWorkflowReminders ?? createDefaultRequalificationWorkflowReminders(),
       scheduledReminders: data.scheduledReminders ?? createDefaultScheduledReminders(),
       structuredNotes: normalizeStructuredNotes(data.structuredNotes ?? createDefaultStructuredNotes()),

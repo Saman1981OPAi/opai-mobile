@@ -12,7 +12,8 @@ import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { secondaryModules, settingsItems } from "@/data/uiMockups";
+import { secondaryModules } from "@/data/uiMockups";
+import type { MciIcon } from "@/data/uiMockups";
 import { aiService } from "@/services/aiService";
 import { dashboardService } from "@/services/dashboardService";
 import { incidentService } from "@/services/incidentService";
@@ -115,6 +116,205 @@ const requalificationCategoryOptions: RequalificationCategory[] = [
   "CPR / First Aid Renewal",
   "Driver Training",
   "Other"
+];
+
+type SettingsViewId =
+  | "overview"
+  | "profile"
+  | "consent"
+  | "data"
+  | "notifications"
+  | "preferences"
+  | "privacy"
+  | "terms"
+  | "ai"
+  | "professional"
+  | "translation"
+  | "ptsd"
+  | "prototype"
+  | "courtTraining"
+  | "incident"
+  | "files"
+  | "support"
+  | "about";
+
+type LegalDocument = {
+  id: SettingsViewId;
+  icon: MciIcon;
+  title: string;
+  subtitle: string;
+  body: string[];
+  productionUrl?: string;
+};
+
+const generalAppDisclaimer = "OPAi Police is a productivity and AI assistance tool.";
+const professionalUseDisclaimer =
+  "OPAi Police is not a replacement for official police systems, supervision, service policy, legal advice, medical advice, training, court requirements, or professional judgment.";
+const aiDisclaimer =
+  "AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user.";
+const prototypeDisclaimer =
+  "OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real evidence, real statements, or official documents into this prototype.";
+const ptsdDisclaimer =
+  "PTSD awareness content is educational and supportive only. It is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support. If you are in immediate danger or crisis, contact local emergency services or a qualified crisis support service.";
+const translationDisclaimer =
+  "OPAi translation features are productivity aids only. Translation output may be incomplete, inaccurate, or contextually incorrect and must be verified by the user. For official proceedings, investigations, court, statements, cautions, rights, or legal processes, users must follow authorized service procedures and obtain qualified interpretation or certified translation where required.";
+const courtTrainingDisclaimer =
+  "OPAi reminders are productivity aids only. Users remain responsible for verifying court dates, training schedules, qualification deadlines, and official obligations through authorized systems, supervisors, and service policies.";
+const incidentDisclaimer =
+  "New Incident drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations.";
+const filesDisclaimer =
+  "Files in this prototype are metadata placeholders only. OPAi does not upload, store, process, or sync real files in this testing version.";
+
+const legalDocuments: LegalDocument[] = [
+  {
+    body: [
+      "OPAi is currently in testing/pre-launch.",
+      "Data is stored locally on the user's device in this prototype.",
+      "The prototype uses local mock authentication and does not connect to a production backend.",
+      "The prototype does not call OpenAI, upload files, sync with police systems, use advertising, or use third-party analytics.",
+      "Users should not enter real police records, evidence, confidential information, sensitive personal information, or official documents.",
+      "Future production versions may use secure backend services, encrypted storage, authentication, audit logging, AI services, and optional integrations.",
+      "Production URL to be verified before final App Store submission."
+    ],
+    icon: "shield-lock-outline",
+    id: "privacy",
+    productionUrl: "https://opaiapp.com/privacy",
+    subtitle: "Local draft for testing",
+    title: "Privacy Policy"
+  },
+  {
+    body: [
+      generalAppDisclaimer,
+      "OPAi Police is not official police software and is not affiliated with a police service or government agency unless explicitly stated in future authorized agreements.",
+      professionalUseDisclaimer,
+      "This prototype should not be used for real police operations.",
+      "No real records, evidence, statements, official documents, or sensitive information should be entered during testing.",
+      "AI and translation features are prototype/mock unless connected in future production releases.",
+      "Users are responsible for verifying all information.",
+      "Production URL to be verified before final App Store submission."
+    ],
+    icon: "file-document-check-outline",
+    id: "terms",
+    productionUrl: "https://opaiapp.com/terms",
+    subtitle: "Local draft for testing",
+    title: "Terms of Use"
+  },
+  {
+    body: [generalAppDisclaimer, aiDisclaimer, "AI Assistant responses in this prototype are mock/local responses only and are not generated by a live AI system."],
+    icon: "brain",
+    id: "ai",
+    subtitle: "AI safety boundary",
+    title: "AI Disclaimer"
+  },
+  {
+    body: [generalAppDisclaimer, professionalUseDisclaimer, "Users must follow service policy, law, training, supervisor direction, court requirements, and professional judgment."],
+    icon: "shield-alert-outline",
+    id: "professional",
+    subtitle: "Professional use boundary",
+    title: "Police / Professional Use Disclaimer"
+  },
+  {
+    body: [translationDisclaimer, "Translation features in this prototype use local mock output only and are not certified translation or interpretation."],
+    icon: "translate",
+    id: "translation",
+    subtitle: "Translation safety boundary",
+    title: "Translation Disclaimer"
+  },
+  {
+    body: [ptsdDisclaimer, "OPAi PTSD awareness messaging exists to support stigma reduction and awareness, not clinical care."],
+    icon: "ribbon",
+    id: "ptsd",
+    subtitle: "Wellness awareness boundary",
+    title: "PTSD Awareness Disclaimer"
+  },
+  {
+    body: [prototypeDisclaimer, "Prototype data may be stored locally on this device until reset, cleared, or removed by the operating system."],
+    icon: "test-tube",
+    id: "prototype",
+    subtitle: "Testing / pre-launch",
+    title: "Prototype / Testing Disclaimer"
+  },
+  {
+    body: [courtTrainingDisclaimer],
+    icon: "calendar-alert",
+    id: "courtTraining",
+    subtitle: "Reminder safety boundary",
+    title: "Court / Training Reminder Disclaimer"
+  },
+  {
+    body: [incidentDisclaimer],
+    icon: "file-document-edit-outline",
+    id: "incident",
+    subtitle: "Drafting safety boundary",
+    title: "Incident Disclaimer"
+  },
+  {
+    body: [filesDisclaimer],
+    icon: "file-cabinet",
+    id: "files",
+    subtitle: "File metadata boundary",
+    title: "Files Disclaimer"
+  }
+];
+
+const settingsMenuSections: Array<{
+  title: string;
+  items: Array<{ id: SettingsViewId; icon: MciIcon; title: string; subtitle: string }>;
+}> = [
+  {
+    items: [
+      { icon: "account-circle-outline", id: "profile", subtitle: "Mock user and account status", title: "Profile" },
+      { icon: "logout", id: "overview", subtitle: "Use the sign-out button below", title: "Mock Account Status" }
+    ],
+    title: "Account"
+  },
+  {
+    items: [
+      { icon: "shield-lock-outline", id: "privacy", subtitle: "Local privacy draft", title: "Privacy Policy" },
+      { icon: "file-document-check-outline", id: "terms", subtitle: "Local terms draft", title: "Terms of Use" },
+      { icon: "file-check-outline", id: "consent", subtitle: "Accepted locally", title: "Consent Status" },
+      { icon: "database-outline", id: "data", subtitle: "Local prototype storage", title: "Data & Storage" },
+      { icon: "fingerprint", id: "profile", subtitle: "Placeholder only", title: "Biometric Placeholder" }
+    ],
+    title: "Privacy & Security"
+  },
+  {
+    items: [
+      { icon: "bell-ring-outline", id: "notifications", subtitle: "Local reminders only", title: "Notifications" },
+      { icon: "tune-variant", id: "preferences", subtitle: "Language and wellness", title: "App Preferences" }
+    ],
+    title: "Notifications & Preferences"
+  },
+  {
+    items: legalDocuments
+      .filter((doc) => !["privacy", "terms"].includes(doc.id))
+      .map((doc) => ({ icon: doc.icon, id: doc.id, subtitle: doc.subtitle, title: doc.title })),
+    title: "Legal & Compliance"
+  },
+  {
+    items: [
+      { icon: "lifebuoy", id: "support", subtitle: "Contacts and links", title: "Support" },
+      { icon: "information-outline", id: "about", subtitle: "Mission and status", title: "About OPAi" }
+    ],
+    title: "Support & About"
+  }
+];
+
+const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data: LocalAppData) => number | string }> = [
+  { getCount: (data) => (data.auth.profile ? 1 : 0), icon: "account-outline", title: "Mock user profile" },
+  { getCount: (data) => Object.values(data.auth.consent).filter(Boolean).length, icon: "file-check-outline", title: "Consent status" },
+  { getCount: () => "local", icon: "tune-variant", title: "Preferences" },
+  { getCount: (data) => data.shiftReminders.length, icon: "shield-check-outline", title: "Start My Shift reminders" },
+  { getCount: (data) => data.calendarWorkflowEvents.length, icon: "calendar-outline", title: "Calendar events" },
+  { getCount: (data) => data.courtWorkflowEvents.length, icon: "scale-balance", title: "Court events" },
+  { getCount: (data) => data.trainingWorkflowEvents.length, icon: "school-outline", title: "Training events" },
+  { getCount: (data) => data.requalificationWorkflowReminders.length, icon: "target", title: "Requalification reminders" },
+  { getCount: (data) => data.followUpWorkflowReminders.length, icon: "clipboard-check-outline", title: "Follow-ups" },
+  { getCount: (data) => data.incidentDrafts.length, icon: "file-document-edit-outline", title: "Incident drafts" },
+  { getCount: (data) => data.translationHistory.length, icon: "translate", title: "Translation history" },
+  { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI mock history" },
+  { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
+  { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File metadata placeholders" }
 ];
 
 const notificationPreferenceRows: Array<{
@@ -3405,6 +3605,17 @@ function SettingsScreen({
     }
   };
 
+  const confirmCancelAllNotifications = () => {
+    Alert.alert(
+      "Cancel Local Notifications",
+      "This will cancel all scheduled local prototype notifications on this device.",
+      [
+        { style: "cancel", text: "Keep" },
+        { onPress: cancelAllNotifications, style: "destructive", text: "Cancel All" }
+      ]
+    );
+  };
+
   const confirmResetDemoData = () => {
     Alert.alert(
       "Reset Demo Data",
@@ -3427,18 +3638,31 @@ function SettingsScreen({
     );
   };
 
+  const confirmSignOut = () => {
+    Alert.alert(
+      "Mock Sign Out",
+      "This signs out the local mock user. No production account is affected.",
+      [
+        { style: "cancel", text: "Stay Signed In" },
+        { onPress: onSignOut, text: "Sign Out" }
+      ]
+    );
+  };
+
+  const activeLegalDocument = legalDocuments.find((document) => document.id === selectedItem);
+  const activeSettingsView = activeLegalDocument ? activeLegalDocument.id : (selectedItem as SettingsViewId);
+
   return (
     <ScreenFrame activeModule="settings" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Settings" />
       <View style={styles.hero}>
         <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>Pre-launch settings.</Text>
-          <Text style={styles.heroSub}>Preferences are local mockups.</Text>
+          <Text style={styles.heroTitle}>Settings & compliance.</Text>
+          <Text style={styles.heroSub}>Local privacy, legal, consent, support, and prototype controls.</Text>
         </View>
         <MaterialCommunityIcons name="cog-outline" size={48} color={colors.primaryBlue} />
       </View>
 
-      <SectionHeader icon="cog-outline" title="Settings Menu" />
       <View style={styles.profilePanel}>
         <MaterialCommunityIcons name="account-circle-outline" size={42} color={colors.primaryBlue} />
         <View style={styles.profileCopy}>
@@ -3446,153 +3670,326 @@ function SettingsScreen({
             {profile ? `${profile.firstName} ${profile.lastName}` : "Mock User"}
           </Text>
           <Text style={styles.profileMeta}>
-            {profile?.role ?? "Canadian Police Officer"} - {profile?.preferredLanguage ?? "English"}
+            {profile?.role ?? "Canadian Police Officer"} - Testing / Pre-Launch - iOS-first
           </Text>
+        </View>
+        <View style={styles.mockBadge}>
+          <Text style={styles.mockBadgeText}>Local</Text>
         </View>
       </View>
       <LocalPrototypeWarning />
-      <View style={styles.localDataPanel}>
-        <View style={styles.localDataHeader}>
-          <MaterialCommunityIcons name="database-outline" size={24} color={colors.ptsdGreen} />
-          <View style={styles.profileCopy}>
-            <Text style={styles.profileName}>Local Prototype Storage</Text>
-            <Text style={styles.profileMeta}>
-              {localData.incidentDrafts.length} drafts - {localData.shiftReminders.length} reminders - updated{" "}
-              {new Date(localData.updatedAt).toLocaleDateString()}
-            </Text>
-          </View>
-        </View>
-        <SecondaryButton label="Reset Demo Data" onPress={confirmResetDemoData}>
-          <MaterialCommunityIcons name="backup-restore" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <SecondaryButton label="Clear Local Data" onPress={confirmClearLocalData}>
-          <MaterialCommunityIcons name="delete-outline" size={20} color={colors.danger} />
-        </SecondaryButton>
-      </View>
-      <View style={styles.localDataPanel}>
-        <View style={styles.localDataHeader}>
-          <MaterialCommunityIcons name="tune-variant" size={24} color={colors.primaryBlue} />
-          <View style={styles.profileCopy}>
-            <Text style={styles.profileName}>Persisted Preferences</Text>
-            <Text style={styles.profileMeta}>Local placeholders only. No production device permissions are changed.</Text>
-          </View>
-        </View>
-        <SecondaryButton
-          label={`Notifications ${localData.preferences.notificationsEnabled ? "On" : "Off"}`}
-          onPress={() => togglePreference("notificationsEnabled")}
-        >
-          <MaterialCommunityIcons name="bell-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <SecondaryButton
-          label={`Biometrics ${localData.preferences.biometricEnabled ? "On" : "Off"}`}
-          onPress={() => togglePreference("biometricEnabled")}
-        >
-          <MaterialCommunityIcons name="fingerprint" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <SecondaryButton
-          label={`PTSD Reminders ${localData.preferences.ptsdRemindersEnabled ? "On" : "Off"}`}
-          onPress={() => togglePreference("ptsdRemindersEnabled")}
-        >
-          <MaterialCommunityIcons name="ribbon" size={20} color={colors.ptsdGreen} />
-        </SecondaryButton>
-      </View>
-      <View style={styles.localDataPanel}>
-        <View style={styles.localDataHeader}>
-          <MaterialCommunityIcons name="bell-ring-outline" size={24} color={colors.primaryBlue} />
-          <View style={styles.profileCopy}>
-            <Text style={styles.profileName}>Notifications</Text>
-            <Text style={styles.profileMeta}>
-              OPAi can send local reminders for court dates, training, requalification deadlines, shift readiness,
-              follow-ups, and calendar events. You can change this anytime in Settings.
-            </Text>
-          </View>
-        </View>
-        <DisclaimerBanner message="Notification reminders in this testing version are scheduled locally on this device. OPAi does not send remote push notifications in this prototype." />
-        <SecondaryButton label={`Permission: ${notificationPreference.permissionStatus}`} onPress={handleRequestNotificationPermission}>
-          <MaterialCommunityIcons name="shield-check-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <View style={styles.actionRow}>
-          <SecondaryButton label="Enable Notifications" onPress={handleRequestNotificationPermission}>
-            <MaterialCommunityIcons name="bell-check-outline" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-          <SecondaryButton label="Maybe Later" onPress={handleMaybeLater}>
-            <MaterialCommunityIcons name="clock-outline" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-        </View>
-        <SecondaryButton
-          label={`Enable All ${notificationPreference.enabled ? "On" : "Off"}`}
-          onPress={() =>
-            updateNotificationPreference((current) => ({
-              ...current,
-              enabled: !current.enabled,
-              lastUpdatedAt: new Date().toISOString()
-            }))
-          }
-        >
-          <MaterialCommunityIcons name="toggle-switch-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        {notificationPreferenceRows.map((row) => (
-          <View key={row.key} style={styles.notificationPreferenceRow}>
+
+      <SettingsMenu selectedItem={selectedItem} onSelectItem={onSelectItem} />
+
+      {activeSettingsView === "overview" || selectedItem === "Home" ? (
+        <SettingsPanel icon="shield-check-outline" title="Mock Account Status">
+          <SettingsFact label="Current status" value={localData.auth.status} />
+          <SettingsFact label="Testing stage" value="Testing / Pre-Launch" />
+          <SettingsFact label="Launch priority" value="iOS active; Android paused pending D-U-N-S Number" />
+          <SettingsFact label="Production systems" value="Not connected" />
+          <DisclaimerBanner message="This Settings area is local and static for App Store review readiness. It does not connect to account, support, legal, backend, OpenAI, database, payment, or police-service systems." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "profile" ? (
+        <SettingsPanel icon="account-circle-outline" title="Account">
+          <SettingsFact label="Name" value={profile ? `${profile.firstName} ${profile.lastName}` : "Mock User"} />
+          <SettingsFact label="Email" value={profile?.email ?? "officer@example.ca"} />
+          <SettingsFact label="Role" value={profile?.role ?? "Canadian Police Officer"} />
+          <SettingsFact label="Language" value={profile?.preferredLanguage ?? "English"} />
+          <SettingsFact label="Mock account status" value={localData.auth.status} />
+          <SettingsFact label="Biometric placeholder" value={localData.preferences.biometricEnabled ? "Enabled locally" : "Disabled locally"} />
+          <DisclaimerBanner message="This profile is local mock data only. No production account, identity verification, police-service account, or backend authentication is connected." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "consent" ? (
+        <SettingsPanel icon="file-check-outline" title="Consent Status">
+          {Object.entries(localData.auth.consent).map(([key, accepted]) => (
+            <View key={key} style={styles.summaryCard}>
+              <View style={[styles.summaryIcon, { backgroundColor: accepted ? "rgba(127,255,212,0.14)" : "rgba(255,255,255,0.06)" }]}>
+                <MaterialCommunityIcons name={accepted ? "check-circle-outline" : "alert-circle-outline"} size={23} color={accepted ? colors.ptsdGreen : colors.warning} />
+              </View>
+              <View style={styles.profileCopy}>
+                <Text style={styles.summaryTitle}>{consentLabel(key)}</Text>
+                <Text style={styles.summaryMeta}>
+                  {accepted ? `Accepted${localData.auth.consentAcceptedAt?.[key as keyof typeof localData.auth.consent] ? ` - ${new Date(localData.auth.consentAcceptedAt[key as keyof typeof localData.auth.consent]!).toLocaleDateString()}` : ""}` : "Not accepted"}
+                </Text>
+              </View>
+              <Text style={[styles.statusBadge, { color: accepted ? colors.ptsdGreen : colors.warning }]}>
+                {accepted ? "Accepted" : "Review"}
+              </Text>
+            </View>
+          ))}
+          <View style={styles.actionRow}>
+            <SecondaryButton label="Review Terms" onPress={() => onSelectItem("terms")} />
+            <SecondaryButton label="Review Privacy" onPress={() => onSelectItem("privacy")} />
             <SecondaryButton
-              label={`${row.label} ${notificationPreference[row.key] ? "On" : "Off"}`}
-              onPress={() => toggleNotificationCategory(row.key)}
-            >
-              <MaterialCommunityIcons name={notificationPreference[row.key] ? "bell-check-outline" : "bell-off-outline"} size={20} color={colors.primaryBlue} />
+              label="Re-Accept Locally"
+              onPress={() => {
+                const acceptedAt = new Date().toISOString();
+                onUpdateLocalData((current) => ({
+                  ...current,
+                  auth: {
+                    ...current.auth,
+                    consent: {
+                      aiDisclaimer: true,
+                      privacy: true,
+                      prototypeDisclaimer: true,
+                      ptsdDisclaimer: true,
+                      terms: true,
+                      translationDisclaimer: true
+                    },
+                    consentAcceptedAt: {
+                      aiDisclaimer: acceptedAt,
+                      privacy: acceptedAt,
+                      prototypeDisclaimer: acceptedAt,
+                      ptsdDisclaimer: acceptedAt,
+                      terms: acceptedAt,
+                      translationDisclaimer: acceptedAt
+                    }
+                  },
+                  preferences: {
+                    ...current.preferences,
+                    consentStatus: {
+                      aiDisclaimer: true,
+                      privacy: true,
+                      prototypeDisclaimer: true,
+                      ptsdDisclaimer: true,
+                      terms: true,
+                      translationDisclaimer: true
+                    }
+                  },
+                  updatedAt: acceptedAt
+                }));
+              }}
+            />
+          </View>
+          <DisclaimerBanner message="Consent status is local prototype consent only. OPAi does not connect to backend consent records in this testing version." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeLegalDocument ? <LegalDocumentPanel document={activeLegalDocument} /> : null}
+
+      {activeSettingsView === "data" ? (
+        <SettingsPanel icon="database-outline" title="Data & Storage">
+          <SettingsFact label="Storage mode" value="Device-local prototype storage" />
+          <SettingsFact label="Last updated" value={new Date(localData.updatedAt).toLocaleString()} />
+          <SettingsFact label="Storage version" value={`v${localData.version}`} />
+          <View style={styles.stack}>
+            {storageCategoryRows.map((row) => (
+              <WorkflowSummaryCard
+                item={{
+                  accent: colors.primaryBlue,
+                  icon: row.icon,
+                  id: row.title,
+                  meta: "local",
+                  status: String(row.getCount(localData)),
+                  subtitle: "Stored locally for prototype review",
+                  title: row.title
+                }}
+                key={row.title}
+                onPress={() => onSelectItem(row.title)}
+                selected={selectedItem === row.title}
+              />
+            ))}
+          </View>
+          <View style={styles.actionRow}>
+            <SecondaryButton label="Reset Demo Data" onPress={confirmResetDemoData}>
+              <MaterialCommunityIcons name="backup-restore" size={20} color={colors.primaryBlue} />
             </SecondaryButton>
+            <SecondaryButton label="Clear Local Data" onPress={confirmClearLocalData}>
+              <MaterialCommunityIcons name="delete-outline" size={20} color={colors.danger} />
+            </SecondaryButton>
+          </View>
+          <DisclaimerBanner message="Clear Local Data removes local prototype data, signs out the mock user, and returns to the Welcome screen. Reset Demo Data restores sample data and keeps the current mock sign-in." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "preferences" ? (
+        <SettingsPanel icon="tune-variant" title="App Preferences">
+          <SettingsFact label="Language preference" value={localData.preferences.preferredLanguage} />
+          <SettingsFact label="Theme" value="Dark OPAi theme" />
+          <SettingsFact label="PTSD awareness accent" value="#7FFFD4" />
+          <View style={styles.actionRow}>
+            <SecondaryButton label={`Notifications ${localData.preferences.notificationsEnabled ? "On" : "Off"}`} onPress={() => togglePreference("notificationsEnabled")} />
+            <SecondaryButton label={`Biometrics ${localData.preferences.biometricEnabled ? "On" : "Off"}`} onPress={() => togglePreference("biometricEnabled")} />
+            <SecondaryButton label={`PTSD Reminders ${localData.preferences.ptsdRemindersEnabled ? "On" : "Off"}`} onPress={() => togglePreference("ptsdRemindersEnabled")} />
+          </View>
+          <DisclaimerBanner message="Preferences are local placeholders only. Production settings will require secure backend account and consent handling." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "notifications" ? (
+        <SettingsPanel icon="bell-ring-outline" title="Notifications">
+          <SettingsFact label="Permission status" value={notificationPreference.permissionStatus} />
+          <SettingsFact label="Scheduled locally" value={String(localData.scheduledReminders.length)} />
+          <DisclaimerBanner message="Notification reminders in this testing version are scheduled locally on this device. OPAi does not send remote push notifications in this prototype." />
+          <View style={styles.actionRow}>
+            <SecondaryButton label="Enable Notifications" onPress={handleRequestNotificationPermission} />
+            <SecondaryButton label="Maybe Later" onPress={handleMaybeLater} />
             <SecondaryButton
-              label={leadTimeLabels[notificationPreference.reminderLeadTimes[row.type]]}
-              onPress={() => cycleLeadTime(row.type)}
-            >
-              <MaterialCommunityIcons name="timer-outline" size={20} color={colors.ptsdGreen} />
-            </SecondaryButton>
+              label={`Enable All ${notificationPreference.enabled ? "On" : "Off"}`}
+              onPress={() =>
+                updateNotificationPreference((current) => ({
+                  ...current,
+                  enabled: !current.enabled,
+                  lastUpdatedAt: new Date().toISOString()
+                }))
+              }
+            />
           </View>
-        ))}
-        <DisclaimerBanner message="OPAi reminders are productivity aids only. Users remain responsible for verifying court dates, training schedules, qualification deadlines, and official obligations through authorized systems and supervisors." />
-      </View>
-      <View style={styles.localDataPanel}>
-        <View style={styles.localDataHeader}>
-          <MaterialCommunityIcons name="test-tube" size={24} color={colors.ptsdGreen} />
-          <View style={styles.profileCopy}>
-            <Text style={styles.profileName}>Notification Testing - Local Prototype</Text>
-            <Text style={styles.profileMeta}>
-              Scheduled locally: {localData.scheduledReminders.length}. No APNs server, FCM, backend push, or remote token is used.
-            </Text>
+          {notificationPreferenceRows.map((row) => (
+            <View key={row.key} style={styles.notificationPreferenceRow}>
+              <SecondaryButton label={`${row.label} ${notificationPreference[row.key] ? "On" : "Off"}`} onPress={() => toggleNotificationCategory(row.key)} />
+              <SecondaryButton label={leadTimeLabels[notificationPreference.reminderLeadTimes[row.type]]} onPress={() => cycleLeadTime(row.type)} />
+            </View>
+          ))}
+          <View style={styles.actionRow}>
+            <SecondaryButton label="Test in 10 sec" onPress={() => scheduleDemo("test")} />
+            <SecondaryButton label="Demo Court" onPress={() => scheduleDemo("court")} />
+            <SecondaryButton label="Demo Training" onPress={() => scheduleDemo("training")} />
+            <SecondaryButton label="Schedule Local Reminders" onPress={scheduleStoredReminders} />
+            <SecondaryButton label="Cancel All Local Notifications" onPress={confirmCancelAllNotifications} />
           </View>
-        </View>
-        <View style={styles.actionRow}>
-          <SecondaryButton label="Test in 10 sec" onPress={() => scheduleDemo("test")}>
-            <MaterialCommunityIcons name="timer-sand" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-          <SecondaryButton label="Demo Court" onPress={() => scheduleDemo("court")}>
-            <MaterialCommunityIcons name="scale-balance" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-        </View>
-        <SecondaryButton label="Demo Training" onPress={() => scheduleDemo("training")}>
-          <MaterialCommunityIcons name="school-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <SecondaryButton label="Schedule Local Reminders" onPress={scheduleStoredReminders}>
-          <MaterialCommunityIcons name="calendar-sync-outline" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
-        <SecondaryButton label="Cancel All Local Notifications" onPress={cancelAllNotifications}>
-          <MaterialCommunityIcons name="bell-cancel-outline" size={20} color={colors.danger} />
-        </SecondaryButton>
-      </View>
-      <View style={styles.stack}>
-        {settingsItems.map((item) => (
-          <ReminderCard
-            active={selectedItem === item.title}
-            key={item.title}
-            onPress={() => onSelectItem(item.title)}
-            {...item}
-          />
-        ))}
-      </View>
-      <SecondaryButton label="Mock Sign Out" onPress={onSignOut}>
+          <DisclaimerBanner message={courtTrainingDisclaimer} />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "support" ? (
+        <SettingsPanel icon="lifebuoy" title="Support">
+          <SettingsFact label="Support" value="support@opaiapp.com" />
+          <SettingsFact label="Privacy" value="privacy@opaiapp.com" />
+          <SettingsFact label="Security" value="security@opaiapp.com" />
+          <SettingsFact label="Legal" value="legal@opaiapp.com" />
+          <SettingsFact label="Website" value="https://opaiapp.com" />
+          <SettingsFact label="Contact URL" value="https://opaiapp.com/contact" />
+          <SettingsFact label="Support URL" value="https://opaiapp.com/support pending if not live" />
+          <SettingsFact label="App status" value="Testing / Pre-Launch" />
+          <SettingsFact label="Version" value="1.0 local prototype" />
+          <SettingsFact label="Build" value="Sprint 014 placeholder" />
+          <DisclaimerBanner message="No live email sending or support ticket submission is connected in this prototype." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "about" ? (
+        <SettingsPanel icon="information-outline" title="About OPAi">
+          <Text style={styles.profileMeta}>
+            OPAi Police is an AI assistant built for Canadian policing. This iOS-first testing version supports productivity,
+            organization, shift readiness, incident drafting, translation, court/training reminders, notes, file metadata
+            placeholders, and PTSD awareness.
+          </Text>
+          <SettingsFact label="Status" value="Testing / Pre-Launch" />
+          <SettingsFact label="Website" value="https://opaiapp.com" />
+          <DisclaimerBanner message="OPAi Police is not official police software and is not affiliated with government or police services unless explicitly authorized in future agreements." />
+          <DisclaimerBanner message={ptsdDisclaimer} />
+        </SettingsPanel>
+      ) : null}
+
+      <SecondaryButton label="Mock Sign Out" onPress={confirmSignOut}>
         <Ionicons name="log-out-outline" size={20} color={colors.primaryBlue} />
       </SecondaryButton>
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
     </ScreenFrame>
+  );
+}
+
+function consentLabel(key: string) {
+  const labels: Record<string, string> = {
+    aiDisclaimer: "AI Disclaimer",
+    privacy: "Privacy Policy",
+    prototypeDisclaimer: "Prototype / Testing Disclaimer",
+    ptsdDisclaimer: "PTSD Awareness Disclaimer",
+    terms: "Terms of Use",
+    translationDisclaimer: "Translation Disclaimer"
+  };
+
+  return labels[key] ?? key;
+}
+
+function SettingsMenu({
+  onSelectItem,
+  selectedItem
+}: {
+  onSelectItem: (label: string) => void;
+  selectedItem: string;
+}) {
+  return (
+    <View style={styles.stack}>
+      {settingsMenuSections.map((section) => (
+        <View key={section.title} style={styles.localDataPanel}>
+          <View style={styles.localDataHeader}>
+            <MaterialCommunityIcons name="view-list-outline" size={23} color={colors.primaryBlue} />
+            <Text style={styles.profileName}>{section.title}</Text>
+          </View>
+          <View style={styles.stack}>
+            {section.items.map((item) => (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected: selectedItem === item.id || selectedItem === item.title }}
+                key={`${section.title}-${item.id}-${item.title}`}
+                onPress={() => onSelectItem(item.id)}
+                style={({ pressed }) => [
+                  styles.summaryCard,
+                  selectedItem === item.id || selectedItem === item.title ? styles.workflowCardActive : null,
+                  pressed ? styles.pressed : null
+                ]}
+              >
+                <View style={[styles.summaryIcon, { backgroundColor: "rgba(10,132,255,0.12)" }]}>
+                  <MaterialCommunityIcons name={item.icon} size={23} color={colors.primaryBlue} />
+                </View>
+                <View style={styles.profileCopy}>
+                  <Text numberOfLines={1} style={styles.summaryTitle}>{item.title}</Text>
+                  <Text numberOfLines={2} style={styles.summaryMeta}>{item.subtitle}</Text>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={23} color={colors.textMuted} />
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function SettingsPanel({ children, icon, title }: { children: ReactNode; icon: MciIcon; title: string }) {
+  return (
+    <View style={styles.localDataPanel}>
+      <View style={styles.localDataHeader}>
+        <MaterialCommunityIcons name={icon} size={24} color={colors.ptsdGreen} />
+        <Text style={styles.profileName}>{title}</Text>
+      </View>
+      {children}
+    </View>
+  );
+}
+
+function SettingsFact({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.selectionBanner}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text numberOfLines={2} style={styles.selectionText}>{value}</Text>
+    </View>
+  );
+}
+
+function LegalDocumentPanel({ document }: { document: LegalDocument }) {
+  return (
+    <SettingsPanel icon={document.icon} title={document.title}>
+      <Text style={styles.profileMeta}>{document.subtitle}</Text>
+      <View style={styles.stack}>
+        {document.body.map((paragraph) => (
+          <View key={paragraph} style={styles.reviewPanel}>
+            <Text style={styles.profileMeta}>{paragraph}</Text>
+          </View>
+        ))}
+      </View>
+      {document.productionUrl ? (
+        <SettingsFact label="Future production URL" value={document.productionUrl} />
+      ) : null}
+      <DisclaimerBanner message="This is local static legal text for the testing/pre-launch prototype. Final production legal text and URLs must be verified before App Store submission." />
+    </SettingsPanel>
   );
 }
 

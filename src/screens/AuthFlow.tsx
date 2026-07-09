@@ -427,7 +427,7 @@ function ConsentScreen({
         <Ionicons name="checkmark-done-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       {!allConsentAccepted ? (
-        <Text style={styles.helperText}>All four consent items are required for mock app access.</Text>
+        <Text style={styles.helperText}>All consent items are required for mock app access.</Text>
       ) : null}
       <TextButton label="Back" onPress={onBack} />
     </View>

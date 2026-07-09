@@ -121,6 +121,13 @@ files and does not connect to backend APIs, OpenAI, databases, cloud storage, po
 systems, payments, subscriptions, analytics, advertising, camera, microphone, photo library, or
 document picker APIs.
 
+Sprint 014 polishes Settings, Privacy, Legal, Consent, Support, About, Data & Storage, and App Store
+review readiness. It adds local static Privacy Policy, Terms of Use, disclaimer, consent status,
+support/contact, and storage status screens. It remains a local/offline prototype and does not add
+backend APIs, OpenAI, production databases, cloud sync, real authentication providers, real file
+upload, payments, subscriptions, analytics, advertising, police-service integrations, production
+secrets, Google Play release workflow, or Android production workflow.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -242,6 +249,18 @@ Sprint 013 adds the structured local/offline Notes & Files workspace. See:
 - `docs/file-metadata-limitations.md`
 - `docs/future-secure-file-storage-plan.md`
 - `docs/notes-files-privacy-limitations.md`
+
+## Sprint 014 Settings, Privacy, Legal, and Consent
+
+Sprint 014 adds the local Settings, Privacy, Legal, Consent, Support, About, Data & Storage, and App
+Store review readiness polish. See:
+
+- `docs/sprint-014-settings-privacy-legal-consent.md`
+- `docs/app-store-review-readiness.md`
+- `docs/privacy-policy-draft.md`
+- `docs/terms-of-use-draft.md`
+- `docs/legal-disclaimers.md`
+- `docs/support-contact-info.md`
 
 ## Product Principles
 

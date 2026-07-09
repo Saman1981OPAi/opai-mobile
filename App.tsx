@@ -54,6 +54,16 @@ export default function App() {
   };
 
   const handleAuthenticated = (nextProfile: MockUserProfile) => {
+    const acceptedAt = new Date().toISOString();
+    const acceptedConsent = {
+      aiDisclaimer: true,
+      privacy: true,
+      prototypeDisclaimer: true,
+      ptsdDisclaimer: true,
+      terms: true,
+      translationDisclaimer: true
+    };
+
     setProfile(nextProfile);
     setAuthStatus("signedIn");
     setActiveModule("dashboard");
@@ -62,13 +72,16 @@ export default function App() {
       auth: {
         ...current.auth,
         biometricPreference: nextProfile.biometricEnabled ? "deviceBiometrics" : current.auth.biometricPreference,
-        consent: {
-          aiDisclaimer: true,
-          privacy: true,
-          ptsdDisclaimer: true,
-          terms: true
+        consent: acceptedConsent,
+        consentAcceptedAt: {
+          aiDisclaimer: acceptedAt,
+          privacy: acceptedAt,
+          prototypeDisclaimer: acceptedAt,
+          ptsdDisclaimer: acceptedAt,
+          terms: acceptedAt,
+          translationDisclaimer: acceptedAt
         },
-        lastSignedInAt: new Date().toISOString(),
+        lastSignedInAt: acceptedAt,
         notificationPreferences: nextProfile.notificationPreferences,
         profile: nextProfile,
         status: "signedIn"
@@ -76,12 +89,7 @@ export default function App() {
       preferences: {
         ...current.preferences,
         biometricEnabled: nextProfile.biometricEnabled,
-        consentStatus: {
-          aiDisclaimer: true,
-          privacy: true,
-          ptsdDisclaimer: true,
-          terms: true
-        },
+        consentStatus: acceptedConsent,
         preferredLanguage: nextProfile.preferredLanguage
       },
       updatedAt: new Date().toISOString()
@@ -117,6 +125,7 @@ export default function App() {
     const seeded = createDefaultLocalAppData({
       biometricPreference: "disabled",
       consent: emptyConsentState,
+      consentAcceptedAt: {},
       lastSignedInAt: null,
       notificationPreferences: {
         courtReminders: true,
