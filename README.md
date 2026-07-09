@@ -128,6 +128,14 @@ backend APIs, OpenAI, production databases, cloud sync, real authentication prov
 upload, payments, subscriptions, analytics, advertising, police-service integrations, production
 secrets, Google Play release workflow, or Android production workflow.
 
+Sprint 015 adds an iOS-first UI/UX polish and accessibility pass. It improves accessible labels,
+button loading/disabled states, auth validation errors, local destructive-action confirmations,
+empty states, disclaimer readability, App Store screenshot readiness documentation, and brand
+compliance documentation. It remains a local/offline prototype and does not add backend APIs,
+OpenAI, production databases, cloud sync, real authentication providers, real file upload, payments,
+subscriptions, analytics, advertising, police-service integrations, production secrets, Google Play
+release workflow, or Android production workflow.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -261,6 +269,16 @@ Store review readiness polish. See:
 - `docs/terms-of-use-draft.md`
 - `docs/legal-disclaimers.md`
 - `docs/support-contact-info.md`
+
+## Sprint 015 iOS UI UX Polish and Accessibility
+
+Sprint 015 improves iOS-first review polish and accessibility. See:
+
+- `docs/sprint-015-ios-ui-ux-accessibility-polish.md`
+- `docs/accessibility-audit.md`
+- `docs/app-store-screenshot-readiness.md`
+- `docs/ui-polish-notes.md`
+- `docs/brand-compliance-check.md`
 
 ## Product Principles
 

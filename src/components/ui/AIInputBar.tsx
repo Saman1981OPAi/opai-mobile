@@ -10,7 +10,8 @@ type AIInputBarProps = {
 export function AIInputBar({ onPress, placeholder = "Ask OPAi..." }: AIInputBarProps) {
   return (
     <Pressable
-      accessibilityLabel="Static AI input preview"
+      accessibilityHint="Opens the local mock OPAi Assistant prompt area"
+      accessibilityLabel={placeholder}
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [styles.wrap, pressed ? styles.pressed : null]}
@@ -18,7 +19,7 @@ export function AIInputBar({ onPress, placeholder = "Ask OPAi..." }: AIInputBarP
       <View style={styles.spark}>
         <MaterialCommunityIcons name="auto-fix" size={22} color={colors.accentBlue} />
       </View>
-      <Text numberOfLines={1} style={styles.placeholder}>{placeholder}</Text>
+      <Text maxFontSizeMultiplier={1.25} numberOfLines={1} style={styles.placeholder}>{placeholder}</Text>
       <View style={styles.send}>
         <Ionicons name="arrow-up" size={22} color={colors.primaryBlue} />
       </View>

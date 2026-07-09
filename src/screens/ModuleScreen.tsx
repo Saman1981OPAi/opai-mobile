@@ -3042,6 +3042,13 @@ function NotesFilesScreen({
   const linkedTypeLabel = (type: LocalLinkedItemType | "All") =>
     type === "All" ? "All links" : type === "followUp" ? "Follow-up" : type === "ai" ? "AI" : type;
 
+  const confirmLocalAction = (title: string, message: string, actionLabel: string, action: () => void) => {
+    Alert.alert(title, message, [
+      { text: "Cancel", style: "cancel" },
+      { text: actionLabel, style: "destructive", onPress: action }
+    ]);
+  };
+
   return (
     <ScreenFrame activeModule="notes" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Notes & Files" />
@@ -3182,28 +3189,42 @@ function NotesFilesScreen({
 
           <SectionHeader icon="note-text-outline" title="Local Notes" />
           <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
-            {filteredNotes.map((note) => {
-              const linkedCount = notesService.getLinkedSummaries(localData, note).length;
+            {filteredNotes.length === 0 ? (
+              <EmptyState
+                actionLabel="New Note"
+                icon="note-text-outline"
+                message="Create a local prototype note or adjust filters. Do not enter real police records or sensitive information."
+                onAction={startNewNote}
+                title="No notes found"
+              />
+            ) : (
+              filteredNotes.map((note) => {
+                const linkedCount = notesService.getLinkedSummaries(localData, note).length;
 
-              return (
-                <WorkflowItemCard
-                  accent={note.pinned ? colors.ptsdGreen : colors.primaryBlue}
-                  active={selectedItem === note.title}
-                  icon={note.pinned ? "pin" : "note-text-outline"}
-                  key={note.id}
-                  meta={`${note.category} - ${notesService.getFolderName(localData, note.folderId)}`}
-                  onDelete={() => onUpdateLocalData((current) => notesService.deleteNote(current, note.id))}
-                  onEdit={() => editNote(note)}
-                  onPress={() => onSelectItem(note.title)}
-                  onPrimary={() => onUpdateLocalData((current) => notesService.togglePinned(current, note.id))}
-                  primaryLabel={note.pinned ? "Unpin" : "Pin"}
-                  reminderEnabled={linkedCount > 0}
-                  status={note.archived ? "Archived" : linkedCount ? `${linkedCount} links` : "Local"}
-                  subtitle={note.body}
-                  title={note.title}
-                />
-              );
-            })}
+                return (
+                  <WorkflowItemCard
+                    accent={note.pinned ? colors.ptsdGreen : colors.primaryBlue}
+                    active={selectedItem === note.title}
+                    icon={note.pinned ? "pin" : "note-text-outline"}
+                    key={note.id}
+                    meta={`${note.category} - ${notesService.getFolderName(localData, note.folderId)}`}
+                    onDelete={() =>
+                      confirmLocalAction("Delete Note", "Remove this local prototype note from the device?", "Delete", () =>
+                        onUpdateLocalData((current) => notesService.deleteNote(current, note.id))
+                      )
+                    }
+                    onEdit={() => editNote(note)}
+                    onPress={() => onSelectItem(note.title)}
+                    onPrimary={() => onUpdateLocalData((current) => notesService.togglePinned(current, note.id))}
+                    primaryLabel={note.pinned ? "Unpin" : "Pin"}
+                    reminderEnabled={linkedCount > 0}
+                    status={note.archived ? "Archived" : linkedCount ? `${linkedCount} links` : "Local"}
+                    subtitle={note.body}
+                    title={note.title}
+                  />
+                );
+              })
+            )}
           </View>
         </>
       ) : null}
@@ -3227,28 +3248,48 @@ function NotesFilesScreen({
 
           <SectionHeader icon="folder-multiple-outline" title="Folders" />
           <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
-            {filteredFolders.map((folder) => {
-              const noteCount = localData.structuredNotes.filter((note) => note.folderId === folder.id).length;
+            {filteredFolders.length === 0 ? (
+              <EmptyState
+                actionLabel="New Folder"
+                icon="folder-outline"
+                message="Create a local prototype folder or adjust filters. Folders stay on this device only."
+                onAction={startNewFolder}
+                title="No folders found"
+              />
+            ) : (
+              filteredFolders.map((folder) => {
+                const noteCount = localData.structuredNotes.filter((note) => note.folderId === folder.id).length;
 
-              return (
-                <WorkflowItemCard
-                  accent={folder.color ?? colors.ptsdGreen}
-                  active={selectedItem === folder.name}
-                  icon={folder.icon ?? "folder-outline"}
-                  key={folder.id}
-                  meta={`${noteCount} local notes`}
-                  onDelete={() => onUpdateLocalData((current) => notesService.deleteFolder(current, folder.id))}
-                  onEdit={() => editFolder(folder)}
-                  onPress={() => onSelectItem(folder.name)}
-                  onPrimary={() => onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))}
-                  primaryLabel={folder.archived ? "Restore" : "Archive"}
-                  reminderEnabled={!folder.archived}
-                  status={folder.archived ? "Archived" : "Local"}
-                  subtitle={folder.description ?? "Local folder"}
-                  title={folder.name}
-                />
-              );
-            })}
+                return (
+                  <WorkflowItemCard
+                    accent={folder.color ?? colors.ptsdGreen}
+                    active={selectedItem === folder.name}
+                    icon={folder.icon ?? "folder-outline"}
+                    key={folder.id}
+                    meta={`${noteCount} local notes`}
+                    onDelete={() =>
+                      confirmLocalAction("Delete Folder", "Remove this local prototype folder and its local references?", "Delete", () =>
+                        onUpdateLocalData((current) => notesService.deleteFolder(current, folder.id))
+                      )
+                    }
+                    onEdit={() => editFolder(folder)}
+                    onPress={() => onSelectItem(folder.name)}
+                    onPrimary={() =>
+                      folder.archived
+                        ? onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))
+                        : confirmLocalAction("Archive Folder", "Archive this local prototype folder?", "Archive", () =>
+                            onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))
+                          )
+                    }
+                    primaryLabel={folder.archived ? "Restore" : "Archive"}
+                    reminderEnabled={!folder.archived}
+                    status={folder.archived ? "Archived" : "Local"}
+                    subtitle={folder.description ?? "Local folder"}
+                    title={folder.name}
+                  />
+                );
+              })
+            )}
           </View>
         </>
       ) : null}
@@ -3286,24 +3327,38 @@ function NotesFilesScreen({
 
           <SectionHeader icon="file-cabinet" title="File Metadata Placeholders" />
           <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
-            {filteredMetadata.map((item) => (
-              <WorkflowItemCard
-                accent={colors.ptsdGreen}
-                active={selectedItem === item.fileName}
+            {filteredMetadata.length === 0 ? (
+              <EmptyState
+                actionLabel="New Metadata"
                 icon="file-document-outline"
-                key={item.id}
-                meta={`${item.category} - ${item.fileType}`}
-                onDelete={() => onUpdateLocalData((current) => notesService.deleteFileMetadata(current, item.id))}
-                onEdit={() => editMetadata(item)}
-                onPress={() => onSelectItem(item.fileName)}
-                onPrimary={() => editMetadata(item)}
-                primaryLabel="Edit"
-                reminderEnabled={item.metadataOnly}
-                status="Metadata only"
-                subtitle={item.description}
-                title={item.fileName}
+                message="Add a local metadata placeholder. This prototype does not upload, open, or process real files."
+                onAction={startNewMetadata}
+                title="No file metadata"
               />
-            ))}
+            ) : (
+              filteredMetadata.map((item) => (
+                <WorkflowItemCard
+                  accent={colors.ptsdGreen}
+                  active={selectedItem === item.fileName}
+                  icon="file-document-outline"
+                  key={item.id}
+                  meta={`${item.category} - ${item.fileType}`}
+                  onDelete={() =>
+                    confirmLocalAction("Delete Metadata", "Remove this local file metadata placeholder?", "Delete", () =>
+                      onUpdateLocalData((current) => notesService.deleteFileMetadata(current, item.id))
+                    )
+                  }
+                  onEdit={() => editMetadata(item)}
+                  onPress={() => onSelectItem(item.fileName)}
+                  onPrimary={() => editMetadata(item)}
+                  primaryLabel="Edit"
+                  reminderEnabled={item.metadataOnly}
+                  status="Metadata only"
+                  subtitle={item.description}
+                  title={item.fileName}
+                />
+              ))
+            )}
           </View>
         </>
       ) : null}
@@ -3926,6 +3981,7 @@ function SettingsMenu({
           <View style={styles.stack}>
             {section.items.map((item) => (
               <Pressable
+                accessibilityLabel={`${item.title}. ${item.subtitle}`}
                 accessibilityRole="button"
                 accessibilityState={{ selected: selectedItem === item.id || selectedItem === item.title }}
                 key={`${section.title}-${item.id}-${item.title}`}
@@ -4043,6 +4099,7 @@ function SecondaryModuleMenu({
       <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
         {secondaryModules.map((module) => (
           <Pressable
+            accessibilityLabel={`Open ${module.title}`}
             accessibilityRole="button"
             accessibilityState={{ selected: activeModule === module.id }}
             key={module.id}
@@ -4091,6 +4148,7 @@ function WorkflowSummaryCard({
 }) {
   return (
     <Pressable
+      accessibilityLabel={`${item.title}. ${item.subtitle}. ${item.status}`}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
@@ -4185,6 +4243,7 @@ function WorkflowItemCard({
 }) {
   return (
     <Pressable
+      accessibilityLabel={`${title}. ${subtitle}. ${status}`}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       onPress={onPress}
@@ -4212,14 +4271,14 @@ function WorkflowItemCard({
           <Text style={styles.reminderStatusText}>{reminderEnabled ? "Reminder on" : "Reminder off"}</Text>
         </View>
         <View style={styles.workflowActions}>
-          <Pressable accessibilityRole="button" onPress={onEdit} style={styles.iconAction}>
+          <Pressable accessibilityLabel={`Edit ${title}`} accessibilityRole="button" onPress={onEdit} style={styles.iconAction}>
             <MaterialCommunityIcons name="pencil-outline" size={18} color={colors.primaryBlue} />
           </Pressable>
-          <Pressable accessibilityRole="button" onPress={onPrimary} style={styles.iconAction}>
+          <Pressable accessibilityLabel={`${primaryLabel} ${title}`} accessibilityRole="button" onPress={onPrimary} style={styles.iconAction}>
             <MaterialCommunityIcons name="check-circle-outline" size={18} color={colors.ptsdGreen} />
             <Text style={styles.iconActionLabel}>{primaryLabel}</Text>
           </Pressable>
-          <Pressable accessibilityRole="button" onPress={onDelete} style={styles.iconAction}>
+          <Pressable accessibilityLabel={`Delete ${title}`} accessibilityRole="button" onPress={onDelete} style={styles.iconAction}>
             <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
           </Pressable>
         </View>
@@ -4472,7 +4531,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: spacing.xs,
     justifyContent: "center",
-    minHeight: 34,
+    minHeight: 44,
+    minWidth: 44,
     paddingHorizontal: spacing.sm
   },
   iconActionLabel: {
