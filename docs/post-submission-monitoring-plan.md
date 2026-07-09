@@ -25,4 +25,3 @@
 Capture build number, device, iOS version, module, steps, expected result, actual result, severity,
 screenshots when safe, owner, and disposition. Never include real police, personal, evidentiary, or
 confidential data.
-

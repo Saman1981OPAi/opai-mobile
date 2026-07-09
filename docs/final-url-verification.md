@@ -22,4 +22,3 @@ does not perform runtime URL or network checks.
 
 The shorter aliases requested in the roadmap must not be entered in App Store Connect until they
 return a public success response. Re-run this check immediately before submission.
-

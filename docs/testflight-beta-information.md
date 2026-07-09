@@ -34,4 +34,3 @@ personal information, real evidence, real statements, or official documents.
 - No external calendar synchronization
 - No payments or subscriptions
 - Android release is paused pending the D-U-N-S Number for Ebrahimi Holdings
-

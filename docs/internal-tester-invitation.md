@@ -24,4 +24,3 @@ Use TestFlight feedback when available, or email support@opaiapp.com. Include:
 - Screenshot or screen recording when safe and useful
 
 Do not include real operational, personal, evidentiary, or confidential information in feedback.
-

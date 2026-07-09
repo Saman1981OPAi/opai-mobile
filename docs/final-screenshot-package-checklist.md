@@ -40,4 +40,3 @@ accepted dimensions before upload.
 - [ ] AI, legal, medical, and translation capabilities are not overstated
 - [ ] Testing/pre-launch status remains clear where appropriate
 - [ ] iPhone assets receive first priority; Android store assets remain paused
-

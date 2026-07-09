@@ -14,4 +14,3 @@ This sprint documents the strategy only. It does not create a release branch or 
 
 Android support remains on the shared codebase. Android production branching and Google Play work
 remain paused pending the D-U-N-S Number for Ebrahimi Holdings.
-

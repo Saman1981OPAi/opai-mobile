@@ -27,4 +27,3 @@ government agency unless expressly authorized in the future.
 6. Test local notification permission and a demo notification if the device allows it.
 
 No reviewer credentials are required because the authentication flow is a local mock.
-

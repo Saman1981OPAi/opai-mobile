@@ -47,4 +47,3 @@ on-device-only processing.
 - [ ] Confirm local-only fields are handled according to Apple's current definition of collection.
 - [ ] Confirm diagnostics behavior for the production EAS build.
 - [ ] Have the privacy owner approve the final App Store Connect answers.
-
