@@ -16,16 +16,33 @@ import { secondaryModules, settingsItems } from "@/data/uiMockups";
 import { aiService } from "@/services/aiService";
 import { dashboardService } from "@/services/dashboardService";
 import { incidentService } from "@/services/incidentService";
+import {
+  attachmentTypes,
+  followUpTaskOptions,
+  incidentPriorities,
+  incidentStatuses,
+  incidentTypes,
+  incidentWorkflowService,
+  occurrenceCategories,
+  personRoles,
+  type IncidentDraftFilter
+} from "@/services/incidentWorkflowService";
 import { notesService } from "@/services/notesService";
 import { notificationService } from "@/services/notificationService";
 import { notificationScheduler } from "@/services/notificationScheduler";
-import type { LocalAppData } from "@/storage/storageTypes";
+import type { LocalAppData, LocalIncidentDraft } from "@/storage/storageTypes";
 import { translationService } from "@/services/translationService";
 import { workflowService } from "@/services/workflowService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
 import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
 import type { NotificationCategory, NotificationLeadTime, NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type {
+  IncidentAttachmentMetadata,
+  IncidentDraftStatus,
+  IncidentPerson,
+  IncidentWitness
+} from "@/types/incident";
 import type {
   CalendarWorkflowEvent,
   CalendarWorkflowStatus,
@@ -237,8 +254,11 @@ export function ModuleScreen({
       <NewIncidentScreen
         isTablet={isTablet}
         localData={localData}
+        onCancelReminder={cancelRelatedWorkflowReminder}
+        onScheduleReminder={upsertWorkflowReminder}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
+        onUpdateLocalData={onUpdateLocalData}
         selectedItem={selectedItem}
       />
     );
@@ -522,70 +542,542 @@ function StartShiftScreen({
   );
 }
 
+const incidentStepTitles = ["Basics", "Persons", "Witnesses", "Notes", "Attachments", "Review"] as const;
+
+function createIncidentId(prefix: string) {
+  return `${prefix}-${Date.now()}`;
+}
+
+function createBlankIncidentPerson(): IncidentPerson {
+  return {
+    email: "",
+    id: createIncidentId("incident-person"),
+    name: "",
+    notes: "",
+    phone: "",
+    role: "Other"
+  };
+}
+
+function createBlankIncidentWitness(): IncidentWitness {
+  return {
+    contact: "",
+    followUpRequired: false,
+    id: createIncidentId("incident-witness"),
+    name: "",
+    statementSummary: ""
+  };
+}
+
+function createBlankIncidentAttachment(): IncidentAttachmentMetadata {
+  return {
+    addedAt: new Date().toISOString(),
+    attachmentType: "Document",
+    description: "",
+    fileName: "",
+    id: createIncidentId("incident-attachment"),
+    metadataOnly: true,
+    notes: ""
+  };
+}
+
+function createBlankIncidentDraft(): LocalIncidentDraft {
+  const now = new Date().toISOString();
+
+  return {
+    attachmentMetadata: [],
+    attachments: [],
+    createdAt: now,
+    date: workflowService.today(),
+    followUpRequired: false,
+    id: createIncidentId("incident-draft"),
+    incidentNotes: {
+      disclosureNotes: "",
+      followUpNotes: "",
+      narrativeDraft: "",
+      observations: "",
+      officerNotes: ""
+    },
+    incidentType: "Other",
+    involvedPersons: [],
+    location: "",
+    notes: "",
+    occurrenceCategory: "General",
+    personsInvolved: [],
+    priority: "Medium",
+    status: "draft",
+    time: "09:00",
+    updatedAt: now,
+    witnesses: [],
+    witnessDetails: []
+  };
+}
+
 function NewIncidentScreen({
   isTablet,
   localData,
+  onCancelReminder,
+  onScheduleReminder,
   onSelectItem,
   onSelectModule,
+  onUpdateLocalData,
   selectedItem
 }: {
   isTablet: boolean;
   localData: LocalAppData;
+  onCancelReminder: (relatedEntityId: string) => Promise<void>;
+  onScheduleReminder: (reminder: ScheduledReminder) => Promise<void>;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   selectedItem: string;
 }) {
-  const steps = incidentService.getWorkflowSteps();
-  const examples = incidentService.getExamples(localData);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [filter, setFilter] = useState<IncidentDraftFilter>("All");
+  const [search, setSearch] = useState("");
+  const [draft, setDraft] = useState<LocalIncidentDraft>(createBlankIncidentDraft);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [followUpTitle, setFollowUpTitle] = useState<(typeof followUpTaskOptions)[number]>("Witness statement");
+  const [followUpDate, setFollowUpDate] = useState(workflowService.today());
+  const [calendarDate, setCalendarDate] = useState(workflowService.today());
+  const incidentDrafts = incidentWorkflowService.filterDrafts(localData.incidentDrafts, filter, search);
+  const completeness = incidentWorkflowService.calculateCompleteness(draft);
+
+  const resetDraft = () => {
+    setDraft(createBlankIncidentDraft());
+    setEditingId(null);
+    setStepIndex(0);
+  };
+
+  const syncDerivedDraftFields = (item: LocalIncidentDraft): LocalIncidentDraft => ({
+    ...item,
+    followUpRequired: item.followUpRequired || item.witnessDetails.some((witness) => witness.followUpRequired),
+    involvedPersons: item.personsInvolved.map((person) => person.name).filter(Boolean),
+    notes: item.incidentNotes.officerNotes || item.incidentNotes.narrativeDraft,
+    status:
+      item.status === "reviewed" || item.status === "archived"
+        ? item.status
+        : item.followUpRequired || item.witnessDetails.some((witness) => witness.followUpRequired)
+          ? "followUpRequired"
+          : item.status,
+    witnesses: item.witnessDetails.map((witness) => witness.name).filter(Boolean)
+  });
+
+  const saveIncidentDraft = (statusOverride?: IncidentDraftStatus) => {
+    const now = new Date().toISOString();
+    const next = syncDerivedDraftFields({
+      ...draft,
+      id: editingId ?? draft.id,
+      createdAt: editingId ? draft.createdAt : now,
+      incidentType: draft.incidentType.trim() || "Other",
+      location: draft.location.trim(),
+      occurrenceCategory: draft.occurrenceCategory.trim() || "General",
+      status: statusOverride ?? draft.status,
+      updatedAt: now
+    });
+
+    onUpdateLocalData((current) => ({
+      ...current,
+      incidentDrafts: [
+        next,
+        ...current.incidentDrafts.filter((item) => item.id !== next.id)
+      ],
+      updatedAt: now
+    }));
+    setDraft(next);
+    setEditingId(next.id);
+    onSelectItem(next.incidentType);
+    Alert.alert("Draft Saved", incidentWorkflowService.createReviewSummary(next));
+  };
+
+  const deleteIncidentDraft = (item: LocalIncidentDraft) => {
+    Alert.alert("Delete Draft", "Remove this local prototype incident draft?", [
+      { style: "cancel", text: "Cancel" },
+      {
+        onPress: () => {
+          onUpdateLocalData((current) => ({
+            ...current,
+            incidentDrafts: current.incidentDrafts.filter((draftItem) => draftItem.id !== item.id),
+            updatedAt: new Date().toISOString()
+          }));
+          if (editingId === item.id) {
+            resetDraft();
+          }
+        },
+        style: "destructive",
+        text: "Delete"
+      }
+    ]);
+  };
+
+  const archiveIncidentDraft = (item: LocalIncidentDraft) => {
+    const next = { ...item, status: "archived" as const, updatedAt: new Date().toISOString() };
+    onUpdateLocalData((current) => ({
+      ...current,
+      incidentDrafts: current.incidentDrafts.map((draftItem) => (draftItem.id === item.id ? next : draftItem)),
+      updatedAt: next.updatedAt
+    }));
+    if (editingId === item.id) {
+      setDraft(next);
+    }
+  };
+
+  const editIncidentDraft = (item: LocalIncidentDraft) => {
+    setDraft(item);
+    setEditingId(item.id);
+    setStepIndex(0);
+    onSelectItem(item.incidentType);
+  };
+
+  const addPerson = () => setDraft((item) => ({ ...item, personsInvolved: [...item.personsInvolved, createBlankIncidentPerson()] }));
+  const addWitness = () => setDraft((item) => ({ ...item, witnessDetails: [...item.witnessDetails, createBlankIncidentWitness()] }));
+  const addAttachment = () => setDraft((item) => ({ ...item, attachmentMetadata: [...item.attachmentMetadata, createBlankIncidentAttachment()] }));
+
+  const createIncidentFollowUp = async () => {
+    const now = new Date().toISOString();
+    const savedDraft = syncDerivedDraftFields({ ...draft, followUpRequired: true, status: "followUpRequired", updatedAt: now });
+    const followUp: FollowUpWorkflowReminder = {
+      createdAt: now,
+      dueDate: followUpDate,
+      id: createIncidentId("incident-follow-up"),
+      notes: `Incident follow-up: ${savedDraft.incidentType}. ${savedDraft.incidentNotes.followUpNotes || "Local prototype reminder only."}`,
+      priority: savedDraft.priority === "Urgent" || savedDraft.priority === "High" ? "high" : savedDraft.priority === "Medium" ? "medium" : "low",
+      relatedIncidentId: savedDraft.id,
+      reminderEnabled: true,
+      reminderLeadTime: "1Day",
+      status: "open",
+      title: followUpTitle,
+      updatedAt: now
+    };
+
+    onUpdateLocalData((current) => ({
+      ...current,
+      followUpWorkflowReminders: workflowService.sortByDateTime([
+        followUp,
+        ...current.followUpWorkflowReminders
+      ]),
+      incidentDrafts: [
+        savedDraft,
+        ...current.incidentDrafts.filter((item) => item.id !== savedDraft.id)
+      ],
+      updatedAt: now
+    }));
+    setDraft(savedDraft);
+    setEditingId(savedDraft.id);
+    await onScheduleReminder(workflowService.createFollowUpReminder(followUp));
+    Alert.alert("Follow-Up Created", "A local follow-up reminder was created from this prototype incident draft.");
+  };
+
+  const createIncidentCalendarItem = async () => {
+    const now = new Date().toISOString();
+    const event: CalendarWorkflowEvent = {
+      createdAt: now,
+      date: calendarDate,
+      id: createIncidentId("incident-calendar"),
+      location: draft.location,
+      notes: `Incident-related calendar placeholder for ${draft.incidentType}. No external calendar sync.`,
+      reminderEnabled: true,
+      reminderLeadTime: "1Day",
+      status: "upcoming",
+      time: draft.time || "09:00",
+      title: `${draft.incidentType} review`,
+      type: "Follow-up",
+      updatedAt: now
+    };
+
+    onUpdateLocalData((current) => ({
+      ...current,
+      calendarWorkflowEvents: workflowService.sortByDateTime([
+        event,
+        ...current.calendarWorkflowEvents
+      ]),
+      updatedAt: now
+    }));
+    await onScheduleReminder(workflowService.createCalendarReminder(event));
+    Alert.alert("Calendar Placeholder Added", "A local calendar reminder was added. No external calendar sync was used.");
+  };
+
+  const showAiPlaceholder = () => {
+    const preview = incidentWorkflowService.buildAiReadyPreview(draft);
+    Alert.alert("Prepare for AI Review", preview.warning);
+  };
 
   return (
     <ScreenFrame activeModule="incident" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="New Incident" />
       <View style={styles.hero}>
         <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>Capture key details.</Text>
-          <Text style={styles.heroSub}>Static report workflow preview.</Text>
+          <Text style={styles.heroTitle}>Structured draft.</Text>
+          <Text style={styles.heroSub}>Local incident workflow. No RMS sync.</Text>
         </View>
         <MaterialCommunityIcons name="file-plus-outline" size={48} color={colors.primaryBlue} />
       </View>
 
-      <SectionHeader icon="clipboard-text-outline" title="Report Sections" />
-      <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
-        {steps.map((step) => (
-          <FeatureCard
-            compact={isTablet}
-            icon={step.icon}
-            key={step.title}
-            onPress={() => onSelectItem(step.title)}
-            subtitle={step.subtitle}
-            title={step.title}
-          />
+      <SectionHeader icon="file-document-edit-outline" title="Incident Drafts" />
+      <WorkflowField label="Search drafts" value={search} onChangeText={setSearch} />
+      <View style={styles.filterRow}>
+        {(["All", "Draft", "Follow-up Required", "Reviewed", "Archived"] as IncidentDraftFilter[]).map((item) => (
+          <SecondaryButton key={item} label={item} onPress={() => setFilter(item)}>
+            <MaterialCommunityIcons name={filter === item ? "check-circle-outline" : "circle-outline"} size={18} color={colors.primaryBlue} />
+          </SecondaryButton>
+        ))}
+      </View>
+      <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
+        {incidentDrafts.map((item) => {
+          const itemCompleteness = incidentWorkflowService.calculateCompleteness(item);
+          return (
+            <WorkflowItemCard
+              accent={item.priority === "Urgent" ? colors.danger : item.priority === "High" ? colors.warning : colors.primaryBlue}
+              active={selectedItem === item.incidentType}
+              icon="file-document-edit-outline"
+              key={item.id}
+              meta={`${item.date} - ${item.time} - ${item.priority}`}
+              onDelete={() => deleteIncidentDraft(item)}
+              onEdit={() => editIncidentDraft(item)}
+              onPress={() => editIncidentDraft(item)}
+              onPrimary={() => archiveIncidentDraft(item)}
+              primaryLabel={item.status === "archived" ? "Archived" : "Archive"}
+              reminderEnabled={item.followUpRequired}
+              status={`${incidentWorkflowService.statusLabel(item.status)} ${itemCompleteness.percent}%`}
+              subtitle={item.location || "No location added"}
+              title={item.incidentType}
+            />
+          );
+        })}
+      </View>
+      {incidentDrafts.length === 0 ? (
+        <EmptyState icon="file-document-outline" title="No drafts" message="Create or reset local prototype incident drafts." />
+      ) : null}
+
+      <SectionHeader icon="progress-check" title={`Step ${stepIndex + 1} of ${incidentStepTitles.length}: ${incidentStepTitles[stepIndex]}`} />
+      <View style={styles.stepperRow}>
+        {incidentStepTitles.map((step, index) => (
+          <Pressable
+            accessibilityRole="button"
+            key={step}
+            onPress={() => setStepIndex(index)}
+            style={[styles.stepPill, stepIndex === index ? styles.stepPillActive : null]}
+          >
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.stepPillText}>{index + 1}. {step}</Text>
+          </Pressable>
         ))}
       </View>
 
-      <SectionHeader icon="file-document-outline" title="Examples" />
-      <View style={styles.stack}>
-        {examples.map((item) => (
-          <ReminderCard
-            active={selectedItem === item.title}
-            key={item.title}
-            onPress={() => onSelectItem(item.title)}
-            {...item}
-          />
-        ))}
+      {stepIndex === 0 ? (
+        <WorkflowFormPanel icon="clipboard-text-outline" title="Incident Basics">
+          <View style={styles.filterRow}>
+            <SecondaryButton label={draft.incidentType} onPress={() => setDraft((item) => ({ ...item, incidentType: cycleOption([...incidentTypes], item.incidentType as (typeof incidentTypes)[number]) }))}>
+              <MaterialCommunityIcons name="tag-outline" size={18} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label={draft.occurrenceCategory} onPress={() => setDraft((item) => ({ ...item, occurrenceCategory: cycleOption([...occurrenceCategories], item.occurrenceCategory as (typeof occurrenceCategories)[number]) }))}>
+              <MaterialCommunityIcons name="shape-outline" size={18} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label={`Priority: ${draft.priority}`} onPress={() => setDraft((item) => ({ ...item, priority: cycleOption(incidentPriorities, item.priority) }))}>
+              <MaterialCommunityIcons name="flag-outline" size={18} color={draft.priority === "Urgent" ? colors.danger : colors.warning} />
+            </SecondaryButton>
+            <SecondaryButton label={incidentWorkflowService.statusLabel(draft.status)} onPress={() => setDraft((item) => ({ ...item, status: cycleOption(incidentStatuses, item.status) }))}>
+              <MaterialCommunityIcons name="progress-check" size={18} color={colors.primaryBlue} />
+            </SecondaryButton>
+          </View>
+          <View style={styles.formRow}>
+            <WorkflowField label="Date" value={draft.date} onChangeText={(date) => setDraft((item) => ({ ...item, date }))} />
+            <WorkflowField label="Time" value={draft.time} onChangeText={(time) => setDraft((item) => ({ ...item, time }))} />
+          </View>
+          <WorkflowField label="Location" value={draft.location} onChangeText={(location) => setDraft((item) => ({ ...item, location }))} />
+          <DisclaimerBanner message="Priority labels are local productivity labels only and do not replace official dispatch, RMS, supervision, or service policy." />
+        </WorkflowFormPanel>
+      ) : null}
+
+      {stepIndex === 1 ? (
+        <WorkflowFormPanel icon="account-multiple-outline" title="Persons Involved">
+          <PrimaryButton label="Add Person" onPress={addPerson}>
+            <MaterialCommunityIcons name="account-plus-outline" size={20} color={colors.textPrimary} />
+          </PrimaryButton>
+          {draft.personsInvolved.map((person) => (
+            <View key={person.id} style={styles.workflowPanel}>
+              <View style={styles.filterRow}>
+                <SecondaryButton label={person.role} onPress={() => setDraft((item) => ({
+                  ...item,
+                  personsInvolved: item.personsInvolved.map((entry) => entry.id === person.id ? { ...entry, role: cycleOption(personRoles, entry.role) } : entry)
+                }))}>
+                  <MaterialCommunityIcons name="account-tag-outline" size={18} color={colors.primaryBlue} />
+                </SecondaryButton>
+                <SecondaryButton label="Remove" onPress={() => setDraft((item) => ({ ...item, personsInvolved: item.personsInvolved.filter((entry) => entry.id !== person.id) }))}>
+                  <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
+                </SecondaryButton>
+              </View>
+              <WorkflowField label="Name placeholder" value={person.name} onChangeText={(name) => setDraft((item) => ({
+                ...item,
+                personsInvolved: item.personsInvolved.map((entry) => entry.id === person.id ? { ...entry, name } : entry)
+              }))} />
+              <View style={styles.formRow}>
+                <WorkflowField label="Phone optional" value={person.phone} onChangeText={(phone) => setDraft((item) => ({
+                  ...item,
+                  personsInvolved: item.personsInvolved.map((entry) => entry.id === person.id ? { ...entry, phone } : entry)
+                }))} />
+                <WorkflowField label="Email optional" value={person.email} onChangeText={(email) => setDraft((item) => ({
+                  ...item,
+                  personsInvolved: item.personsInvolved.map((entry) => entry.id === person.id ? { ...entry, email } : entry)
+                }))} />
+              </View>
+              <WorkflowField label="Notes" value={person.notes} onChangeText={(notes) => setDraft((item) => ({
+                ...item,
+                personsInvolved: item.personsInvolved.map((entry) => entry.id === person.id ? { ...entry, notes } : entry)
+              }))} />
+            </View>
+          ))}
+          <DisclaimerBanner message="Do not enter real personal information in this testing version." />
+        </WorkflowFormPanel>
+      ) : null}
+
+      {stepIndex === 2 ? (
+        <WorkflowFormPanel icon="account-voice" title="Witnesses">
+          <PrimaryButton label="Add Witness" onPress={addWitness}>
+            <MaterialCommunityIcons name="account-plus-outline" size={20} color={colors.textPrimary} />
+          </PrimaryButton>
+          {draft.witnessDetails.map((witness) => (
+            <View key={witness.id} style={styles.workflowPanel}>
+              <View style={styles.filterRow}>
+                <SecondaryButton label={`Follow-up ${witness.followUpRequired ? "On" : "Off"}`} onPress={() => setDraft((item) => ({
+                  ...item,
+                  witnessDetails: item.witnessDetails.map((entry) => entry.id === witness.id ? { ...entry, followUpRequired: !entry.followUpRequired } : entry)
+                }))}>
+                  <MaterialCommunityIcons name={witness.followUpRequired ? "bell-check-outline" : "bell-off-outline"} size={18} color={colors.primaryBlue} />
+                </SecondaryButton>
+                <SecondaryButton label="Remove" onPress={() => setDraft((item) => ({ ...item, witnessDetails: item.witnessDetails.filter((entry) => entry.id !== witness.id) }))}>
+                  <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
+                </SecondaryButton>
+              </View>
+              <WorkflowField label="Name placeholder" value={witness.name} onChangeText={(name) => setDraft((item) => ({
+                ...item,
+                witnessDetails: item.witnessDetails.map((entry) => entry.id === witness.id ? { ...entry, name } : entry)
+              }))} />
+              <WorkflowField label="Contact placeholder" value={witness.contact} onChangeText={(contact) => setDraft((item) => ({
+                ...item,
+                witnessDetails: item.witnessDetails.map((entry) => entry.id === witness.id ? { ...entry, contact } : entry)
+              }))} />
+              <WorkflowField label="Statement summary" multiline value={witness.statementSummary} onChangeText={(statementSummary) => setDraft((item) => ({
+                ...item,
+                witnessDetails: item.witnessDetails.map((entry) => entry.id === witness.id ? { ...entry, statementSummary } : entry)
+              }))} />
+            </View>
+          ))}
+        </WorkflowFormPanel>
+      ) : null}
+
+      {stepIndex === 3 ? (
+        <WorkflowFormPanel icon="note-edit-outline" title="Notes">
+          <WorkflowField label="Officer notes" multiline value={draft.incidentNotes.officerNotes} onChangeText={(officerNotes) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, officerNotes } }))} />
+          <WorkflowField label="Narrative draft" multiline value={draft.incidentNotes.narrativeDraft} onChangeText={(narrativeDraft) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, narrativeDraft } }))} />
+          <WorkflowField label="Observations" multiline value={draft.incidentNotes.observations} onChangeText={(observations) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, observations } }))} />
+          <WorkflowField label="Follow-up notes" multiline value={draft.incidentNotes.followUpNotes} onChangeText={(followUpNotes) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, followUpNotes } }))} />
+          <WorkflowField label="Disclosure notes placeholder" multiline value={draft.incidentNotes.disclosureNotes} onChangeText={(disclosureNotes) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, disclosureNotes } }))} />
+        </WorkflowFormPanel>
+      ) : null}
+
+      {stepIndex === 4 ? (
+        <WorkflowFormPanel icon="paperclip" title="Attachment Metadata">
+          <PrimaryButton label="Add Metadata" onPress={addAttachment}>
+            <MaterialCommunityIcons name="paperclip-plus" size={20} color={colors.textPrimary} />
+          </PrimaryButton>
+          {draft.attachmentMetadata.map((attachment) => (
+            <View key={attachment.id} style={styles.workflowPanel}>
+              <View style={styles.filterRow}>
+                <SecondaryButton label={attachment.attachmentType} onPress={() => setDraft((item) => ({
+                  ...item,
+                  attachmentMetadata: item.attachmentMetadata.map((entry) => entry.id === attachment.id ? { ...entry, attachmentType: cycleOption(attachmentTypes, entry.attachmentType) } : entry)
+                }))}>
+                  <MaterialCommunityIcons name="paperclip" size={18} color={colors.primaryBlue} />
+                </SecondaryButton>
+                <SecondaryButton label="Remove" onPress={() => setDraft((item) => ({ ...item, attachmentMetadata: item.attachmentMetadata.filter((entry) => entry.id !== attachment.id) }))}>
+                  <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
+                </SecondaryButton>
+              </View>
+              <WorkflowField label="File name placeholder" value={attachment.fileName} onChangeText={(fileName) => setDraft((item) => ({
+                ...item,
+                attachmentMetadata: item.attachmentMetadata.map((entry) => entry.id === attachment.id ? { ...entry, fileName } : entry)
+              }))} />
+              <WorkflowField label="Description" value={attachment.description} onChangeText={(description) => setDraft((item) => ({
+                ...item,
+                attachmentMetadata: item.attachmentMetadata.map((entry) => entry.id === attachment.id ? { ...entry, description } : entry)
+              }))} />
+              <WorkflowField label="Notes" multiline value={attachment.notes} onChangeText={(notes) => setDraft((item) => ({
+                ...item,
+                attachmentMetadata: item.attachmentMetadata.map((entry) => entry.id === attachment.id ? { ...entry, notes } : entry)
+              }))} />
+            </View>
+          ))}
+          <DisclaimerBanner message="Attachment metadata only. This sprint does not upload files or access camera, microphone, photos, or documents." />
+        </WorkflowFormPanel>
+      ) : null}
+
+      {stepIndex === 5 ? (
+        <WorkflowFormPanel icon="clipboard-check-outline" title="Review & Save">
+          <View style={styles.reviewPanel}>
+            <Text style={styles.profileName}>{incidentWorkflowService.createReviewSummary(draft)}</Text>
+            <Text style={styles.profileMeta}>{completeness.complete} of {completeness.total} sections complete</Text>
+            <Text style={styles.workflowSubtitle}>Persons: {draft.personsInvolved.length} - Witnesses: {draft.witnessDetails.length} - Attachments: {draft.attachmentMetadata.length}</Text>
+          </View>
+          <View style={styles.formRow}>
+            <WorkflowField label="Follow-up date" value={followUpDate} onChangeText={setFollowUpDate} />
+            <WorkflowField label="Calendar date" value={calendarDate} onChangeText={setCalendarDate} />
+          </View>
+          <View style={styles.filterRow}>
+            <SecondaryButton label={`Task: ${followUpTitle}`} onPress={() => setFollowUpTitle((current) => cycleOption([...followUpTaskOptions], current))}>
+              <MaterialCommunityIcons name="clipboard-check-outline" size={18} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label={`Follow-up ${draft.followUpRequired ? "On" : "Off"}`} onPress={() => setDraft((item) => ({ ...item, followUpRequired: !item.followUpRequired, status: !item.followUpRequired ? "followUpRequired" : item.status }))}>
+              <MaterialCommunityIcons name={draft.followUpRequired ? "bell-check-outline" : "bell-off-outline"} size={18} color={colors.primaryBlue} />
+            </SecondaryButton>
+          </View>
+          <View style={styles.actionRow}>
+            <PrimaryButton label="Save Draft" onPress={() => saveIncidentDraft("draft")}>
+              <MaterialCommunityIcons name="content-save-outline" size={20} color={colors.textPrimary} />
+            </PrimaryButton>
+            <SecondaryButton label="Mark Reviewed" onPress={() => saveIncidentDraft("reviewed")}>
+              <MaterialCommunityIcons name="check-decagram-outline" size={20} color={colors.ptsdGreen} />
+            </SecondaryButton>
+            <SecondaryButton label="Archive" onPress={() => saveIncidentDraft("archived")}>
+              <MaterialCommunityIcons name="archive-outline" size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label="Create Follow-Up" onPress={createIncidentFollowUp}>
+              <MaterialCommunityIcons name="bell-plus-outline" size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label="Add Calendar Reminder" onPress={createIncidentCalendarItem}>
+              <MaterialCommunityIcons name="calendar-plus-outline" size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label="Prepare for AI Review" onPress={showAiPlaceholder}>
+              <MaterialCommunityIcons name="brain" size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton label="New Draft" onPress={resetDraft}>
+              <MaterialCommunityIcons name="file-plus-outline" size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+          </View>
+        </WorkflowFormPanel>
+      ) : null}
+
+      <View style={styles.actionRow}>
+        <SecondaryButton label="Back" onPress={() => setStepIndex(Math.max(0, stepIndex - 1))}>
+          <Ionicons name="chevron-back" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton label="Next" onPress={() => setStepIndex(Math.min(incidentStepTitles.length - 1, stepIndex + 1))}>
+          <Ionicons name="chevron-forward" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <PrimaryButton label="Save" onPress={() => saveIncidentDraft()}>
+          <MaterialCommunityIcons name="content-save-outline" size={20} color={colors.textPrimary} />
+        </PrimaryButton>
       </View>
 
-      <SecondaryButton label="Draft Preview">
-        <MaterialCommunityIcons name="pencil-outline" size={20} color={colors.primaryBlue} />
-      </SecondaryButton>
       <PrototypeSelection label={selectedItem} />
-      <DisclaimerBanner message="Incident drafts are local prototype data only. Do not enter real police records, evidence, confidential information, or sensitive personal information." />
+      <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool." />
+      <DisclaimerBanner message="New Incident drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations." />
+      <DisclaimerBanner message="Do not enter real police records, confidential information, sensitive personal information, or real evidence into this testing version." />
+      <DisclaimerBanner message="Future AI-assisted report features may produce incomplete or inaccurate content and must be verified by the user." />
       <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
   );
 }
-
 function AIAssistantScreen({
   isTablet,
   localData,
@@ -2497,6 +2989,14 @@ const styles = StyleSheet.create({
     fontSize: typography.caption,
     fontWeight: "800"
   },
+  reviewPanel: {
+    backgroundColor: "rgba(10,132,255,0.10)",
+    borderColor: "rgba(77,163,255,0.24)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.md
+  },
   disclaimerStack: {
     gap: spacing.sm
   },
@@ -2632,6 +3132,29 @@ const styles = StyleSheet.create({
   },
   stack: {
     gap: spacing.sm
+  },
+  stepperRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm
+  },
+  stepPill: {
+    backgroundColor: "rgba(6,29,56,0.65)",
+    borderColor: "rgba(77,163,255,0.22)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    minHeight: 38,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm
+  },
+  stepPillActive: {
+    backgroundColor: "rgba(10,132,255,0.22)",
+    borderColor: colors.primaryBlue
+  },
+  stepPillText: {
+    color: colors.textPrimary,
+    fontSize: typography.caption,
+    fontWeight: "900"
   },
   statusBadge: {
     fontSize: typography.caption,

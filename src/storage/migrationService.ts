@@ -6,7 +6,8 @@ import {
   createDefaultNotificationPreference,
   createDefaultRequalificationWorkflowReminders,
   createDefaultScheduledReminders,
-  createDefaultTrainingWorkflowEvents
+  createDefaultTrainingWorkflowEvents,
+  normalizeIncidentDrafts
 } from "@/storage/seedDataService";
 import type { LocalAppData } from "@/storage/storageTypes";
 
@@ -17,6 +18,7 @@ export const migrationService = {
       calendarWorkflowEvents: data.calendarWorkflowEvents ?? createDefaultCalendarWorkflowEvents(),
       courtWorkflowEvents: data.courtWorkflowEvents ?? createDefaultCourtWorkflowEvents(),
       followUpWorkflowReminders: data.followUpWorkflowReminders ?? createDefaultFollowUpWorkflowReminders(),
+      incidentDrafts: normalizeIncidentDrafts(data.incidentDrafts),
       notificationPreference: data.notificationPreference ?? createDefaultNotificationPreference(),
       requalificationWorkflowReminders: data.requalificationWorkflowReminders ?? createDefaultRequalificationWorkflowReminders(),
       scheduledReminders: data.scheduledReminders ?? createDefaultScheduledReminders(),

@@ -1,5 +1,13 @@
 import type { MciIcon } from "@/data/uiMockups";
 import type { AuthStatus, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
+import type {
+  IncidentAttachmentMetadata,
+  IncidentDraftStatus,
+  IncidentNotes,
+  IncidentPerson,
+  IncidentPriority,
+  IncidentWitness
+} from "@/types/incident";
 import type { NotificationPreference, ScheduledReminder } from "@/types/notifications";
 import type {
   CalendarWorkflowEvent,
@@ -51,7 +59,7 @@ export type LocalCalendarEvent = {
 export type LocalAttachmentMetadata = {
   id: string;
   fileName: string;
-  fileType: "photo" | "document" | "audio" | "reference";
+  fileType: "photo" | "document" | "audio" | "reference" | "video" | "other";
   addedAt: string;
   localOnly: true;
 };
@@ -59,14 +67,21 @@ export type LocalAttachmentMetadata = {
 export type LocalIncidentDraft = {
   id: string;
   incidentType: string;
+  occurrenceCategory: string;
   date: string;
   time: string;
   location: string;
+  priority: IncidentPriority;
+  followUpRequired: boolean;
   involvedPersons: string[];
+  personsInvolved: IncidentPerson[];
   witnesses: string[];
+  witnessDetails: IncidentWitness[];
   notes: string;
+  incidentNotes: IncidentNotes;
   attachments: LocalAttachmentMetadata[];
-  status: "draft" | "reviewed" | "archived";
+  attachmentMetadata: IncidentAttachmentMetadata[];
+  status: IncidentDraftStatus;
   createdAt: string;
   updatedAt: string;
 };
