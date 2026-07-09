@@ -2,6 +2,7 @@ import type { MciIcon } from "@/data/uiMockups";
 
 export type AICategoryId =
   | "general"
+  | "shift_readiness"
   | "report_review"
   | "incident_summary"
   | "follow_up"
@@ -11,6 +12,7 @@ export type AICategoryId =
   | "translation"
   | "legal_reference_placeholder"
   | "policy_placeholder"
+  | "ptsd_stress_support"
   | "wellness";
 
 export type AIPromptClassification =
@@ -41,6 +43,13 @@ export type AISuggestedAction = {
   icon: MciIcon;
   title: string;
   subtitle: string;
+  prompt: string;
+};
+
+export type AIPromptSuggestion = {
+  id: string;
+  category: AICategoryId;
+  label: string;
   prompt: string;
 };
 

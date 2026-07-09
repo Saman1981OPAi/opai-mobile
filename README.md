@@ -108,9 +108,9 @@ not connect to real translation APIs, OpenAI, backend APIs, OCR services, microp
 camera access, document upload, cloud storage, police-service systems, payments, subscriptions,
 analytics, advertising, or production secrets.
 
-Sprint 012 expands AI Assistant into a local/mock workflow with categories, suggested actions,
-mock responses, local AI history, prompt guardrail placeholders, incident/notes placeholders, and
-AI safety notices. It does not connect to OpenAI, backend APIs, databases, cloud sync,
+Sprint 012 expands OPAi Assistant into a local/mock workflow with categories, category-specific
+prompt chips, suggested actions, mock responses, local AI history, prompt guardrail placeholders,
+incident/notes placeholders, and AI safety notices. It does not connect to OpenAI, backend APIs, databases, cloud sync,
 police-service systems, legal databases, payments, subscriptions, analytics, advertising, or
 production secrets.
 
@@ -217,7 +217,8 @@ Sprint 011 adds structured local/mock translation workflows. See:
 
 ## Sprint 012 AI Assistant Mock Workflow
 
-Sprint 012 adds the structured local/mock AI Assistant workflow and safety layer. See:
+Sprint 012 adds the structured local/mock OPAi Assistant workflow and safety layer, including
+category-specific prompt chips and local history controls. See:
 
 - `docs/sprint-012-ai-assistant-mock-workflow.md`
 - `docs/ai-platform-architecture.md`
