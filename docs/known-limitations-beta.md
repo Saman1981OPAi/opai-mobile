@@ -18,5 +18,7 @@
 - Android release is paused pending the D-U-N-S Number for Ebrahimi Holdings.
 - App is not official police software.
 - App is not legal, medical, operational, or emergency advice.
+- App does not replace official systems, RMS, notebook requirements, supervision, service policy, legal advice, medical advice, training, court requirements, or professional judgment.
+- PTSD awareness content is educational/supportive only and is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support.
 - Do not enter real police records, confidential information, sensitive personal information, real evidence, real statements, or official documents.
 
