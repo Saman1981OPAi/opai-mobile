@@ -12,6 +12,7 @@ import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { releaseInfo } from "@/config/release";
 import { secondaryModules } from "@/data/uiMockups";
 import type { MciIcon } from "@/data/uiMockups";
 import { aiService } from "@/services/aiService";
@@ -3739,7 +3740,10 @@ function SettingsScreen({
       {activeSettingsView === "overview" || selectedItem === "Home" ? (
         <SettingsPanel icon="shield-check-outline" title="Mock Account Status">
           <SettingsFact label="Current status" value={localData.auth.status} />
-          <SettingsFact label="Testing stage" value="Testing / Pre-Launch" />
+          <SettingsFact label="Testing stage" value={releaseInfo.status} />
+          <SettingsFact label="App version" value={releaseInfo.appVersion} />
+          <SettingsFact label="Build" value={releaseInfo.buildNumber} />
+          <SettingsFact label="Release channel" value={releaseInfo.releaseChannel} />
           <SettingsFact label="Launch priority" value="iOS active; Android paused pending D-U-N-S Number" />
           <SettingsFact label="Production systems" value="Not connected" />
           <DisclaimerBanner message="This Settings area is local and static for App Store review readiness. It does not connect to account, support, legal, backend, OpenAI, database, payment, or police-service systems." />
@@ -3920,9 +3924,10 @@ function SettingsScreen({
           <SettingsFact label="Website" value="https://opaiapp.com" />
           <SettingsFact label="Contact URL" value="https://opaiapp.com/contact" />
           <SettingsFact label="Support URL" value="https://opaiapp.com/support pending if not live" />
-          <SettingsFact label="App status" value="Testing / Pre-Launch" />
-          <SettingsFact label="Version" value="1.0 local prototype" />
-          <SettingsFact label="Build" value="Sprint 014 placeholder" />
+          <SettingsFact label="App status" value={releaseInfo.status} />
+          <SettingsFact label="Version" value={releaseInfo.appVersion} />
+          <SettingsFact label="Build" value={releaseInfo.buildNumber} />
+          <SettingsFact label="Release channel" value={releaseInfo.releaseChannel} />
           <DisclaimerBanner message="No live email sending or support ticket submission is connected in this prototype." />
         </SettingsPanel>
       ) : null}
@@ -3934,7 +3939,10 @@ function SettingsScreen({
             organization, shift readiness, incident drafting, translation, court/training reminders, notes, file metadata
             placeholders, and PTSD awareness.
           </Text>
-          <SettingsFact label="Status" value="Testing / Pre-Launch" />
+          <SettingsFact label="Status" value={releaseInfo.status} />
+          <SettingsFact label="Version" value={releaseInfo.appVersion} />
+          <SettingsFact label="Build" value={releaseInfo.buildNumber} />
+          <SettingsFact label="Platform priority" value={releaseInfo.platformPriority} />
           <SettingsFact label="Website" value="https://opaiapp.com" />
           <DisclaimerBanner message="OPAi Police is not official police software and is not affiliated with government or police services unless explicitly authorized in future agreements." />
           <DisclaimerBanner message={ptsdDisclaimer} />

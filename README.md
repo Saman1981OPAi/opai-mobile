@@ -136,6 +136,14 @@ OpenAI, production databases, cloud sync, real authentication providers, real fi
 subscriptions, analytics, advertising, police-service integrations, production secrets, Google Play
 release workflow, or Android production workflow.
 
+Sprint 016 prepares the internal iOS TestFlight beta package. It adds beta version/build visibility,
+TestFlight readiness documentation, beta tester instructions, QA checklists, App Store Connect notes,
+app privacy review notes, screenshot checklists, bug report templates, and beta feedback templates.
+It remains a local/offline prototype and does not add backend APIs, OpenAI, production databases,
+cloud sync, real authentication providers, real file upload, payments, subscriptions, analytics,
+advertising, police-service integrations, production secrets, Google Play release workflow, or
+Android production workflow.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -279,6 +287,31 @@ Sprint 015 improves iOS-first review polish and accessibility. See:
 - `docs/app-store-screenshot-readiness.md`
 - `docs/ui-polish-notes.md`
 - `docs/brand-compliance-check.md`
+
+## Sprint 016 TestFlight Internal Beta Preparation
+
+Sprint 016 prepares the internal iOS TestFlight beta documentation and in-app beta version/build
+visibility. Current beta values:
+
+- App version: `0.1.0-beta`
+- Native Expo version: `0.1.0`
+- Build: `16`
+- Status: Internal TestFlight Beta
+- Platform priority: iOS-first
+
+See:
+
+- `docs/sprint-016-testflight-internal-beta-preparation.md`
+- `docs/testflight-readiness-audit.md`
+- `docs/testflight-beta-notes.md`
+- `docs/beta-tester-instructions.md`
+- `docs/internal-qa-checklist.md`
+- `docs/known-limitations-beta.md`
+- `docs/app-store-connect-preparation.md`
+- `docs/app-privacy-review-notes.md`
+- `docs/screenshot-checklist-ios.md`
+- `docs/bug-report-template.md`
+- `docs/beta-feedback-template.md`
 
 ## Product Principles
 

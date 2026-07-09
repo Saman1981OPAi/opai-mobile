@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.opaiapp.police",
-      "buildNumber": "8",
+      "buildNumber": "16",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -37,6 +37,11 @@
     "extra": {
       "product": "OPAi Police",
       "domain": "opaiapp.com",
+      "release": {
+        "appVersion": "0.1.0-beta",
+        "buildNumber": "16",
+        "status": "Internal TestFlight Beta"
+      },
       "eas": {
         "projectId": "c9044294-c57a-47f8-bb2e-15721c8882a2"
       }
