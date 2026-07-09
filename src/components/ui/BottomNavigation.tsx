@@ -30,6 +30,7 @@ export function BottomNavigation({ activeModule, onSelectModule }: BottomNavigat
         const active = activeModule === item.id;
         return (
           <Pressable
+            accessibilityLabel={`${item.label} tab`}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             key={item.id}
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
     justifyContent: "center",
+    minWidth: 44,
     minHeight: 64
   },
   label: {

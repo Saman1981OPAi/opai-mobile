@@ -10,9 +10,9 @@ export function DisclaimerBanner({
   message = "Testing preview. Reminders and AI outputs are support tools, not official direction."
 }: DisclaimerBannerProps) {
   return (
-    <View style={styles.wrap}>
+    <View accessibilityRole="text" style={styles.wrap}>
       <Ionicons name="information-circle-outline" size={18} color={colors.ptsdGreen} />
-      <Text style={styles.text}>{message}</Text>
+      <Text maxFontSizeMultiplier={1.3} style={styles.text}>{message}</Text>
     </View>
   );
 }
@@ -21,11 +21,12 @@ const styles = StyleSheet.create({
   text: {
     color: colors.textSecondary,
     flex: 1,
-    fontSize: 12,
-    lineHeight: 17
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 19
   },
   wrap: {
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: "rgba(24,73,52,0.42)",
     borderColor: "rgba(127,255,212,0.28)",
     borderRadius: radius.lg,

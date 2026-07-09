@@ -1,20 +1,24 @@
 import type { ComponentProps } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
+import { SecondaryButton } from "@/components/ui/Buttons";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type EmptyStateProps = {
+  actionLabel?: string;
   icon?: ComponentProps<typeof MaterialCommunityIcons>["name"];
   title: string;
   message: string;
+  onAction?: () => void;
 };
 
-export function EmptyState({ icon = "progress-wrench", message, title }: EmptyStateProps) {
+export function EmptyState({ actionLabel, icon = "progress-wrench", message, onAction, title }: EmptyStateProps) {
   return (
-    <View style={styles.wrap}>
+    <View accessibilityRole="text" style={styles.wrap}>
       <MaterialCommunityIcons name={icon} size={42} color={colors.primaryBlue} />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.message}>{message}</Text>
+      <Text maxFontSizeMultiplier={1.25} style={styles.title}>{title}</Text>
+      <Text maxFontSizeMultiplier={1.35} style={styles.message}>{message}</Text>
+      {actionLabel && onAction ? <SecondaryButton label={actionLabel} onPress={onAction} /> : null}
     </View>
   );
 }

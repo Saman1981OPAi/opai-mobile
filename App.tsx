@@ -149,8 +149,8 @@ export default function App() {
         <StatusBar style="light" />
         {!localData ? (
           <View style={{ alignItems: "center", flex: 1, gap: spacing.md, justifyContent: "center" }}>
-            <ActivityIndicator color={colors.primaryBlue} />
-            <Text style={{ color: colors.textMuted, fontSize: typography.small, fontWeight: "800" }}>
+            <ActivityIndicator accessibilityLabel="Loading local prototype data" accessibilityRole="progressbar" color={colors.primaryBlue} />
+            <Text maxFontSizeMultiplier={1.3} style={{ color: colors.textMuted, fontSize: typography.small, fontWeight: "800" }}>
               Loading local prototype data
             </Text>
           </View>

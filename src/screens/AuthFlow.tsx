@@ -38,22 +38,64 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
   const [email, setEmail] = useState(mockUserProfile.email);
   const [code, setCode] = useState("");
   const [consent, setConsent] = useState<ConsentState>(emptyConsentState);
+  const [authError, setAuthError] = useState("");
+  const [loadingAction, setLoadingAction] = useState<"account" | "reset" | "signin" | "verify" | null>(null);
 
   const allConsentAccepted = useMemo(
     () => Object.values(consent).every(Boolean),
     [consent]
   );
 
+  const isValidEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
+
+  const runLocalAction = (action: typeof loadingAction, callback: () => void) => {
+    setLoadingAction(action);
+    setTimeout(() => {
+      callback();
+      setLoadingAction(null);
+    }, 120);
+  };
+
+  const beginVerification = () => {
+    if (!isValidEmail(email)) {
+      setAuthError("Enter a valid email address to continue with mock authentication.");
+      return;
+    }
+
+    setAuthError("");
+    onAuthStatusChange("signingIn");
+    runLocalAction("signin", () => setScreen("verification"));
+  };
+
+  const beginCreateAccount = () => {
+    if (!isValidEmail(email)) {
+      setAuthError("Enter a valid email address before creating the local mock account.");
+      return;
+    }
+
+    setAuthError("");
+    onAuthStatusChange("signingIn");
+    runLocalAction("account", () => setScreen("verification"));
+  };
+
   const goToConsent = () => {
+    if (code.trim().length < 4 && screen === "verification") {
+      setAuthError("Enter the mock verification code. Any 4 or more digits work in this local prototype.");
+      return;
+    }
+
+    setAuthError("");
     onAuthStatusChange("onboardingRequired");
-    setScreen("consent");
+    runLocalAction("verify", () => setScreen("consent"));
   };
 
   const completeConsent = () => {
     if (!allConsentAccepted) {
+      setAuthError("Accept every required consent item before entering the prototype.");
       return;
     }
 
+    setAuthError("");
     setScreen("success");
   };
 
@@ -97,31 +139,38 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
             }}
             onEmailChange={setEmail}
             onForgotPassword={() => setScreen("forgotPassword")}
-            onSignIn={() => {
-              onAuthStatusChange("signingIn");
-              setScreen("verification");
-            }}
+            onSignIn={beginVerification}
+            error={authError}
+            loading={loadingAction === "signin"}
           />
         ) : null}
 
         {screen === "createAccount" ? (
           <CreateAccountScreen
             email={email}
+            error={authError}
+            loading={loadingAction === "account"}
             onBack={() => setScreen("welcome")}
             onEmailChange={setEmail}
-            onSubmit={() => {
-              onAuthStatusChange("signingIn");
-              setScreen("verification");
-            }}
+            onSubmit={beginCreateAccount}
           />
         ) : null}
 
         {screen === "forgotPassword" ? (
           <ForgotPasswordScreen
             email={email}
+            error={authError}
+            loading={loadingAction === "reset"}
             onBack={() => setScreen("signIn")}
             onEmailChange={setEmail}
-            onSubmit={() => onAuthStatusChange("passwordResetRequested")}
+            onSubmit={() => {
+              if (!isValidEmail(email)) {
+                setAuthError("Enter a valid email address before requesting the local reset placeholder.");
+                return;
+              }
+              setAuthError("");
+              runLocalAction("reset", () => onAuthStatusChange("passwordResetRequested"));
+            }}
             resetRequested={authStatus === "passwordResetRequested"}
           />
         ) : null}
@@ -129,6 +178,8 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
         {screen === "verification" ? (
           <VerificationScreen
             code={code}
+            error={authError}
+            loading={loadingAction === "verify"}
             onBack={() => setScreen("signIn")}
             onCodeChange={setCode}
             onVerify={goToConsent}
@@ -146,6 +197,7 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
           <ConsentScreen
             allConsentAccepted={allConsentAccepted}
             consent={consent}
+            error={authError}
             onBack={() => setScreen("welcome")}
             onContinue={completeConsent}
             onToggle={(key) => setConsent((current) => ({ ...current, [key]: !current[key] }))}
@@ -210,6 +262,8 @@ function WelcomeScreen({
 
 function SignInScreen({
   email,
+  error,
+  loading,
   onBack,
   onBiometric,
   onEmailChange,
@@ -217,6 +271,8 @@ function SignInScreen({
   onSignIn
 }: {
   email: string;
+  error: string;
+  loading: boolean;
   onBack: () => void;
   onBiometric: () => void;
   onEmailChange: (value: string) => void;
@@ -235,7 +291,8 @@ function SignInScreen({
         value={email}
       />
       <Field icon="key-outline" label="Password" placeholder="Mock password" secureTextEntry value="" />
-      <PrimaryButton label="Continue" onPress={onSignIn}>
+      {error ? <ErrorText message={error} /> : null}
+      <PrimaryButton label="Continue" loading={loading} onPress={onSignIn}>
         <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <View style={styles.inlineActions}>
@@ -249,11 +306,15 @@ function SignInScreen({
 
 function CreateAccountScreen({
   email,
+  error,
+  loading,
   onBack,
   onEmailChange,
   onSubmit
 }: {
   email: string;
+  error: string;
+  loading: boolean;
   onBack: () => void;
   onEmailChange: (value: string) => void;
   onSubmit: () => void;
@@ -274,7 +335,8 @@ function CreateAccountScreen({
         value={email}
       />
       <Field icon="briefcase-outline" label="Role" value="Canadian Police Officer" />
-      <PrimaryButton label="Create Mock Account" onPress={onSubmit}>
+      {error ? <ErrorText message={error} /> : null}
+      <PrimaryButton label="Create Mock Account" loading={loading} onPress={onSubmit}>
         <Ionicons name="checkmark-circle-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <TextButton label="Back" onPress={onBack} />
@@ -284,12 +346,16 @@ function CreateAccountScreen({
 
 function ForgotPasswordScreen({
   email,
+  error,
+  loading,
   onBack,
   onEmailChange,
   onSubmit,
   resetRequested
 }: {
   email: string;
+  error: string;
+  loading: boolean;
   onBack: () => void;
   onEmailChange: (value: string) => void;
   onSubmit: () => void;
@@ -322,7 +388,8 @@ function ForgotPasswordScreen({
         onChangeText={onEmailChange}
         value={email}
       />
-      <PrimaryButton label="Request Reset" onPress={onSubmit}>
+      {error ? <ErrorText message={error} /> : null}
+      <PrimaryButton label="Request Reset" loading={loading} onPress={onSubmit}>
         <Ionicons name="mail-unread-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <DisclaimerBanner message="Password reset architecture is reserved for a secure backend. This screen does not send email." />
@@ -333,11 +400,15 @@ function ForgotPasswordScreen({
 
 function VerificationScreen({
   code,
+  error,
+  loading,
   onBack,
   onCodeChange,
   onVerify
 }: {
   code: string;
+  error: string;
+  loading: boolean;
   onBack: () => void;
   onCodeChange: (value: string) => void;
   onVerify: () => void;
@@ -353,7 +424,8 @@ function VerificationScreen({
         placeholder="000000"
         value={code}
       />
-      <PrimaryButton label="Verify Code" onPress={onVerify}>
+      {error ? <ErrorText message={error} /> : null}
+      <PrimaryButton label="Verify Code" loading={loading} onPress={onVerify}>
         <Ionicons name="shield-checkmark-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <TextButton label="Back" onPress={onBack} />
@@ -385,12 +457,14 @@ function BiometricScreen({ onBack, onContinue }: { onBack: () => void; onContinu
 function ConsentScreen({
   allConsentAccepted,
   consent,
+  error,
   onBack,
   onContinue,
   onToggle
 }: {
   allConsentAccepted: boolean;
   consent: ConsentState;
+  error: string;
   onBack: () => void;
   onContinue: () => void;
   onToggle: (key: ConsentKey) => void;
@@ -426,6 +500,7 @@ function ConsentScreen({
       <PrimaryButton label={allConsentAccepted ? "Accept & Continue" : "Accept All Required Items"} onPress={onContinue}>
         <Ionicons name="checkmark-done-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
+      {error ? <ErrorText message={error} /> : null}
       {!allConsentAccepted ? (
         <Text style={styles.helperText}>All consent items are required for mock app access.</Text>
       ) : null}
@@ -488,12 +563,22 @@ function Field({
       <View style={styles.fieldCopy}>
         <Text style={styles.fieldLabel}>{label}</Text>
         <TextInput
+          accessibilityLabel={label}
           placeholderTextColor={colors.textSubtle}
           selectionColor={colors.primaryBlue}
           style={styles.input}
           {...inputProps}
         />
       </View>
+    </View>
+  );
+}
+
+function ErrorText({ message }: { message: string }) {
+  return (
+    <View accessibilityRole="alert" style={styles.errorBox}>
+      <Ionicons name="alert-circle-outline" size={18} color={colors.warning} />
+      <Text style={styles.errorText}>{message}</Text>
     </View>
   );
 }
@@ -628,6 +713,23 @@ const styles = StyleSheet.create({
     fontSize: typography.caption,
     fontWeight: "800",
     textTransform: "uppercase"
+  },
+  errorBox: {
+    alignItems: "flex-start",
+    backgroundColor: "rgba(255,209,102,0.10)",
+    borderColor: "rgba(255,209,102,0.35)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.sm,
+    padding: spacing.base
+  },
+  errorText: {
+    color: colors.textSecondary,
+    flex: 1,
+    fontSize: typography.small,
+    fontWeight: "800",
+    lineHeight: 20
   },
   headingCopy: {
     flex: 1
