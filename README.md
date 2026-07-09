@@ -161,6 +161,13 @@ databases, cloud sync, real authentication providers, real file upload, payments
 analytics, advertising, police-service integrations, production secrets, Google Play release workflow,
 or Android production workflow.
 
+Sprint 019 prepares the final iOS-first TestFlight submission package. It updates the current build
+number to `19`, keeps the app at `0.1.0-beta`, and adds copy-ready App Store Connect fields, final
+review and tester notes, URL and privacy checks, screenshot and upload checklists, monitoring and
+release guidance, and a final no-integration audit. It adds no product features or production
+integrations. Android compatibility remains intact while Google Play release work stays paused
+pending the D-U-N-S Number for Ebrahimi Holdings.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -312,8 +319,8 @@ visibility. Current beta values:
 
 - App version: `0.1.0-beta`
 - Native Expo version: `0.1.0`
-- Build: `18`
-- Status: Internal Beta / Release Candidate Hardening
+- Build: `19`
+- Status: TestFlight Submission Package
 - Platform priority: iOS-first
 
 See:
@@ -355,6 +362,25 @@ Sprint 018 hardens the iOS release candidate and prepares final pre-TestFlight Q
 - `docs/app-store-review-risk-audit.md`
 - `docs/release-candidate-hardening-checklist.md`
 - `docs/final-pre-testflight-qa.md`
+
+## Sprint 019 TestFlight Submission Package
+
+Sprint 019 assembles the final copy, checklists, and operating guidance needed to upload build `19`
+for internal TestFlight review. See:
+
+- `docs/sprint-019-testflight-submission-package.md`
+- `docs/testflight-submission-master-checklist.md`
+- `docs/app-store-connect-field-package.md`
+- `docs/testflight-beta-information.md`
+- `docs/app-review-notes-final.md`
+- `docs/internal-tester-invitation.md`
+- `docs/final-url-verification.md`
+- `docs/final-app-privacy-answer-checklist.md`
+- `docs/final-screenshot-package-checklist.md`
+- `docs/final-build-upload-checklist.md`
+- `docs/post-submission-monitoring-plan.md`
+- `docs/release-branch-strategy.md`
+- `docs/final-no-integration-check.md`
 
 ## Product Principles
 

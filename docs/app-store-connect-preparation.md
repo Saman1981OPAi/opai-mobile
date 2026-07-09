@@ -5,13 +5,13 @@
 - App name: OPAi Police
 - App status: Testing / Pre-Launch
 - App version: `0.1.0-beta`
-- Build: `18`
+- Build: `19`
 - Platform: iOS-first
 - Website: https://opaiapp.com
-- Privacy URL: https://opaiapp.com/privacy
-- Terms URL: https://opaiapp.com/terms
+- Privacy URL: https://opaiapp.com/privacy-policy
+- Terms URL: https://opaiapp.com/terms-of-service
 - Support URL: https://opaiapp.com/contact
-- Alternate support URL: https://opaiapp.com/support, pending verification if not live
+- Alternate support URL: https://opaiapp.com/support, pending because it currently returns 404
 
 ## Contacts
 
