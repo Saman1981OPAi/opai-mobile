@@ -27,7 +27,7 @@ import {
   personRoles,
   type IncidentDraftFilter
 } from "@/services/incidentWorkflowService";
-import { notesService } from "@/services/notesService";
+import { fileMetadataCategories, linkedTypeOptions, noteCategories, notesService } from "@/services/notesService";
 import { notificationService } from "@/services/notificationService";
 import { notificationScheduler } from "@/services/notificationScheduler";
 import type { LocalAppData, LocalIncidentDraft } from "@/storage/storageTypes";
@@ -38,6 +38,15 @@ import type { AICategoryId, AIConversation } from "@/types/ai";
 import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
 import type { NotificationCategory, NotificationLeadTime, NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type {
+  LocalFileMetadataCategory,
+  LocalFileMetadataPlaceholder,
+  LocalLinkedItemType,
+  LocalNoteCategory,
+  LocalNoteFolder,
+  LocalStructuredNote,
+  NotesFilesFilters
+} from "@/types/notesFiles";
 import type { TranslationLanguage, TranslationMode, TranslationRecord } from "@/types/translation";
 import type {
   IncidentAttachmentMetadata,
@@ -331,6 +340,7 @@ export function ModuleScreen({
         localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
+        onUpdateLocalData={onUpdateLocalData}
         selectedItem={selectedItem}
       />
     );
@@ -2712,15 +2722,125 @@ function NotesFilesScreen({
   localData,
   onSelectItem,
   onSelectModule,
+  onUpdateLocalData,
   selectedItem
 }: {
   isTablet: boolean;
   localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   selectedItem: string;
 }) {
-  const items = notesService.getNotesAndFiles(localData);
+  type NotesFilesTab = "Notes" | "Folders" | "File Metadata" | "Linked Items";
+
+  const tabs: NotesFilesTab[] = ["Notes", "Folders", "File Metadata", "Linked Items"];
+  const [activeTab, setActiveTab] = useState<NotesFilesTab>("Notes");
+  const [filters, setFilters] = useState<NotesFilesFilters>({
+    category: "All",
+    folderId: "All",
+    linkedType: "All",
+    pinnedOnly: false,
+    search: "",
+    showArchived: false
+  });
+  const firstFolderId = localData.noteFolders[0]?.id;
+  const [noteDraft, setNoteDraft] = useState<LocalStructuredNote>(notesService.createBlankNote(firstFolderId));
+  const [noteEditingId, setNoteEditingId] = useState<string | null>(null);
+  const [folderDraft, setFolderDraft] = useState<LocalNoteFolder>(notesService.createBlankFolder());
+  const [folderEditingId, setFolderEditingId] = useState<string | null>(null);
+  const [metadataDraft, setMetadataDraft] = useState<LocalFileMetadataPlaceholder>(notesService.createBlankFileMetadata());
+  const [metadataEditingId, setMetadataEditingId] = useState<string | null>(null);
+
+  const filteredNotes = notesService.filterNotes(localData, filters);
+  const filteredFolders = notesService.filterFolders(localData, filters.search, filters.showArchived);
+  const filteredMetadata = notesService.filterFileMetadata(localData, filters.search, "All");
+  const linkedNotes = localData.structuredNotes.filter((note) => notesService.getLinkedSummaries(localData, note).length > 0);
+
+  const setNoteField = <Key extends keyof LocalStructuredNote>(key: Key, value: LocalStructuredNote[Key]) => {
+    setNoteDraft((current) => ({ ...current, [key]: value }));
+  };
+
+  const setFolderField = <Key extends keyof LocalNoteFolder>(key: Key, value: LocalNoteFolder[Key]) => {
+    setFolderDraft((current) => ({ ...current, [key]: value }));
+  };
+
+  const setMetadataField = <Key extends keyof LocalFileMetadataPlaceholder>(
+    key: Key,
+    value: LocalFileMetadataPlaceholder[Key]
+  ) => {
+    setMetadataDraft((current) => ({ ...current, [key]: value }));
+  };
+
+  const startNewNote = () => {
+    setNoteEditingId(null);
+    setNoteDraft(notesService.createBlankNote(firstFolderId));
+  };
+
+  const saveNote = () => {
+    onUpdateLocalData((current) => notesService.upsertNote(current, noteDraft));
+    onSelectItem(noteDraft.title || "Untitled local note");
+    startNewNote();
+  };
+
+  const editNote = (note: LocalStructuredNote) => {
+    setActiveTab("Notes");
+    setNoteEditingId(note.id);
+    setNoteDraft(note);
+    onSelectItem(note.title);
+  };
+
+  const startNewFolder = () => {
+    setFolderEditingId(null);
+    setFolderDraft(notesService.createBlankFolder());
+  };
+
+  const saveFolder = () => {
+    onUpdateLocalData((current) => notesService.upsertFolder(current, folderDraft));
+    onSelectItem(folderDraft.name || "Untitled folder");
+    startNewFolder();
+  };
+
+  const editFolder = (folder: LocalNoteFolder) => {
+    setActiveTab("Folders");
+    setFolderEditingId(folder.id);
+    setFolderDraft(folder);
+    onSelectItem(folder.name);
+  };
+
+  const startNewMetadata = () => {
+    setMetadataEditingId(null);
+    setMetadataDraft(notesService.createBlankFileMetadata());
+  };
+
+  const saveMetadata = () => {
+    onUpdateLocalData((current) => notesService.upsertFileMetadata(current, metadataDraft));
+    onSelectItem(metadataDraft.fileName || "File metadata placeholder");
+    startNewMetadata();
+  };
+
+  const editMetadata = (item: LocalFileMetadataPlaceholder) => {
+    setActiveTab("File Metadata");
+    setMetadataEditingId(item.id);
+    setMetadataDraft(item);
+    onSelectItem(item.fileName);
+  };
+
+  const cycleFolder = () => {
+    const folders = localData.noteFolders.filter((folder) => !folder.archived);
+    const currentIndex = folders.findIndex((folder) => folder.id === noteDraft.folderId);
+    const next = folders[(currentIndex + 1) % Math.max(folders.length, 1)];
+    setNoteField("folderId", next?.id);
+  };
+
+  const cycleMetadataCategory = () => {
+    const currentIndex = fileMetadataCategories.indexOf(metadataDraft.category);
+    const next = fileMetadataCategories[(currentIndex + 1) % fileMetadataCategories.length] ?? "Other";
+    setMetadataField("category", next);
+  };
+
+  const linkedTypeLabel = (type: LocalLinkedItemType | "All") =>
+    type === "All" ? "All links" : type === "followUp" ? "Follow-up" : type === "ai" ? "AI" : type;
 
   return (
     <ScreenFrame activeModule="notes" isTablet={isTablet} onSelectModule={onSelectModule}>
@@ -2728,24 +2848,322 @@ function NotesFilesScreen({
       <View style={styles.hero}>
         <View style={styles.heroCopy}>
           <Text style={styles.heroTitle}>Organize locally.</Text>
-          <Text style={styles.heroSub}>Placeholder notes and files.</Text>
+          <Text style={styles.heroSub}>Notes, folders, file metadata, and workflow links.</Text>
         </View>
         <MaterialCommunityIcons name="folder-outline" size={48} color={colors.primaryBlue} />
       </View>
 
-      <SectionHeader icon="folder-outline" title="Local Samples" />
-      <View style={styles.stack}>
-        {items.map((item) => (
-          <ReminderCard
-            active={selectedItem === item.title}
-            key={item.title}
-            onPress={() => onSelectItem(item.title)}
-            {...item}
-          />
+      <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real evidence, real statements, or official documents into this prototype." />
+      <DisclaimerBanner message="Files in this prototype are metadata placeholders only. OPAi does not upload, store, process, or sync real files in this testing version." />
+
+      <View style={styles.filterRow}>
+        {tabs.map((tab) => (
+          <Pressable
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === tab }}
+            key={tab}
+            onPress={() => setActiveTab(tab)}
+            style={({ pressed }) => [
+              styles.categoryChip,
+              activeTab === tab ? styles.categoryChipActive : null,
+              pressed ? styles.pressed : null
+            ]}
+          >
+            <Text style={styles.categoryChipText}>{tab}</Text>
+          </Pressable>
         ))}
       </View>
+
+      <WorkflowFormPanel icon="magnify" title="Search & Filter">
+        <WorkflowField
+          label="Search notes, folders, metadata"
+          onChangeText={(search) => setFilters((current) => ({ ...current, search }))}
+          value={filters.search}
+        />
+        <View style={styles.filterRow}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              const options: Array<LocalNoteCategory | "All"> = ["All", ...noteCategories];
+              const next = options[(options.indexOf(filters.category) + 1) % options.length] ?? "All";
+              setFilters((current) => ({ ...current, category: next }));
+            }}
+            style={styles.promptChip}
+          >
+            <MaterialCommunityIcons name="tag-outline" size={17} color={colors.ptsdGreen} />
+            <Text numberOfLines={1} style={styles.promptChipText}>{filters.category}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              const options = ["All", ...localData.noteFolders.map((folder) => folder.id)];
+              const next = options[(options.indexOf(filters.folderId) + 1) % options.length] ?? "All";
+              setFilters((current) => ({ ...current, folderId: next }));
+            }}
+            style={styles.promptChip}
+          >
+            <MaterialCommunityIcons name="folder-outline" size={17} color={colors.primaryBlue} />
+            <Text numberOfLines={1} style={styles.promptChipText}>
+              {filters.folderId === "All" ? "All folders" : notesService.getFolderName(localData, filters.folderId)}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              const options: Array<LocalLinkedItemType | "All"> = ["All", ...linkedTypeOptions];
+              const next = options[(options.indexOf(filters.linkedType) + 1) % options.length] ?? "All";
+              setFilters((current) => ({ ...current, linkedType: next }));
+            }}
+            style={styles.promptChip}
+          >
+            <MaterialCommunityIcons name="link-variant" size={17} color={colors.primaryBlue} />
+            <Text numberOfLines={1} style={styles.promptChipText}>{linkedTypeLabel(filters.linkedType)}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: filters.pinnedOnly }}
+            onPress={() => setFilters((current) => ({ ...current, pinnedOnly: !current.pinnedOnly }))}
+            style={[styles.promptChip, filters.pinnedOnly ? styles.categoryChipActive : null]}
+          >
+            <MaterialCommunityIcons name="pin-outline" size={17} color={colors.ptsdGreen} />
+            <Text style={styles.promptChipText}>Pinned</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: filters.showArchived }}
+            onPress={() => setFilters((current) => ({ ...current, showArchived: !current.showArchived }))}
+            style={[styles.promptChip, filters.showArchived ? styles.categoryChipActive : null]}
+          >
+            <MaterialCommunityIcons name="archive-outline" size={17} color={colors.textSecondary} />
+            <Text style={styles.promptChipText}>Archived</Text>
+          </Pressable>
+        </View>
+      </WorkflowFormPanel>
+
+      {activeTab === "Notes" ? (
+        <>
+          <WorkflowFormPanel icon="note-plus-outline" title={noteEditingId ? "Edit Local Note" : "Create Note"}>
+            <View style={styles.formRow}>
+              <WorkflowField label="Title" onChangeText={(title) => setNoteField("title", title)} value={noteDraft.title} />
+              <WorkflowField
+                label="Tags"
+                onChangeText={(tags) => setNoteField("tags", notesService.parseTags(tags))}
+                value={notesService.formatTags(noteDraft.tags)}
+              />
+            </View>
+            <WorkflowField label="Body" multiline onChangeText={(body) => setNoteField("body", body)} value={noteDraft.body} />
+            <View style={styles.filterRow}>
+              {noteCategories.map((category) => (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: noteDraft.category === category }}
+                  key={category}
+                  onPress={() => setNoteField("category", category)}
+                  style={[styles.categoryChip, noteDraft.category === category ? styles.categoryChipActive : null]}
+                >
+                  <Text style={styles.categoryChipText}>{category}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <View style={styles.actionRow}>
+              <SecondaryButton label={`Folder: ${notesService.getFolderName(localData, noteDraft.folderId)}`} onPress={cycleFolder} />
+              <SecondaryButton
+                label={noteDraft.pinned ? "Pinned" : "Pin"}
+                onPress={() => setNoteField("pinned", !noteDraft.pinned)}
+              />
+              <SecondaryButton
+                label={noteDraft.archived ? "Archived" : "Archive"}
+                onPress={() => setNoteField("archived", !noteDraft.archived)}
+              />
+              <PrimaryButton label={noteEditingId ? "Save Changes" : "Create Note"} onPress={saveNote} />
+              <SecondaryButton label="New Note" onPress={startNewNote} />
+            </View>
+          </WorkflowFormPanel>
+
+          <SectionHeader icon="note-text-outline" title="Local Notes" />
+          <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
+            {filteredNotes.map((note) => {
+              const linkedCount = notesService.getLinkedSummaries(localData, note).length;
+
+              return (
+                <WorkflowItemCard
+                  accent={note.pinned ? colors.ptsdGreen : colors.primaryBlue}
+                  active={selectedItem === note.title}
+                  icon={note.pinned ? "pin" : "note-text-outline"}
+                  key={note.id}
+                  meta={`${note.category} - ${notesService.getFolderName(localData, note.folderId)}`}
+                  onDelete={() => onUpdateLocalData((current) => notesService.deleteNote(current, note.id))}
+                  onEdit={() => editNote(note)}
+                  onPress={() => onSelectItem(note.title)}
+                  onPrimary={() => onUpdateLocalData((current) => notesService.togglePinned(current, note.id))}
+                  primaryLabel={note.pinned ? "Unpin" : "Pin"}
+                  reminderEnabled={linkedCount > 0}
+                  status={note.archived ? "Archived" : linkedCount ? `${linkedCount} links` : "Local"}
+                  subtitle={note.body}
+                  title={note.title}
+                />
+              );
+            })}
+          </View>
+        </>
+      ) : null}
+
+      {activeTab === "Folders" ? (
+        <>
+          <WorkflowFormPanel icon="folder-plus-outline" title={folderEditingId ? "Rename Folder" : "Create Folder"}>
+            <View style={styles.formRow}>
+              <WorkflowField label="Folder name" onChangeText={(name) => setFolderField("name", name)} value={folderDraft.name} />
+              <WorkflowField
+                label="Description"
+                onChangeText={(description) => setFolderField("description", description)}
+                value={folderDraft.description ?? ""}
+              />
+            </View>
+            <View style={styles.actionRow}>
+              <PrimaryButton label={folderEditingId ? "Save Folder" : "Create Folder"} onPress={saveFolder} />
+              <SecondaryButton label="New Folder" onPress={startNewFolder} />
+            </View>
+          </WorkflowFormPanel>
+
+          <SectionHeader icon="folder-multiple-outline" title="Folders" />
+          <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
+            {filteredFolders.map((folder) => {
+              const noteCount = localData.structuredNotes.filter((note) => note.folderId === folder.id).length;
+
+              return (
+                <WorkflowItemCard
+                  accent={folder.color ?? colors.ptsdGreen}
+                  active={selectedItem === folder.name}
+                  icon={folder.icon ?? "folder-outline"}
+                  key={folder.id}
+                  meta={`${noteCount} local notes`}
+                  onDelete={() => onUpdateLocalData((current) => notesService.deleteFolder(current, folder.id))}
+                  onEdit={() => editFolder(folder)}
+                  onPress={() => onSelectItem(folder.name)}
+                  onPrimary={() => onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))}
+                  primaryLabel={folder.archived ? "Restore" : "Archive"}
+                  reminderEnabled={!folder.archived}
+                  status={folder.archived ? "Archived" : "Local"}
+                  subtitle={folder.description ?? "Local folder"}
+                  title={folder.name}
+                />
+              );
+            })}
+          </View>
+        </>
+      ) : null}
+
+      {activeTab === "File Metadata" ? (
+        <>
+          <WorkflowFormPanel icon="file-plus-outline" title={metadataEditingId ? "Edit Metadata Placeholder" : "Add File Metadata"}>
+            <View style={styles.formRow}>
+              <WorkflowField
+                label="File name placeholder"
+                onChangeText={(fileName) => setMetadataField("fileName", fileName)}
+                value={metadataDraft.fileName}
+              />
+              <WorkflowField
+                label="Description"
+                onChangeText={(description) => setMetadataField("description", description)}
+                value={metadataDraft.description}
+              />
+            </View>
+            <View style={styles.actionRow}>
+              <SecondaryButton label={`Category: ${metadataDraft.category}`} onPress={cycleMetadataCategory} />
+              <SecondaryButton
+                label={`Linked note: ${notesService.getFolderName(localData, localData.structuredNotes.find((note) => note.id === metadataDraft.linkedNoteId)?.folderId)}`}
+                onPress={() => {
+                  const notes = localData.structuredNotes;
+                  const currentIndex = notes.findIndex((note) => note.id === metadataDraft.linkedNoteId);
+                  setMetadataField("linkedNoteId", notes[(currentIndex + 1) % Math.max(notes.length, 1)]?.id);
+                }}
+              />
+              <PrimaryButton label={metadataEditingId ? "Save Metadata" : "Add Metadata"} onPress={saveMetadata} />
+              <SecondaryButton label="New Metadata" onPress={startNewMetadata} />
+            </View>
+            <DisclaimerBanner message="Metadata placeholders do not open camera, microphone, photo library, document picker, file upload, file sync, or cloud storage." />
+          </WorkflowFormPanel>
+
+          <SectionHeader icon="file-cabinet" title="File Metadata Placeholders" />
+          <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
+            {filteredMetadata.map((item) => (
+              <WorkflowItemCard
+                accent={colors.ptsdGreen}
+                active={selectedItem === item.fileName}
+                icon="file-document-outline"
+                key={item.id}
+                meta={`${item.category} - ${item.fileType}`}
+                onDelete={() => onUpdateLocalData((current) => notesService.deleteFileMetadata(current, item.id))}
+                onEdit={() => editMetadata(item)}
+                onPress={() => onSelectItem(item.fileName)}
+                onPrimary={() => editMetadata(item)}
+                primaryLabel="Edit"
+                reminderEnabled={item.metadataOnly}
+                status="Metadata only"
+                subtitle={item.description}
+                title={item.fileName}
+              />
+            ))}
+          </View>
+        </>
+      ) : null}
+
+      {activeTab === "Linked Items" ? (
+        <>
+          <WorkflowFormPanel icon="link-variant" title="Save Workflow Output As Notes">
+            <View style={styles.actionRow}>
+              <PrimaryButton label="Save Latest AI Response" onPress={() => onUpdateLocalData((current) => notesService.saveAIResponseAsNote(current))} />
+              <SecondaryButton label="Save Latest Translation" onPress={() => onUpdateLocalData((current) => notesService.saveTranslationRecordAsNote(current))} />
+            </View>
+            <DisclaimerBanner message="Linked items are local references only. They do not sync to police systems, cloud storage, RMS, disclosure systems, or case management tools." />
+          </WorkflowFormPanel>
+
+          <SectionHeader icon="link" title="Linked Local Items" />
+          <View style={styles.stack}>
+            {linkedNotes.length === 0 ? (
+              <EmptyState icon="link-off" title="No links yet" message="Create or save a local note with a workflow link." />
+            ) : (
+              linkedNotes.map((note) => (
+                <View key={note.id} style={styles.reviewPanel}>
+                  <Text style={styles.profileName}>{note.title}</Text>
+                  <Text style={styles.profileMeta}>{note.category}</Text>
+                  <View style={styles.stack}>
+                    {notesService.getLinkedSummaries(localData, note).map((summary) => (
+                      <WorkflowSummaryCard
+                        item={{
+                          accent: colors.primaryBlue,
+                          icon: summary.icon,
+                          id: summary.id,
+                          meta: summary.type,
+                          status: summary.type,
+                          subtitle: summary.subtitle,
+                          title: summary.title
+                        }}
+                        key={`${note.id}-${summary.type}-${summary.id}`}
+                        onPress={() => onSelectItem(summary.title)}
+                        selected={selectedItem === summary.title}
+                      />
+                    ))}
+                  </View>
+                </View>
+              ))
+            )}
+          </View>
+        </>
+      ) : null}
+
+      <View style={styles.localDataPanel}>
+        <View style={styles.localDataHeader}>
+          <MaterialCommunityIcons name="shield-lock-outline" size={24} color={colors.ptsdGreen} />
+          <Text style={styles.profileName}>Local Prototype Limits</Text>
+        </View>
+        <Text style={styles.profileMeta}>
+          Notes, folders, metadata, and links are stored locally through the existing offline prototype storage. Reset Demo Data restores
+          default samples. Clear Local Data removes them from this device.
+        </Text>
+      </View>
+
       <PrototypeSelection label={selectedItem} />
-      <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
   );

@@ -114,6 +114,13 @@ incident/notes placeholders, and AI safety notices. It does not connect to OpenA
 police-service systems, legal databases, payments, subscriptions, analytics, advertising, or
 production secrets.
 
+Sprint 013 expands Notes & Files into a local/offline productivity workspace with structured notes,
+folders, file metadata placeholders, workflow links, search/filter controls, and local save-as-note
+actions from mock AI and translation history. It does not upload, store, process, sync, or open real
+files and does not connect to backend APIs, OpenAI, databases, cloud storage, police-service
+systems, payments, subscriptions, analytics, advertising, camera, microphone, photo library, or
+document picker APIs.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -225,6 +232,16 @@ category-specific prompt chips and local history controls. See:
 - `docs/ai-safety-layer.md`
 - `docs/future-openai-integration.md`
 - `docs/ai-privacy-limitations.md`
+
+## Sprint 013 Notes and Files Workflow
+
+Sprint 013 adds the structured local/offline Notes & Files workspace. See:
+
+- `docs/sprint-013-notes-files-workflow.md`
+- `docs/notes-files-workflow.md`
+- `docs/file-metadata-limitations.md`
+- `docs/future-secure-file-storage-plan.md`
+- `docs/notes-files-privacy-limitations.md`
 
 ## Product Principles
 
