@@ -19,12 +19,14 @@ import { courtService } from "@/services/courtService";
 import { dashboardService } from "@/services/dashboardService";
 import { incidentService } from "@/services/incidentService";
 import { notesService } from "@/services/notesService";
+import { notificationService } from "@/services/notificationService";
 import type { LocalAppData } from "@/storage/storageTypes";
 import { trainingService } from "@/services/trainingService";
 import { translationService } from "@/services/translationService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
 import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
+import type { NotificationCategory, NotificationLeadTime, NotificationPreference, ScheduledReminder } from "@/types/notifications";
 
 type ModuleScreenProps = {
   localData: LocalAppData;
@@ -36,6 +38,37 @@ type ModuleScreenProps = {
   onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   profile: MockUserProfile | null;
 };
+
+const leadTimeLabels: Record<NotificationLeadTime, string> = {
+  "15Minutes": "15 min before",
+  "1Day": "1 day before",
+  "1Hour": "1 hour before",
+  "1Week": "1 week before",
+  atTime: "At time"
+};
+
+const leadTimeOptions: NotificationLeadTime[] = ["atTime", "15Minutes", "1Hour", "1Day", "1Week"];
+
+const notificationPreferenceRows: Array<{
+  key: keyof Pick<
+    NotificationPreference,
+    | "calendarEventRemindersEnabled"
+    | "courtRemindersEnabled"
+    | "followUpRemindersEnabled"
+    | "requalificationRemindersEnabled"
+    | "startShiftRemindersEnabled"
+    | "trainingRemindersEnabled"
+  >;
+  label: string;
+  type: NotificationCategory;
+}> = [
+  { key: "courtRemindersEnabled", label: "Court", type: "courtReminder" },
+  { key: "trainingRemindersEnabled", label: "Training", type: "trainingReminder" },
+  { key: "requalificationRemindersEnabled", label: "Requalification", type: "requalificationReminder" },
+  { key: "startShiftRemindersEnabled", label: "Start My Shift", type: "startShiftReminder" },
+  { key: "followUpRemindersEnabled", label: "Follow-Ups", type: "followUpReminder" },
+  { key: "calendarEventRemindersEnabled", label: "Calendar", type: "calendarEventReminder" }
+];
 
 export function ModuleScreen({
   localData,
@@ -821,6 +854,8 @@ function SettingsScreen({
   profile: MockUserProfile | null;
   selectedItem: string;
 }) {
+  const notificationPreference = localData.notificationPreference;
+
   const togglePreference = (
     key: "biometricEnabled" | "notificationsEnabled" | "ptsdRemindersEnabled"
   ) => {
@@ -861,9 +896,175 @@ function SettingsScreen({
           ...current.preferences,
           [key]: nextValue
         },
+        notificationPreference: {
+          ...current.notificationPreference,
+          enabled: key === "notificationsEnabled" ? nextValue : current.notificationPreference.enabled,
+          lastUpdatedAt: new Date().toISOString()
+        },
         updatedAt: new Date().toISOString()
       };
     });
+  };
+
+  const updateNotificationPreference = (updater: (current: NotificationPreference) => NotificationPreference) => {
+    onUpdateLocalData((current) => {
+      const nextPreference = updater(current.notificationPreference);
+      return {
+        ...current,
+        auth: {
+          ...current.auth,
+          notificationPreferences: {
+            courtReminders: nextPreference.courtRemindersEnabled,
+            shiftReminders: nextPreference.startShiftRemindersEnabled,
+            trainingReminders: nextPreference.trainingRemindersEnabled,
+            wellnessReminders: current.auth.notificationPreferences.wellnessReminders
+          },
+          profile: current.auth.profile
+            ? {
+                ...current.auth.profile,
+                notificationPreferences: {
+                  courtReminders: nextPreference.courtRemindersEnabled,
+                  shiftReminders: nextPreference.startShiftRemindersEnabled,
+                  trainingReminders: nextPreference.trainingRemindersEnabled,
+                  wellnessReminders: current.auth.profile.notificationPreferences.wellnessReminders
+                }
+              }
+            : null
+        },
+        notificationPreference: nextPreference,
+        preferences: {
+          ...current.preferences,
+          notificationsEnabled: nextPreference.enabled
+        },
+        updatedAt: new Date().toISOString()
+      };
+    });
+  };
+
+  const toggleNotificationCategory = (key: (typeof notificationPreferenceRows)[number]["key"]) => {
+    updateNotificationPreference((current) => ({
+      ...current,
+      [key]: !current[key],
+      lastUpdatedAt: new Date().toISOString()
+    }));
+  };
+
+  const cycleLeadTime = (category: NotificationCategory) => {
+    updateNotificationPreference((current) => {
+      const currentLeadTime = current.reminderLeadTimes[category];
+      const nextIndex = (leadTimeOptions.indexOf(currentLeadTime) + 1) % leadTimeOptions.length;
+      return {
+        ...current,
+        lastUpdatedAt: new Date().toISOString(),
+        reminderLeadTimes: {
+          ...current.reminderLeadTimes,
+          [category]: leadTimeOptions[nextIndex]
+        }
+      };
+    });
+  };
+
+  const handleRequestNotificationPermission = async () => {
+    try {
+      const status = await notificationService.requestPermission();
+      updateNotificationPreference((current) => ({
+        ...current,
+        enabled: status === "granted",
+        lastUpdatedAt: new Date().toISOString(),
+        permissionPromptSeen: true,
+        permissionStatus: status
+      }));
+      Alert.alert("Notification Permission", status === "granted" ? "Local reminders are enabled." : "Permission was not granted.");
+    } catch {
+      Alert.alert("Notification Permission", "Could not request notification permission on this device.");
+    }
+  };
+
+  const handleMaybeLater = () => {
+    updateNotificationPreference((current) => ({
+      ...current,
+      enabled: false,
+      lastUpdatedAt: new Date().toISOString(),
+      permissionPromptSeen: true,
+      permissionStatus: "maybeLater"
+    }));
+  };
+
+  const scheduleDemo = async (kind: "test" | "court" | "training") => {
+    try {
+      const localNotificationId =
+        kind === "court"
+          ? await notificationService.scheduleDemoCourtReminder()
+          : kind === "training"
+            ? await notificationService.scheduleDemoTrainingReminder()
+            : await notificationService.scheduleTestNotification();
+
+      const now = new Date().toISOString();
+      const reminder: ScheduledReminder = {
+        body:
+          kind === "court"
+            ? "Demo court reminder. Verify official court details through authorized systems."
+            : kind === "training"
+              ? "Demo training reminder. Confirm official training details through authorized systems."
+              : "This is a local prototype notification. No remote push service was used.",
+        createdAt: now,
+        enabled: true,
+        id: `scheduled-${kind}-${Date.now()}`,
+        localNotificationId,
+        relatedEntityId: `${kind}-demo`,
+        relatedEntityType: kind === "court" ? "court" : kind === "training" ? "training" : "system",
+        scheduledAt: new Date(Date.now() + 10 * 1000).toISOString(),
+        title: kind === "court" ? "Demo Court Reminder" : kind === "training" ? "Demo Training Reminder" : "OPAi Test Reminder",
+        type: kind === "court" ? "courtReminder" : kind === "training" ? "trainingReminder" : "systemReminder",
+        updatedAt: now
+      };
+
+      onUpdateLocalData((current) => ({
+        ...current,
+        scheduledReminders: [
+          reminder,
+          ...current.scheduledReminders
+        ].slice(0, 20),
+        updatedAt: now
+      }));
+      Alert.alert("Local Notification Scheduled", "A local prototype notification was scheduled for about 10 seconds from now.");
+    } catch {
+      Alert.alert("Local Notification", "Could not schedule the local notification. Check device notification permission.");
+    }
+  };
+
+  const scheduleStoredReminders = async () => {
+    try {
+      const candidates = notificationService.buildScheduledReminderMetadata(localData).slice(0, 8);
+      const scheduled: ScheduledReminder[] = [];
+
+      for (const reminder of candidates) {
+        scheduled.push(await notificationService.scheduleReminder(reminder));
+      }
+
+      onUpdateLocalData((current) => ({
+        ...current,
+        scheduledReminders: scheduled,
+        updatedAt: new Date().toISOString()
+      }));
+      Alert.alert("Local Reminders Scheduled", `${scheduled.length} prototype reminders were scheduled locally.`);
+    } catch {
+      Alert.alert("Local Reminders", "Could not schedule local reminders. Check device notification permission.");
+    }
+  };
+
+  const cancelAllNotifications = async () => {
+    try {
+      await notificationService.cancelAll();
+      onUpdateLocalData((current) => ({
+        ...current,
+        scheduledReminders: [],
+        updatedAt: new Date().toISOString()
+      }));
+      Alert.alert("Local Notifications", "All local prototype notifications were cancelled.");
+    } catch {
+      Alert.alert("Local Notifications", "Could not cancel local notifications on this device.");
+    }
   };
 
   const confirmResetDemoData = () => {
@@ -955,6 +1156,87 @@ function SettingsScreen({
           onPress={() => togglePreference("ptsdRemindersEnabled")}
         >
           <MaterialCommunityIcons name="ribbon" size={20} color={colors.ptsdGreen} />
+        </SecondaryButton>
+      </View>
+      <View style={styles.localDataPanel}>
+        <View style={styles.localDataHeader}>
+          <MaterialCommunityIcons name="bell-ring-outline" size={24} color={colors.primaryBlue} />
+          <View style={styles.profileCopy}>
+            <Text style={styles.profileName}>Notifications</Text>
+            <Text style={styles.profileMeta}>
+              OPAi can send local reminders for court dates, training, requalification deadlines, shift readiness,
+              follow-ups, and calendar events. You can change this anytime in Settings.
+            </Text>
+          </View>
+        </View>
+        <DisclaimerBanner message="Notification reminders in this testing version are scheduled locally on this device. OPAi does not send remote push notifications in this prototype." />
+        <SecondaryButton label={`Permission: ${notificationPreference.permissionStatus}`} onPress={handleRequestNotificationPermission}>
+          <MaterialCommunityIcons name="shield-check-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <View style={styles.actionRow}>
+          <SecondaryButton label="Enable Notifications" onPress={handleRequestNotificationPermission}>
+            <MaterialCommunityIcons name="bell-check-outline" size={20} color={colors.primaryBlue} />
+          </SecondaryButton>
+          <SecondaryButton label="Maybe Later" onPress={handleMaybeLater}>
+            <MaterialCommunityIcons name="clock-outline" size={20} color={colors.primaryBlue} />
+          </SecondaryButton>
+        </View>
+        <SecondaryButton
+          label={`Enable All ${notificationPreference.enabled ? "On" : "Off"}`}
+          onPress={() =>
+            updateNotificationPreference((current) => ({
+              ...current,
+              enabled: !current.enabled,
+              lastUpdatedAt: new Date().toISOString()
+            }))
+          }
+        >
+          <MaterialCommunityIcons name="toggle-switch-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        {notificationPreferenceRows.map((row) => (
+          <View key={row.key} style={styles.notificationPreferenceRow}>
+            <SecondaryButton
+              label={`${row.label} ${notificationPreference[row.key] ? "On" : "Off"}`}
+              onPress={() => toggleNotificationCategory(row.key)}
+            >
+              <MaterialCommunityIcons name={notificationPreference[row.key] ? "bell-check-outline" : "bell-off-outline"} size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <SecondaryButton
+              label={leadTimeLabels[notificationPreference.reminderLeadTimes[row.type]]}
+              onPress={() => cycleLeadTime(row.type)}
+            >
+              <MaterialCommunityIcons name="timer-outline" size={20} color={colors.ptsdGreen} />
+            </SecondaryButton>
+          </View>
+        ))}
+        <DisclaimerBanner message="OPAi reminders are productivity aids only. Users remain responsible for verifying court dates, training schedules, qualification deadlines, and official obligations through authorized systems and supervisors." />
+      </View>
+      <View style={styles.localDataPanel}>
+        <View style={styles.localDataHeader}>
+          <MaterialCommunityIcons name="test-tube" size={24} color={colors.ptsdGreen} />
+          <View style={styles.profileCopy}>
+            <Text style={styles.profileName}>Notification Testing - Local Prototype</Text>
+            <Text style={styles.profileMeta}>
+              Scheduled locally: {localData.scheduledReminders.length}. No APNs server, FCM, backend push, or remote token is used.
+            </Text>
+          </View>
+        </View>
+        <View style={styles.actionRow}>
+          <SecondaryButton label="Test in 10 sec" onPress={() => scheduleDemo("test")}>
+            <MaterialCommunityIcons name="timer-sand" size={20} color={colors.primaryBlue} />
+          </SecondaryButton>
+          <SecondaryButton label="Demo Court" onPress={() => scheduleDemo("court")}>
+            <MaterialCommunityIcons name="scale-balance" size={20} color={colors.primaryBlue} />
+          </SecondaryButton>
+        </View>
+        <SecondaryButton label="Demo Training" onPress={() => scheduleDemo("training")}>
+          <MaterialCommunityIcons name="school-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton label="Schedule Local Reminders" onPress={scheduleStoredReminders}>
+          <MaterialCommunityIcons name="calendar-sync-outline" size={20} color={colors.primaryBlue} />
+        </SecondaryButton>
+        <SecondaryButton label="Cancel All Local Notifications" onPress={cancelAllNotifications}>
+          <MaterialCommunityIcons name="bell-cancel-outline" size={20} color={colors.danger} />
         </SecondaryButton>
       </View>
       <View style={styles.stack}>
@@ -1117,6 +1399,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: spacing.sm,
     padding: spacing.md
+  },
+  notificationPreferenceRow: {
+    gap: spacing.sm
   },
   heroSub: {
     color: colors.textMuted,

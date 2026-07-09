@@ -1,5 +1,6 @@
 import type { MciIcon } from "@/data/uiMockups";
 import type { AuthStatus, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
+import type { NotificationPreference, ScheduledReminder } from "@/types/notifications";
 
 export type LocalAuthSession = {
   status: AuthStatus;
@@ -97,4 +98,6 @@ export type LocalAppData = {
   followUpReminders: LocalReminderCard[];
   aiHistory: LocalDemoHistoryItem[];
   translationHistory: LocalDemoHistoryItem[];
+  notificationPreference: NotificationPreference;
+  scheduledReminders: ScheduledReminder[];
 };
