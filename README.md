@@ -91,6 +91,11 @@ scheduling, demo court/training reminders, and cancel-all behavior. It does not 
 APNs server integration, Firebase Cloud Messaging, external calendar sync, OpenAI, databases,
 payments, subscriptions, police-service integrations, or production secrets.
 
+Sprint 009 adds local editable workflows for Calendar, Court, Training, Requalification, and
+Follow-Up reminders. These workflows use placeholder/offline data and the Sprint 008 local
+notification scheduler only. External calendar sync, backend APIs, databases, OpenAI, payments,
+subscriptions, police-service integrations, and production secrets remain out of scope.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -162,6 +167,17 @@ Sprint 008 adds local notification scheduling for testing and pre-launch review.
 - `docs/notification-permissions.md`
 - `docs/notification-testing.md`
 - `docs/sprint-008-local-notifications.md`
+
+## Sprint 009 Calendar, Court, Training, and Requalification
+
+Sprint 009 adds local workflow screens and storage for calendar items, court reminders, training
+events, requalification deadlines, and follow-up reminders. See:
+
+- `docs/calendar-workflow.md`
+- `docs/court-reminder-workflow.md`
+- `docs/training-requalification-workflow.md`
+- `docs/follow-up-reminder-workflow.md`
+- `docs/sprint-009-calendar-court-training-workflow.md`
 
 ## Product Principles
 

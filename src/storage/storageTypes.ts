@@ -1,6 +1,13 @@
 import type { MciIcon } from "@/data/uiMockups";
 import type { AuthStatus, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
 import type { NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type {
+  CalendarWorkflowEvent,
+  CourtWorkflowEvent,
+  FollowUpWorkflowReminder,
+  RequalificationWorkflowReminder,
+  TrainingWorkflowEvent
+} from "@/types/workflow";
 
 export type LocalAuthSession = {
   status: AuthStatus;
@@ -100,4 +107,9 @@ export type LocalAppData = {
   translationHistory: LocalDemoHistoryItem[];
   notificationPreference: NotificationPreference;
   scheduledReminders: ScheduledReminder[];
+  calendarWorkflowEvents: CalendarWorkflowEvent[];
+  courtWorkflowEvents: CourtWorkflowEvent[];
+  trainingWorkflowEvents: TrainingWorkflowEvent[];
+  requalificationWorkflowReminders: RequalificationWorkflowReminder[];
+  followUpWorkflowReminders: FollowUpWorkflowReminder[];
 };

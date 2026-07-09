@@ -1,13 +1,26 @@
 import { CURRENT_STORAGE_VERSION } from "@/storage/storageKeys";
-import { createDefaultNotificationPreference, createDefaultScheduledReminders } from "@/storage/seedDataService";
+import {
+  createDefaultCalendarWorkflowEvents,
+  createDefaultCourtWorkflowEvents,
+  createDefaultFollowUpWorkflowReminders,
+  createDefaultNotificationPreference,
+  createDefaultRequalificationWorkflowReminders,
+  createDefaultScheduledReminders,
+  createDefaultTrainingWorkflowEvents
+} from "@/storage/seedDataService";
 import type { LocalAppData } from "@/storage/storageTypes";
 
 export const migrationService = {
   migrate(data: LocalAppData): LocalAppData {
     const migrated = {
       ...data,
+      calendarWorkflowEvents: data.calendarWorkflowEvents ?? createDefaultCalendarWorkflowEvents(),
+      courtWorkflowEvents: data.courtWorkflowEvents ?? createDefaultCourtWorkflowEvents(),
+      followUpWorkflowReminders: data.followUpWorkflowReminders ?? createDefaultFollowUpWorkflowReminders(),
       notificationPreference: data.notificationPreference ?? createDefaultNotificationPreference(),
-      scheduledReminders: data.scheduledReminders ?? createDefaultScheduledReminders()
+      requalificationWorkflowReminders: data.requalificationWorkflowReminders ?? createDefaultRequalificationWorkflowReminders(),
+      scheduledReminders: data.scheduledReminders ?? createDefaultScheduledReminders(),
+      trainingWorkflowEvents: data.trainingWorkflowEvents ?? createDefaultTrainingWorkflowEvents()
     };
 
     if (migrated.version === CURRENT_STORAGE_VERSION) {
