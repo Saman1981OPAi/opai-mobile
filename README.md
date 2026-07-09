@@ -144,6 +144,15 @@ cloud sync, real authentication providers, real file upload, payments, subscript
 advertising, police-service integrations, production secrets, Google Play release workflow, or
 Android production workflow.
 
+Sprint 017 prepares the iOS release candidate and App Store asset finalization package. It updates
+the beta build number to `17`, keeps the app at `0.1.0-beta`, adds App Store metadata drafts, App
+Review notes, screenshot final checklists, legal URL verification, App Privacy declaration draft,
+iOS permission audit, release candidate QA checklist, and TestFlight submission checklist. It remains
+a local/offline prototype and does not add backend APIs, OpenAI, production databases, cloud sync,
+real authentication providers, real file upload, payments, subscriptions, analytics, advertising,
+police-service integrations, production secrets, Google Play release workflow, or Android production
+workflow.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -295,8 +304,8 @@ visibility. Current beta values:
 
 - App version: `0.1.0-beta`
 - Native Expo version: `0.1.0`
-- Build: `16`
-- Status: Internal TestFlight Beta
+- Build: `17`
+- Status: iOS Internal Beta / Release Candidate
 - Platform priority: iOS-first
 
 See:
@@ -312,6 +321,22 @@ See:
 - `docs/screenshot-checklist-ios.md`
 - `docs/bug-report-template.md`
 - `docs/beta-feedback-template.md`
+
+## Sprint 017 iOS Release Candidate and App Store Assets
+
+Sprint 017 prepares the iOS release candidate documentation and App Store-facing asset package. See:
+
+- `docs/sprint-017-release-candidate-app-store-assets.md`
+- `docs/release-candidate-audit.md`
+- `docs/app-store-metadata-final-draft.md`
+- `docs/app-review-notes-draft.md`
+- `docs/app-store-screenshot-final-checklist.md`
+- `docs/legal-url-verification.md`
+- `docs/app-privacy-declaration-final-draft.md`
+- `docs/ios-permission-audit.md`
+- `docs/release-candidate-qa-checklist.md`
+- `docs/testflight-submission-checklist.md`
+- `docs/known-limitations-beta.md`
 
 ## Product Principles
 
