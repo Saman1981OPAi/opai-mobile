@@ -2,7 +2,7 @@
 
 ## Status
 
-OPAi Police is prepared as an iOS-first release candidate for internal beta review. The current build remains a local/offline prototype.
+OPAi Police is prepared as an iOS-first release candidate for internal beta review. The current build is `18` and remains a local/offline prototype.
 
 ## Audit Results
 

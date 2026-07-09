@@ -144,7 +144,7 @@ cloud sync, real authentication providers, real file upload, payments, subscript
 advertising, police-service integrations, production secrets, Google Play release workflow, or
 Android production workflow.
 
-Sprint 017 prepares the iOS release candidate and App Store asset finalization package. It updates
+Sprint 017 prepares the iOS release candidate and App Store asset finalization package. It updated
 the beta build number to `17`, keeps the app at `0.1.0-beta`, adds App Store metadata drafts, App
 Review notes, screenshot final checklists, legal URL verification, App Privacy declaration draft,
 iOS permission audit, release candidate QA checklist, and TestFlight submission checklist. It remains
@@ -152,6 +152,14 @@ a local/offline prototype and does not add backend APIs, OpenAI, production data
 real authentication providers, real file upload, payments, subscriptions, analytics, advertising,
 police-service integrations, production secrets, Google Play release workflow, or Android production
 workflow.
+
+Sprint 018 hardens the release candidate after beta-readiness review. It updates the current build
+number to `18`, keeps the app at `0.1.0-beta`, fixes duplicate bulk local notification scheduling,
+adds beta feedback triage, App Store review risk audit, hardening checklist, and final pre-TestFlight
+QA notes. It remains a local/offline prototype and does not add backend APIs, OpenAI, production
+databases, cloud sync, real authentication providers, real file upload, payments, subscriptions,
+analytics, advertising, police-service integrations, production secrets, Google Play release workflow,
+or Android production workflow.
 
 ## Apple Build & Upload
 
@@ -304,8 +312,8 @@ visibility. Current beta values:
 
 - App version: `0.1.0-beta`
 - Native Expo version: `0.1.0`
-- Build: `17`
-- Status: iOS Internal Beta / Release Candidate
+- Build: `18`
+- Status: Internal Beta / Release Candidate Hardening
 - Platform priority: iOS-first
 
 See:
@@ -337,6 +345,16 @@ Sprint 017 prepares the iOS release candidate documentation and App Store-facing
 - `docs/release-candidate-qa-checklist.md`
 - `docs/testflight-submission-checklist.md`
 - `docs/known-limitations-beta.md`
+
+## Sprint 018 Beta Feedback and Release Candidate Hardening
+
+Sprint 018 hardens the iOS release candidate and prepares final pre-TestFlight QA. See:
+
+- `docs/sprint-018-beta-feedback-release-candidate-hardening.md`
+- `docs/beta-feedback-triage.md`
+- `docs/app-store-review-risk-audit.md`
+- `docs/release-candidate-hardening-checklist.md`
+- `docs/final-pre-testflight-qa.md`
 
 ## Product Principles
 

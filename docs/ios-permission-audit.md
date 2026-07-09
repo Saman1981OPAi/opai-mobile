@@ -6,7 +6,7 @@
 - Bundle identifier: `com.opaiapp.police`
 - Version: `0.1.0`
 - Beta app version label: `0.1.0-beta`
-- Build number: `17`
+- Build number: `18`
 - Orientation: default
 - Supports iPad: true
 - Encryption flag: `ITSAppUsesNonExemptEncryption` is false

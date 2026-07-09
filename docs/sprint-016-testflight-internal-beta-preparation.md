@@ -19,8 +19,9 @@ Prepare OPAi Police for internal iOS TestFlight beta review while preserving the
 
 - App version: `0.1.0-beta`
 - Native Expo version: `0.1.0`
-- Build: `16`
-- Status: Internal TestFlight Beta
+- Current build: `18`
+- Original Sprint 016 build: `16`
+- Status: Internal Beta / Release Candidate Hardening
 - Platform priority: iOS-first
 
 ## Out of Scope
