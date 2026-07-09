@@ -102,6 +102,12 @@ reminder creation, local calendar placeholders, and an AI-ready placeholder. It 
 connect to backend APIs, databases, OpenAI, real evidence upload, cloud sync, police-service
 systems, payments, subscriptions, analytics, advertising, or production secrets.
 
+Sprint 011 expands Translation into a local/offline mock workflow with text translation, voice,
+conversation, camera/OCR, document, history, preferences, and incident-link placeholders. It does
+not connect to real translation APIs, OpenAI, backend APIs, OCR services, microphone recording,
+camera access, document upload, cloud storage, police-service systems, payments, subscriptions,
+analytics, advertising, or production secrets.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -193,6 +199,15 @@ Sprint 010 adds structured local incident drafting. See:
 - `docs/incident-data-model.md`
 - `docs/incident-privacy-limitations.md`
 - `docs/sprint-010-new-incident-workflow.md`
+
+## Sprint 011 Translation Workflow
+
+Sprint 011 adds structured local/mock translation workflows. See:
+
+- `docs/translation-workflow.md`
+- `docs/translation-privacy-limitations.md`
+- `docs/translation-future-api-plan.md`
+- `docs/sprint-011-translation-workflow.md`
 
 ## Product Principles
 

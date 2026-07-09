@@ -6,8 +6,10 @@ import {
   createDefaultNotificationPreference,
   createDefaultRequalificationWorkflowReminders,
   createDefaultScheduledReminders,
+  createDefaultTranslationPreferences,
   createDefaultTrainingWorkflowEvents,
-  normalizeIncidentDrafts
+  normalizeIncidentDrafts,
+  normalizeTranslationHistory
 } from "@/storage/seedDataService";
 import type { LocalAppData } from "@/storage/storageTypes";
 
@@ -22,7 +24,9 @@ export const migrationService = {
       notificationPreference: data.notificationPreference ?? createDefaultNotificationPreference(),
       requalificationWorkflowReminders: data.requalificationWorkflowReminders ?? createDefaultRequalificationWorkflowReminders(),
       scheduledReminders: data.scheduledReminders ?? createDefaultScheduledReminders(),
-      trainingWorkflowEvents: data.trainingWorkflowEvents ?? createDefaultTrainingWorkflowEvents()
+      trainingWorkflowEvents: data.trainingWorkflowEvents ?? createDefaultTrainingWorkflowEvents(),
+      translationHistory: normalizeTranslationHistory(data.translationHistory),
+      translationPreferences: data.translationPreferences ?? createDefaultTranslationPreferences()
     };
 
     if (migrated.version === CURRENT_STORAGE_VERSION) {

@@ -9,6 +9,7 @@ import type {
   IncidentWitness
 } from "@/types/incident";
 import type { NotificationPreference, ScheduledReminder } from "@/types/notifications";
+import type { TranslationPreferences, TranslationRecord } from "@/types/translation";
 import type {
   CalendarWorkflowEvent,
   CourtWorkflowEvent,
@@ -119,7 +120,8 @@ export type LocalAppData = {
   trainingReminders: LocalReminderCard[];
   followUpReminders: LocalReminderCard[];
   aiHistory: LocalDemoHistoryItem[];
-  translationHistory: LocalDemoHistoryItem[];
+  translationHistory: TranslationRecord[];
+  translationPreferences: TranslationPreferences;
   notificationPreference: NotificationPreference;
   scheduledReminders: ScheduledReminder[];
   calendarWorkflowEvents: CalendarWorkflowEvent[];
