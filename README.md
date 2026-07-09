@@ -168,6 +168,12 @@ release guidance, and a final no-integration audit. It adds no product features 
 integrations. Android compatibility remains intact while Google Play release work stays paused
 pending the D-U-N-S Number for Ebrahimi Holdings.
 
+Sprint 020 adds TestFlight submission support and hotfix readiness documentation without changing
+the candidate binary. Build `19` remains current. The sprint adds issue-response and App Review
+templates, hotfix/build-replacement procedures, tester onboarding, feedback intake, screenshot and
+privacy/legal checks, and release-freeze rules. It adds no product feature or production
+integration, and Android production release remains paused.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -381,6 +387,24 @@ for internal TestFlight review. See:
 - `docs/post-submission-monitoring-plan.md`
 - `docs/release-branch-strategy.md`
 - `docs/final-no-integration-check.md`
+
+## Sprint 020 TestFlight Submission Support and Hotfix Readiness
+
+Sprint 020 prepares controlled response and beta-operations guidance for build `19`. See:
+
+- `docs/sprint-020-testflight-submission-support-hotfix-readiness.md`
+- `docs/testflight-submission-support-checklist.md`
+- `docs/app-store-issue-response-playbook.md`
+- `docs/app-review-response-templates.md`
+- `docs/hotfix-branch-strategy.md`
+- `docs/build-replacement-procedure.md`
+- `docs/beta-tester-onboarding-package.md`
+- `docs/beta-feedback-intake-system.md`
+- `docs/first-beta-hotfix-plan.md`
+- `docs/app-store-connect-cross-check.md`
+- `docs/screenshot-correction-procedure.md`
+- `docs/privacy-legal-final-verification.md`
+- `docs/release-freeze-rules.md`
 
 ## Product Principles
 
