@@ -8,7 +8,7 @@ Sprint 014 displays local support and compliance contact information in Settings
 - Legal: legal@opaiapp.com
 - Website: https://opaiapp.com
 - Contact: https://opaiapp.com/contact
-- Support URL: https://opaiapp.com/support pending if not live
+- Support URL: https://opaiapp.com/support (live; canonical contact page is `/contact`)
 
 The prototype does not send email, open a support ticket, or connect to a live support backend.
 

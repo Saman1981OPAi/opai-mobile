@@ -1,6 +1,6 @@
 # Release Freeze Confirmation
 
-The TestFlight release freeze remains active.
+The App Store public-submission release freeze remains active through Sprint 023.
 
 ## Allowed With Review
 
@@ -8,6 +8,7 @@ The TestFlight release freeze remains active.
 - App Store metadata, screenshot, review, privacy, or legal corrections
 - Typo and critical non-disruptive UX fixes tied to observed beta issues
 - Tests and documentation directly supporting a required correction
+- Build-number corrections and public URL fixes required by App Store Connect
 
 ## Not Allowed
 
@@ -20,3 +21,12 @@ The TestFlight release freeze remains active.
 
 Android compatibility must remain intact. Android release stays paused pending the D-U-N-S Number
 for Ebrahimi Holdings.
+
+## Current Manual Gates
+
+- Build `21` has not been generated.
+- Build `21` has not been uploaded.
+- Real-device TestFlight certification has not been completed.
+- Final screenshots and App Store questionnaires have not been certified against build `21`.
+
+Only release-freeze-allowed work may be performed while these gates are open.

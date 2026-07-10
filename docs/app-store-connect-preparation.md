@@ -8,10 +8,10 @@
 - Target build: `21` (EAS remote version must be synchronized before build)
 - Platform: iOS-first
 - Website: https://opaiapp.com
-- Privacy URL: https://opaiapp.com/privacy-policy
-- Terms URL: https://opaiapp.com/terms-of-service
-- Support URL: https://opaiapp.com/contact
-- Alternate support URL: https://opaiapp.com/support, pending because it currently returns 404
+- Privacy URL: https://opaiapp.com/privacy
+- Terms URL: https://opaiapp.com/terms
+- Support URL: https://opaiapp.com/support
+- Canonical pages: `/privacy-policy`, `/terms-of-service`, and `/contact`
 
 ## Contacts
 
