@@ -197,6 +197,10 @@ evidence-based triage, response templates, issue/status logs, metadata-versus-bi
 replacement-build readiness without changing runtime behavior. The release remains NO-GO until
 build `21` completes the existing manual gates.
 
+Build 21 execution preparation confirms the iOS release identity, hardens App Transport Security,
+aligns the in-app testing/support metadata, validates exports and local launch, and records the EAS
+remote-version procedure. It does not generate, upload, submit, or install the signed build.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -500,6 +504,16 @@ See:
 - `docs/public-build-replacement-readiness.md`
 - `docs/support-inbox-workflow.md`
 - `docs/public-legal-url-monitoring.md`
+
+## Build 21 iOS TestFlight Execution Preparation
+
+The execution-preparation checklist records validated source/configuration facts and the remaining
+manual EAS, App Store Connect, and physical-device gates:
+
+- `docs/build-21-execution-checklist.md`
+- `docs/version-build-number-review.md`
+- `docs/ios-permission-audit.md`
+- `docs/testflight-upload-instructions.md`
 
 ## Product Principles
 
