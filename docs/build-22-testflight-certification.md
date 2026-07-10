@@ -4,7 +4,7 @@
 
 `NOT CERTIFIED`
 
-Build 22 has been generated but has not yet been uploaded, processed by Apple, installed through TestFlight, or physically tested on a real iPhone.
+Build 22 has been generated and uploaded to App Store Connect. It has not yet been confirmed as processed by Apple, installed through TestFlight, or physically tested on a real iPhone.
 
 ## Build Details
 
@@ -14,7 +14,8 @@ Build 22 has been generated but has not yet been uploaded, processed by Apple, i
 - In-app release label: `0.1.0-beta`
 - Bundle identifier: `com.opaiapp.police`
 - IPA generated: yes
-- Uploaded to App Store Connect: no
+- Uploaded to App Store Connect: yes
+- EAS Submission ID: `0bebc73a-ea44-486f-b0b8-06ffead7dca8`
 - Apple processing complete: no
 - Appears in TestFlight: no
 - Installed through TestFlight: no

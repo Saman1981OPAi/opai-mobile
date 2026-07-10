@@ -1,6 +1,6 @@
-# Build 22 Upload Next Steps
+# Build 22 Upload Status and Next Steps
 
-Build 22 exists as a generated EAS iOS production artifact.
+Build 22 exists as a generated EAS iOS production artifact and has been uploaded to App Store Connect.
 
 ## Build To Upload
 
@@ -11,13 +11,22 @@ Build 22 exists as a generated EAS iOS production artifact.
 
 ## Upload Command
 
-Use EAS Submit against the exact build ID:
+EAS Submit was run against the exact build ID:
 
 ```bash
 pnpm exec eas submit --platform ios --id 6c9bceae-7b11-453b-98d6-e5f06a1a8b28
 ```
 
 Do not use `--latest` when the exact build ID is available.
+
+## Upload Result
+
+- Submission ID: `0bebc73a-ea44-486f-b0b8-06ffead7dca8`
+- Submission URL: https://expo.dev/accounts/ebrahimi-holdings/projects/opai-police/submissions/0bebc73a-ea44-486f-b0b8-06ffead7dca8
+- ASC App ID: `6788187875`
+- Upload status: successful
+- Apple processing: pending confirmation
+- TestFlight visibility: pending Apple processing
 
 ## Upload Rules
 
