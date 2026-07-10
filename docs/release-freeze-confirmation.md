@@ -1,6 +1,6 @@
 # Release Freeze Confirmation
 
-The App Store public-submission release freeze remains active through Sprint 023.
+The App Store public-submission release freeze remains active through Sprint 024.
 
 ## Allowed With Review
 
@@ -9,6 +9,7 @@ The App Store public-submission release freeze remains active through Sprint 023
 - Typo and critical non-disruptive UX fixes tied to observed beta issues
 - Tests and documentation directly supporting a required correction
 - Build-number corrections and public URL fixes required by App Store Connect
+- Evidence-based Apple review responses and narrowly scoped review corrections
 
 ## Not Allowed
 

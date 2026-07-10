@@ -192,6 +192,11 @@ QA and risk checklists, and an explicit go/no-go gate. The preferred public URLs
 `/privacy`, `/terms`, and `/support`. Public submission remains NO-GO until build `21` is generated,
 uploaded, and certified through real-device TestFlight testing.
 
+Sprint 024 adds public-submission support and Apple review-response operations. It provides
+evidence-based triage, response templates, issue/status logs, metadata-versus-binary decisions, and
+replacement-build readiness without changing runtime behavior. The release remains NO-GO until
+build `21` completes the existing manual gates.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -479,6 +484,20 @@ Sprint 023 assembles the public App Store submission package without adding runt
 - `docs/public-submission-risk-register.md`
 - `docs/public-submission-go-no-go-checklist.md`
 - `docs/release-freeze-confirmation.md`
+
+## Sprint 024 Public Submission Support and Apple Review Response
+
+Sprint 024 prepares the operating package for Apple public review without adding runtime features.
+See:
+
+- `docs/sprint-024-public-submission-support-apple-review-response.md`
+- `docs/public-submission-support-checklist.md`
+- `docs/apple-public-review-response-playbook.md`
+- `docs/apple-public-review-response-templates.md`
+- `docs/apple-review-issue-log.md`
+- `docs/apple-review-evidence-checklist.md`
+- `docs/public-submission-status-log.md`
+- `docs/public-build-replacement-readiness.md`
 
 ## Product Principles
 
