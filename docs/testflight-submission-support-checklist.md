@@ -1,17 +1,17 @@
 # TestFlight Submission Support Checklist
 
-Use this checklist with build `19`. A documentation-only change does not require a replacement
-binary; increment the build number only when a new binary is generated.
+Use this checklist with target build `21`. Synchronize the EAS remote baseline before generating
+the binary.
 
 ## Before Upload
 
 - [ ] Confirm `main` is stable and Sprint 019 is merged.
-- [x] Confirm native version `0.1.0`, beta label `0.1.0-beta`, and build `19`.
+- [x] Confirm native version `0.1.0`, beta label `0.1.0-beta`, and target build `21`.
 - [ ] Re-run typecheck and iOS export from the final merged commit.
 - [ ] Confirm no production secrets, backend, OpenAI, or database calls.
 - [x] App Review notes and TestFlight beta notes are prepared.
 - [x] Live URLs: Privacy `/privacy-policy`, Terms `/terms-of-service`, Support `/contact`.
-- [ ] Confirm final screenshots use accepted dimensions and match build `19`.
+- [ ] Confirm final screenshots use accepted dimensions and match build `21`.
 - [ ] Visually confirm the app icon and splash screen on a real device.
 - [x] Confirm bundle identifier `com.opaiapp.police`.
 
@@ -21,7 +21,7 @@ binary; increment the build number only when a new binary is generated.
 - [ ] Confirm processing completes and the build appears in App Store Connect.
 - [ ] Complete encryption/export compliance and content-rights questions accurately.
 - [ ] Review App Privacy answers against the uploaded binary.
-- [ ] Select build `19` for internal TestFlight.
+- [ ] Select processed build `21` for internal TestFlight.
 - [ ] Add approved internal testers and paste final beta information.
 
 ## After Upload

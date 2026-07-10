@@ -4,7 +4,7 @@
 
 - [ ] `main` is current and Sprint 019 has been reviewed and merged.
 - [x] Native version is `0.1.0`; displayed beta version is `0.1.0-beta`.
-- [x] iOS build number is `19`.
+- [x] Target iOS build number is `21`; synchronize the EAS remote baseline before building.
 - [ ] CI, typecheck, iOS export, and final release build pass.
 - [ ] App icon and splash screen are visually confirmed on a real device.
 - [x] No production secrets or hardcoded API keys are present in the reviewed source.
@@ -19,7 +19,7 @@
 - [ ] Generate the signed iOS build through the approved EAS production profile.
 - [ ] Upload the build to App Store Connect.
 - [ ] Wait for processing to complete without errors.
-- [ ] Select build `19` for TestFlight.
+- [ ] Select processed build `21` for TestFlight.
 - [ ] Paste the final beta information and App Review notes.
 - [ ] Add internal testers.
 - [ ] Answer export compliance and content-rights questions accurately.

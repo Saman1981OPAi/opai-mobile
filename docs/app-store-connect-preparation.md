@@ -5,7 +5,7 @@
 - App name: OPAi Police
 - App status: Testing / Pre-Launch
 - App version: `0.1.0-beta`
-- Build: `19`
+- Target build: `21` (EAS remote version must be synchronized before build)
 - Platform: iOS-first
 - Website: https://opaiapp.com
 - Privacy URL: https://opaiapp.com/privacy-policy

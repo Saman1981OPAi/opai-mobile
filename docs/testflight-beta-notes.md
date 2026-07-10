@@ -11,7 +11,7 @@ Please do not enter real police records, confidential information, sensitive per
 ## Build Information
 
 - Version: `0.1.0-beta`
-- Build: `19`
-- Status: TestFlight Submission Package
+- Target build: `21`
+- Status: Internal TestFlight Beta Candidate
 - Platform priority: iOS-first
 
