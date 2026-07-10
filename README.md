@@ -186,6 +186,12 @@ as simulated QA. The sprint resets scroll position on module changes, improves f
 handling, increases interactive touch targets, and documents feedback, physical-device, App Store,
 hotfix, limitations, and release-freeze status. Target build `21` remains pending review and upload.
 
+Sprint 023 prepares the public App Store submission documentation package. It adds copy-ready
+metadata, release and review notes, privacy and content-rating guidance, screenshot and URL checks,
+QA and risk checklists, and an explicit go/no-go gate. The preferred public URLs are live at
+`/privacy`, `/terms`, and `/support`. Public submission remains NO-GO until build `21` is generated,
+uploaded, and certified through real-device TestFlight testing.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -453,6 +459,26 @@ triage. See:
 - `docs/sprint-022-hotfix-readiness.md`
 - `docs/sprint-022-release-freeze-compliance.md`
 - `docs/known-limitations-beta.md`
+
+## Sprint 023 App Store Public Submission Preparation
+
+Sprint 023 assembles the public App Store submission package without adding runtime features. See:
+
+- `docs/sprint-023-app-store-public-submission-preparation.md`
+- `docs/public-app-store-submission-master-checklist.md`
+- `docs/final-app-store-metadata.md`
+- `docs/public-release-notes.md`
+- `docs/final-app-review-notes-public-submission.md`
+- `docs/final-app-privacy-answers.md`
+- `docs/final-age-rating-notes.md`
+- `docs/final-content-rights-notes.md`
+- `docs/final-export-compliance-notes.md`
+- `docs/final-screenshot-submission-checklist.md`
+- `docs/final-public-submission-url-verification.md`
+- `docs/final-public-submission-qa-checklist.md`
+- `docs/public-submission-risk-register.md`
+- `docs/public-submission-go-no-go-checklist.md`
+- `docs/release-freeze-confirmation.md`
 
 ## Product Principles
 

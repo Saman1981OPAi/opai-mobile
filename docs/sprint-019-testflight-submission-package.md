@@ -25,9 +25,9 @@ secret. The build remains a local/offline testing prototype using demo data.
 
 ## URL Finding
 
-The live canonical legal pages are `/privacy-policy` and `/terms-of-service`. The requested aliases
-`/privacy`, `/terms`, and `/support` currently return 404 and are documented as follow-up website
-redirects. The final App Store package uses only currently live URLs.
+Sprint 019 originally found missing short aliases. Website PR #21 resolved that follow-up in Sprint
+023: `/privacy`, `/terms`, and `/support` now return HTTP 200, while `/privacy-policy`,
+`/terms-of-service`, and `/contact` remain the canonical pages.
 
 ## Platform Priority
 

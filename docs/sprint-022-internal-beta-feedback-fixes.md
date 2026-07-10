@@ -26,7 +26,7 @@ reasonable internal-QA fixes while preserving the local/offline prototype archit
 
 - Generate/upload target build `21` after Sprint 022 review and merge.
 - Physical iPhone/iPad TestFlight smoke and accessibility testing.
-- Optional website redirects for unavailable short legal/support aliases.
+- Website short legal/support aliases were deferred here and resolved by website PR #21 in Sprint 023.
 
 ## Release Impact
 

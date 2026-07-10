@@ -10,13 +10,13 @@ field against the actual build before submission.
 - Primary category: Productivity
 - Secondary category: Utilities (Business is an acceptable alternative if required)
 - Marketing URL: https://opaiapp.com
-- Support URL: https://opaiapp.com/contact
-- Privacy Policy URL: https://opaiapp.com/privacy-policy
-- Requested privacy alias: https://opaiapp.com/privacy (not live as of July 9, 2026)
+- Support URL: https://opaiapp.com/support
+- Privacy Policy URL: https://opaiapp.com/privacy
+- Terms URL: https://opaiapp.com/terms
 - Copyright: 2026 OPAi
 
-The live canonical Privacy Policy URL is used above because App Store Connect requires a working
-public URL. Add a website redirect for `/privacy` before using that shorter alias.
+The short routes are live static aliases. Canonical pages remain available at `/contact`,
+`/privacy-policy`, and `/terms-of-service`.
 
 ## Promotional Text
 
