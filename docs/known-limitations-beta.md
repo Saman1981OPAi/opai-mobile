@@ -16,6 +16,11 @@
 - No external calendar sync.
 - Weather is a beta Home Dashboard convenience feature using Open-Meteo and may be unavailable offline.
 - Optional foreground location is used only when the user requests local weather; no background tracking is implemented.
+- Device Testing uses bundled local reference guides only.
+- Device Testing does not connect to live AI, OpenAI, backend APIs, police systems, or equipment systems.
+- Device Testing does not create official equipment certifications, official logs, evidentiary records, legal certificates, maintenance records, or police-service notifications.
+- Unsupported Device Testing models receive a manual/procedure notice instead of generated instructions.
+- Device Testing source content must be rechecked before production or operational use.
 - Build 21 failed physical iPhone certification. Build 22 or higher is required before public submission.
 - No payment or subscription functionality.
 - Android release is paused pending the D-U-N-S Number for Ebrahimi Holdings.

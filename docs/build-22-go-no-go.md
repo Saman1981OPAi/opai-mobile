@@ -16,6 +16,7 @@ Build 22 has not yet been generated, uploaded, processed by Apple, installed thr
 - Install Build 22 through TestFlight on a physical iPhone.
 - Complete the Build 22 physical certification checklist.
 - Confirm no critical layout, crash, permission, legal, or navigation defects.
+- Confirm Device Testing category selection, model selection, local guide display, unsupported-model refusal, qualified-technician gate, source links, and Use of Force safeguards pass real-device testing.
 
 ## Build 21 Status
 

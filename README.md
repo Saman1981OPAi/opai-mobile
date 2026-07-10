@@ -29,6 +29,7 @@ Included screens:
 - Home Dashboard
 - Start My Shift
 - New Incident
+- Device Testing
 - Translation
 - Calendar
 - AI Assistant
@@ -527,8 +528,11 @@ Build 22 adds:
 - iOS layout containment fixes for cards, workflow rows, buttons, and navigation labels.
 - A Home Dashboard Today card with time, date, weather, manual city selection, and optional foreground location weather.
 - Report Writing user-facing naming while preserving internal incident route/storage identifiers.
+- App-only Device Testing with local verified guide workflows for LIDAR, Stationary RADAR, Moving RADAR, ASD, Breath Instrument, and Use of Force reference.
 - Official OPAi community links for WhatsApp, Instagram, and Facebook.
 - Weather, location privacy, legal, and App Store documentation updates.
+
+Device Testing in Build 22 is curated-local only. It requires exact model selection, opens the initial guide automatically with no typed prompt, works offline, shows source metadata, refuses unsupported models, gates Breath Instrument content behind qualified-technician confirmation, and keeps Use of Force non-prescriptive. It does not call OpenAI, connect to a backend, request new permissions, collect serial numbers, certify equipment, or create official equipment records.
 
 Build 22 has not been generated or uploaded. Public submission remains NO-GO until Build 22 is generated, processed in App Store Connect, installed through TestFlight, and physically certified on a real iPhone.
 

@@ -17,6 +17,7 @@ import { releaseInfo } from "@/config/release";
 import { externalLinks, openExternalUrl } from "@/config/externalLinks";
 import { secondaryModules } from "@/data/uiMockups";
 import type { MciIcon } from "@/data/uiMockups";
+import { DeviceTestingScreen } from "@/features/deviceTesting/DeviceTestingScreen";
 import { aiService } from "@/services/aiService";
 import { dashboardService } from "@/services/dashboardService";
 import { incidentService } from "@/services/incidentService";
@@ -461,6 +462,15 @@ export function ModuleScreen({
         onUpdateLocalData={onUpdateLocalData}
         selectedItem={selectedItem}
       />
+    );
+  }
+
+  if (module.id === "deviceTesting") {
+    return (
+      <ScreenFrame activeModule="deviceTesting" isTablet={isTablet} onSelectModule={onSelectModule}>
+        <DeviceTestingScreen isTablet={isTablet} />
+        <CoreDisclaimer />
+      </ScreenFrame>
     );
   }
 
