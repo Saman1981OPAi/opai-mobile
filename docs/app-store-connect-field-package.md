@@ -29,7 +29,7 @@ OPAi Police is an iOS-first productivity prototype built to explore clearer, mor
 Canadian policing workflows.
 
 This testing and pre-launch version works locally and offline. It includes Start My Shift
-reminders, local New Incident drafts, a mock OPAi Assistant workflow, mock translation tools,
+reminders, local Report Writing drafts, a mock OPAi Assistant workflow, mock translation tools,
 calendar and court reminders, training and requalification reminders, follow-ups, notes and file
 metadata placeholders, local notifications, and PTSD awareness messaging.
 

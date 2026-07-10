@@ -33,13 +33,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     borderWidth: 1,
     flexBasis: "48%",
+    flexGrow: 1,
     gap: spacing.xs,
     justifyContent: "center",
+    minWidth: 148,
     minHeight: 108,
     padding: spacing.sm
   },
   compact: {
     flexBasis: "31%",
+    minWidth: 136,
     minHeight: 96
   },
   pressed: {
@@ -50,12 +53,14 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 12,
     fontWeight: "700",
+    maxWidth: "100%",
     textAlign: "center"
   },
   title: {
     color: colors.textPrimary,
     fontSize: 17,
     fontWeight: "900",
+    maxWidth: "100%",
     textAlign: "center"
   }
 });

@@ -14,6 +14,9 @@
 - No police-service integration.
 - No official RMS integration.
 - No external calendar sync.
+- Weather is a beta Home Dashboard convenience feature using Open-Meteo and may be unavailable offline.
+- Optional foreground location is used only when the user requests local weather; no background tracking is implemented.
+- Build 21 failed physical iPhone certification. Build 22 or higher is required before public submission.
 - No payment or subscription functionality.
 - Android release is paused pending the D-U-N-S Number for Ebrahimi Holdings.
 - Target build `21` has not yet been uploaded or physically tested through TestFlight.

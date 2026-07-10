@@ -28,7 +28,7 @@ workflows, accessibility, and safety language before production integrations are
 Current local and offline features include:
 
 - Start My Shift reminders
-- New Incident local drafts
+- Report Writing local drafts
 - OPAi Assistant mock responses
 - Translation mock workflows
 - Calendar and court reminders

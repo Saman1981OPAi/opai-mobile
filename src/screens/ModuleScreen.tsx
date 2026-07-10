@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import { TodayContextCard } from "@/components/TodayContextCard";
 import { AIInputBar } from "@/components/ui/AIInputBar";
 import { AppHeader } from "@/components/ui/AppHeader";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
@@ -13,6 +14,7 @@ import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { releaseInfo } from "@/config/release";
+import { externalLinks, openExternalUrl } from "@/config/externalLinks";
 import { secondaryModules } from "@/data/uiMockups";
 import type { MciIcon } from "@/data/uiMockups";
 import { aiService } from "@/services/aiService";
@@ -162,7 +164,7 @@ const translationDisclaimer =
 const courtTrainingDisclaimer =
   "OPAi reminders are productivity aids only. Users remain responsible for verifying court dates, training schedules, qualification deadlines, and official obligations through authorized systems, supervisors, and service policies.";
 const incidentDisclaimer =
-  "New Incident drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations.";
+  "Report Writing drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations.";
 const filesDisclaimer =
   "Files in this prototype are metadata placeholders only. OPAi does not upload, store, process, or sync real files in this testing version.";
 
@@ -247,7 +249,7 @@ const legalDocuments: LegalDocument[] = [
     icon: "file-document-edit-outline",
     id: "incident",
     subtitle: "Drafting safety boundary",
-    title: "Incident Disclaimer"
+    title: "Report Writing Disclaimer"
   },
   {
     body: [filesDisclaimer],
@@ -311,7 +313,7 @@ const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data
   { getCount: (data) => data.trainingWorkflowEvents.length, icon: "school-outline", title: "Training events" },
   { getCount: (data) => data.requalificationWorkflowReminders.length, icon: "target", title: "Requalification reminders" },
   { getCount: (data) => data.followUpWorkflowReminders.length, icon: "clipboard-check-outline", title: "Follow-ups" },
-  { getCount: (data) => data.incidentDrafts.length, icon: "file-document-edit-outline", title: "Incident drafts" },
+  { getCount: (data) => data.incidentDrafts.length, icon: "file-document-edit-outline", title: "Report drafts" },
   { getCount: (data) => data.translationHistory.length, icon: "translate", title: "Translation history" },
   { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI mock history" },
   { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
@@ -624,12 +626,14 @@ function HomeDashboardScreen({
       <View style={[styles.hero, isTablet ? styles.heroTablet : null]}>
         <View style={styles.heroCopy}>
           <Text style={styles.heroTitle}>AI partner on duty.</Text>
-          <Text style={styles.heroSub}>Reports. Translation. Reminders.</Text>
+          <Text style={styles.heroSub}>Reports. Weather. Reminders.</Text>
         </View>
         <View style={styles.heroIcon}>
           <MaterialCommunityIcons name="shield-check-outline" size={42} color={colors.primaryBlue} />
         </View>
       </View>
+
+      <TodayContextCard />
 
       <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
         {dashboard.features.map((feature) => (
@@ -668,6 +672,7 @@ function HomeDashboardScreen({
       </View>
 
       <PTSDRibbonCard />
+      <CommunityLinksCard compact />
       <AIInputBar onPress={() => onSelectModule("ai")} placeholder="Ask OPAi..." />
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
@@ -1004,16 +1009,16 @@ function NewIncidentScreen({
 
   return (
     <ScreenFrame activeModule="incident" isTablet={isTablet} onSelectModule={onSelectModule}>
-      <AppHeader title="New Incident" />
+      <AppHeader title="Report Writing" />
       <View style={styles.hero}>
         <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>Structured draft.</Text>
-          <Text style={styles.heroSub}>Local incident workflow. No RMS sync.</Text>
+          <Text style={styles.heroTitle}>Draft faster.</Text>
+          <Text style={styles.heroSub}>Local report workflow. No RMS sync.</Text>
         </View>
         <MaterialCommunityIcons name="file-plus-outline" size={48} color={colors.primaryBlue} />
       </View>
 
-      <SectionHeader icon="file-document-edit-outline" title="Incident Drafts" />
+      <SectionHeader icon="file-document-edit-outline" title="Report Drafts" />
       <WorkflowField label="Search drafts" value={search} onChangeText={setSearch} />
       <View style={styles.filterRow}>
         {(["All", "Draft", "Follow-up Required", "Reviewed", "Archived"] as IncidentDraftFilter[]).map((item) => (
@@ -1046,7 +1051,7 @@ function NewIncidentScreen({
         })}
       </View>
       {incidentDrafts.length === 0 ? (
-        <EmptyState icon="file-document-outline" title="No drafts" message="Create or reset local prototype incident drafts." />
+        <EmptyState icon="file-document-outline" title="No drafts" message="Create or reset local report drafts." />
       ) : null}
 
       <SectionHeader icon="progress-check" title={`Step ${stepIndex + 1} of ${incidentStepTitles.length}: ${incidentStepTitles[stepIndex]}`} />
@@ -1064,7 +1069,7 @@ function NewIncidentScreen({
       </View>
 
       {stepIndex === 0 ? (
-        <WorkflowFormPanel icon="clipboard-text-outline" title="Incident Basics">
+        <WorkflowFormPanel icon="clipboard-text-outline" title="Report Basics">
           <View style={styles.filterRow}>
             <SecondaryButton label={draft.incidentType} onPress={() => setDraft((item) => ({ ...item, incidentType: cycleOption([...incidentTypes], item.incidentType as (typeof incidentTypes)[number]) }))}>
               <MaterialCommunityIcons name="tag-outline" size={18} color={colors.primaryBlue} />
@@ -1270,7 +1275,7 @@ function NewIncidentScreen({
 
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool." />
-      <DisclaimerBanner message="New Incident drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations." />
+      <DisclaimerBanner message="Report Writing drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations." />
       <DisclaimerBanner message="Do not enter real police records, confidential information, sensitive personal information, or real evidence into this testing version." />
       <DisclaimerBanner message="Future AI-assisted report features may produce incomplete or inaccurate content and must be verified by the user." />
       <LocalPrototypeWarning />
@@ -1490,7 +1495,7 @@ function AIAssistantScreen({
         </View>
         <View style={styles.formRow}>
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Incident Link Placeholder</Text>
+            <Text style={styles.fieldLabel}>Report Link Placeholder</Text>
             <View style={styles.filterRow}>
               {localData.incidentDrafts.slice(0, 4).map((draft) => (
                 <Pressable
@@ -1807,7 +1812,7 @@ function TranslationScreen({
             }}>
               <MaterialCommunityIcons name={saveToHistory ? "content-save-check-outline" : "content-save-off-outline"} size={18} color={colors.primaryBlue} />
             </SecondaryButton>
-            <SecondaryButton label={selectedIncident ? `Incident: ${selectedIncident.incidentType}` : "Incident: none"} onPress={cycleIncidentLink}>
+            <SecondaryButton label={selectedIncident ? `Report: ${selectedIncident.incidentType}` : "Report: none"} onPress={cycleIncidentLink}>
               <MaterialCommunityIcons name="file-link-outline" size={18} color={colors.primaryBlue} />
             </SecondaryButton>
           </View>
@@ -3924,13 +3929,18 @@ function SettingsScreen({
           <SettingsFact label="Security" value="security@opaiapp.com" />
           <SettingsFact label="Legal" value="legal@opaiapp.com" />
           <SettingsFact label="Website" value="https://opaiapp.com" />
-          <SettingsFact label="Contact URL" value="https://opaiapp.com/contact" />
-          <SettingsFact label="Support URL" value="https://opaiapp.com/support" />
+          <SettingsFact label="Contact URL" value={externalLinks.contact} />
+          <SettingsFact label="Support URL" value={externalLinks.support} />
+          <SettingsFact label="WhatsApp Channel" value={externalLinks.whatsappChannel} />
+          <SettingsFact label="Instagram" value="@opaiapp" />
+          <SettingsFact label="Facebook" value={externalLinks.facebook} />
           <SettingsFact label="App status" value={releaseInfo.status} />
           <SettingsFact label="Version" value={releaseInfo.appVersion} />
           <SettingsFact label="Build" value={releaseInfo.buildNumber} />
           <SettingsFact label="Release channel" value={releaseInfo.releaseChannel} />
+          <CommunityLinksCard />
           <DisclaimerBanner message="No live email sending or support ticket submission is connected in this prototype." />
+          <DisclaimerBanner message="Community links open outside the app. OPAi does not add tracking scripts or analytics in this prototype." />
         </SettingsPanel>
       ) : null}
 
@@ -3938,7 +3948,7 @@ function SettingsScreen({
         <SettingsPanel icon="information-outline" title="About OPAi">
           <Text style={styles.profileMeta}>
             OPAi Police is an AI assistant built for Canadian policing. This iOS-first testing version supports productivity,
-            organization, shift readiness, incident drafting, translation, court/training reminders, notes, file metadata
+            organization, shift readiness, report drafting, translation, court/training reminders, notes, file metadata
             placeholders, and PTSD awareness.
           </Text>
           <SettingsFact label="Status" value={releaseInfo.status} />
@@ -4147,6 +4157,40 @@ function CoreDisclaimer() {
   );
 }
 
+function CommunityLinksCard({ compact = false }: { compact?: boolean }) {
+  const links = [
+    { icon: "whatsapp" as MciIcon, label: "WhatsApp", url: externalLinks.whatsappChannel },
+    { icon: "instagram" as MciIcon, label: "@opaiapp", url: externalLinks.instagram },
+    { icon: "facebook" as MciIcon, label: "Facebook", url: externalLinks.facebook }
+  ];
+
+  return (
+    <View style={[styles.communityCard, compact ? styles.communityCardCompact : null]}>
+      <View style={styles.localDataHeader}>
+        <MaterialCommunityIcons name="bullhorn-outline" size={22} color={colors.ptsdGreen} />
+        <View style={styles.profileCopy}>
+          <Text style={styles.communityTitle}>OPAi updates</Text>
+          <Text numberOfLines={compact ? 1 : 2} style={styles.communityMeta}>Official community links. Opens outside the app.</Text>
+        </View>
+      </View>
+      <View style={styles.communityActions}>
+        {links.map((link) => (
+          <Pressable
+            accessibilityLabel={`Open ${link.label}`}
+            accessibilityRole="link"
+            key={link.label}
+            onPress={() => openExternalUrl(link.url)}
+            style={({ pressed }) => [styles.communityLink, pressed ? styles.pressed : null]}
+          >
+            <MaterialCommunityIcons name={link.icon} size={18} color={colors.primaryBlue} />
+            <Text numberOfLines={1} style={styles.communityLinkText}>{link.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function WorkflowSummaryCard({
   item,
   onPress,
@@ -4269,10 +4313,10 @@ function WorkflowItemCard({
           <MaterialCommunityIcons name={icon as never} size={25} color={accent} />
         </View>
         <View style={styles.profileCopy}>
-          <Text numberOfLines={1} style={styles.workflowTitle}>{title}</Text>
+          <Text numberOfLines={2} style={styles.workflowTitle}>{title}</Text>
           <Text numberOfLines={1} style={styles.workflowMeta}>{meta}</Text>
         </View>
-        <Text numberOfLines={1} style={[styles.statusBadge, { color: accent }]}>{status}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.statusBadge, { color: accent }]}>{status}</Text>
       </View>
       <Text numberOfLines={2} style={styles.workflowSubtitle}>{subtitle}</Text>
       <View style={styles.workflowCardFooter}>
@@ -4386,7 +4430,50 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: spacing.lg,
+    minWidth: 0,
     width: "100%"
+  },
+  communityActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm
+  },
+  communityCard: {
+    backgroundColor: "rgba(3,18,30,0.82)",
+    borderColor: "rgba(127,255,212,0.30)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.sm,
+    padding: spacing.md
+  },
+  communityCardCompact: {
+    padding: spacing.base
+  },
+  communityLink: {
+    alignItems: "center",
+    backgroundColor: "rgba(10,132,255,0.10)",
+    borderColor: "rgba(77,163,255,0.24)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.xs,
+    minHeight: 38,
+    paddingHorizontal: spacing.sm
+  },
+  communityLinkText: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    fontWeight: "900"
+  },
+  communityMeta: {
+    color: colors.textMuted,
+    fontSize: typography.caption,
+    fontWeight: "800"
+  },
+  communityTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.small,
+    fontWeight: "900"
   },
   contentTablet: {
     alignSelf: "center",
@@ -4412,7 +4499,8 @@ const styles = StyleSheet.create({
     padding: spacing.md
   },
   heroCopy: {
-    flex: 1
+    flex: 1,
+    minWidth: 0
   },
   heroIcon: {
     alignItems: "center",
@@ -4455,6 +4543,7 @@ const styles = StyleSheet.create({
   heroSub: {
     color: colors.textMuted,
     fontSize: typography.body,
+    flexShrink: 1,
     lineHeight: 22,
     marginTop: spacing.xs
   },
@@ -4463,9 +4552,10 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: colors.textPrimary,
-    fontSize: typography.hero,
+    flexShrink: 1,
+    fontSize: 30,
     fontWeight: "900",
-    lineHeight: 39
+    lineHeight: 35
   },
   reminderGrid: {
     gap: spacing.sm
@@ -4555,16 +4645,19 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 1 }]
   },
   profileCopy: {
-    flex: 1
+    flex: 1,
+    minWidth: 0
   },
   profileMeta: {
     color: colors.textMuted,
     fontSize: typography.small,
+    flexShrink: 1,
     lineHeight: 20
   },
   profileName: {
     color: colors.textPrimary,
     fontSize: typography.h3,
+    flexShrink: 1,
     fontWeight: "900"
   },
   profilePanel: {
@@ -4624,7 +4717,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexBasis: "48%",
     flexDirection: "row",
+    flexGrow: 1,
     gap: spacing.sm,
+    minWidth: 150,
     minHeight: 50,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm
@@ -4637,7 +4732,8 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     flex: 1,
     fontSize: 14,
-    fontWeight: "900"
+    fontWeight: "900",
+    minWidth: 0
   },
   selectionBanner: {
     alignItems: "center",
@@ -4689,9 +4785,11 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   statusBadge: {
+    flexShrink: 0,
     fontSize: typography.caption,
     fontWeight: "900",
-    maxWidth: 84,
+    maxWidth: 96,
+    minWidth: 58,
     textAlign: "right",
     textTransform: "uppercase"
   },
@@ -4703,6 +4801,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: spacing.sm,
     minHeight: 68,
+    minWidth: 0,
     padding: spacing.base
   },
   summaryGrid: {
@@ -4717,17 +4816,20 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     height: 42,
     justifyContent: "center",
+    flexShrink: 0,
     width: 42
   },
   summaryMeta: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "700"
+    fontWeight: "700",
+    flexShrink: 1
   },
   summaryTitle: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "900",
+    flexShrink: 1
   },
   workflowActions: {
     alignItems: "center",
@@ -4769,7 +4871,8 @@ const styles = StyleSheet.create({
   workflowMeta: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800"
+    fontWeight: "800",
+    flexShrink: 1
   },
   workflowPanel: {
     backgroundColor: "rgba(7,23,42,0.72)",
@@ -4782,11 +4885,13 @@ const styles = StyleSheet.create({
   workflowSubtitle: {
     color: colors.textSecondary,
     fontSize: typography.small,
+    flexShrink: 1,
     lineHeight: 20
   },
   workflowTitle: {
     color: colors.textPrimary,
     fontSize: typography.h3,
-    fontWeight: "900"
+    fontWeight: "900",
+    flexShrink: 1
   }
 });

@@ -18,7 +18,7 @@ export const shiftReminders: ReminderItem[] = [
 ];
 
 export const aiActions = [
-  "New Incident",
+  "Report Writing",
   "Review Report",
   "Draft Report",
   "Review Grounds",

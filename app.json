@@ -12,7 +12,13 @@
       "**/*"
     ],
     "plugins": [
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "OPAi Police uses your approximate foreground location only when you choose local weather for the Home Dashboard. Location is not tracked in the background."
+        }
+      ]
     ],
     "splash": {
       "image": "./assets/splash.png",
@@ -22,12 +28,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.opaiapp.police",
-      "buildNumber": "21",
+      "buildNumber": "22",
       "entitlements": {
         "aps-environment": "production"
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "OPAi Police uses your approximate foreground location only when you choose local weather for the Home Dashboard. Location is not tracked in the background.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false
         }
@@ -48,7 +55,7 @@
       "domain": "opaiapp.com",
       "release": {
         "appVersion": "0.1.0-beta",
-        "buildNumber": "21",
+        "buildNumber": "22",
         "status": "Testing / Pre-Launch / Local Prototype"
       },
       "eas": {

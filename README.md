@@ -518,6 +518,20 @@ manual EAS, App Store Connect, and physical-device gates:
 - `docs/ios-permission-audit.md`
 - `docs/testflight-upload-instructions.md`
 
+## Build 22 iOS Hotfix Preparation
+
+Build 21 failed physical iPhone certification because the UI showed text overflow, excessive wording, and missing Home Dashboard time/date/location/weather context. Build 22 prepares the source/configuration hotfix for human review.
+
+Build 22 adds:
+
+- iOS layout containment fixes for cards, workflow rows, buttons, and navigation labels.
+- A Home Dashboard Today card with time, date, weather, manual city selection, and optional foreground location weather.
+- Report Writing user-facing naming while preserving internal incident route/storage identifiers.
+- Official OPAi community links for WhatsApp, Instagram, and Facebook.
+- Weather, location privacy, legal, and App Store documentation updates.
+
+Build 22 has not been generated or uploaded. Public submission remains NO-GO until Build 22 is generated, processed in App Store Connect, installed through TestFlight, and physically certified on a real iPhone.
+
 ## Product Principles
 
 - Start My Shift is a reminder screen, not a mandatory checklist.

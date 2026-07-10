@@ -9,8 +9,11 @@ Sprint 014 displays local support and compliance contact information in Settings
 - Website: https://opaiapp.com
 - Contact: https://opaiapp.com/contact
 - Support URL: https://opaiapp.com/support (live; canonical contact page is `/contact`)
+- WhatsApp Channel: https://whatsapp.com/channel/0029Vb8HFSMEQIaoXOL6YO1a
+- Instagram: https://www.instagram.com/opaiapp/
+- Facebook: https://www.facebook.com/profile.php?id=61591569999710
 
-The prototype does not send email, open a support ticket, or connect to a live support backend.
+The prototype does not send email, open a support ticket, connect to a live support backend, collect social login data, or add tracking parameters to community links.
 
 App status: Testing / Pre-Launch.
 

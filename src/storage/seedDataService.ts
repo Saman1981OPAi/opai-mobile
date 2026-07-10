@@ -435,7 +435,7 @@ export function createDefaultNoteFolders(): LocalNoteFolder[] {
   const createdAt = nowIso();
   const folders: Array<Pick<LocalNoteFolder, "color" | "description" | "icon" | "id" | "name">> = [
     { color: "#7FFFD4", description: "General local prototype notes.", icon: "note-text-outline", id: "folder-general-notes", name: "General Notes" },
-    { color: "#0A84FF", description: "Incident draft notes. Not official RMS.", icon: "file-document-outline", id: "folder-incident-drafts", name: "Incident Drafts" },
+    { color: "#0A84FF", description: "Report draft notes. Not official RMS.", icon: "file-document-outline", id: "folder-incident-drafts", name: "Report Drafts" },
     { color: "#B56CFF", description: "Court preparation placeholders.", icon: "scale-balance", id: "folder-court-preparation", name: "Court Preparation" },
     { color: "#4DA3FF", description: "Training and requalification support.", icon: "school-outline", id: "folder-training", name: "Training" },
     { color: "#7FFFD4", description: "Translation-linked prototype notes.", icon: "translate", id: "folder-translation", name: "Translation" },
@@ -475,7 +475,7 @@ export function createDefaultStructuredNotes(): LocalStructuredNote[] {
       linkedIncidentId: "draft-1",
       pinned: false,
       tags: ["incident", "draft", "local"],
-      title: "Incident draft note"
+      title: "Report draft note"
     },
     {
       archived: false,

@@ -28,7 +28,7 @@
 - [ ] Use consistent OPAi dark blue/black, police blue, and `#7FFFD4` awareness accents.
 - [ ] Label testing or mock workflows where the screenshot could imply production functionality.
 
-Recommended first iPhone screens: Home Dashboard, Start My Shift, then New Incident or OPAi
+Recommended first iPhone screens: Home Dashboard, Start My Shift, then Report Writing or OPAi
 Assistant. Recommended first iPad screens: Dashboard overview, Calendar/Court/Training, then OPAi
 Assistant or Notes & Files.
 

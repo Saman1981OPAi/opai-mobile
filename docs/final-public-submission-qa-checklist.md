@@ -11,7 +11,7 @@ Automated validation may check compilation and export, but physical-device items
 
 ## Core Modules
 
-- [x] Home, Start My Shift, New Incident, OPAi Assistant, Translation, Calendar, Court, Training,
+- [x] Home, Start My Shift, Report Writing, OPAi Assistant, Translation, Calendar, Court, Training,
   Requalification, Follow-Ups, Notes & Files, and Settings remain connected in the local shell.
 - [ ] Complete the full module walkthrough on uploaded build `21` in TestFlight.
 

@@ -4,7 +4,7 @@
 
 OPAi Police is currently an iOS-first testing and pre-launch local offline prototype. The app uses
 mock authentication, device-local persistence, local notifications, mock OPAi Assistant responses,
-mock translation workflows, local incident drafts, local calendar, court, and training reminders,
+mock translation workflows, local report-writing drafts, local calendar, court, and training reminders,
 local notes, and file metadata placeholders.
 
 The app does not connect to a production backend, OpenAI, police systems, cloud storage, payment
@@ -21,7 +21,7 @@ government agency unless expressly authorized in the future.
 1. Launch the app.
 2. Use mock sign-in or mock create account. No reviewer credentials are required.
 3. Accept the local consent screens.
-4. Explore Home, Start My Shift, New Incident, Translation, OPAi Assistant, Calendar, Court,
+4. Explore Home, Start My Shift, Report Writing, Translation, OPAi Assistant, Calendar, Court,
    Training, Notes & Files, and Settings.
 5. Test Reset Demo Data and Clear Local Data in Settings.
 6. Test the local notification explanation and demo notification if the review device permits it.

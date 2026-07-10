@@ -24,6 +24,11 @@ Usage Data:
 
 - Product Interaction, only if local app interaction state is treated as collected usage data.
 
+Location:
+
+- Coarse Location may apply for Build 22 if the user chooses local Home Dashboard weather and grants foreground location permission.
+- Location is used only for weather convenience, is not tracked in the background, and is not uploaded to an OPAi backend in this prototype.
+
 Diagnostics:
 
 - Crash Data and Performance Data only if Apple, Expo, or tooling collects diagnostics for the distributed build.
@@ -34,7 +39,6 @@ Diagnostics:
 - Tracking.
 - Contacts.
 - Precise Location.
-- Coarse Location.
 - Health Data.
 - Payment Info.
 - Real photos or videos.
@@ -46,5 +50,5 @@ Diagnostics:
 
 ## Current Build Notes
 
-The current beta does not add advertising SDKs, analytics SDKs, production backend calls, OpenAI calls, police-service integrations, real authentication, real file upload, or cloud storage.
+Build 22 adds optional foreground location weather and Open-Meteo weather requests. The beta does not add advertising SDKs, analytics SDKs, production backend calls, OpenAI calls, police-service integrations, real authentication, real file upload, payment code, tracking, or cloud storage.
 

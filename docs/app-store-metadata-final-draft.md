@@ -25,7 +25,7 @@ This beta build is a local/offline prototype intended to evaluate the app's work
 Current testing features include:
 
 - Start My Shift reminders.
-- New Incident local drafts.
+- Report Writing local drafts.
 - OPAi Assistant mock workflow.
 - Translation mock workflow.
 - Calendar, court, training, and requalification reminders.
