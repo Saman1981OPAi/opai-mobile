@@ -24,15 +24,16 @@ Do not change the native version to production `1.0` without explicit approval.
 
 ## EAS Source of Truth
 
-The EAS remote iOS value was `8` on July 9, 2026. With remote versioning enabled, EAS ignores the
-local `ios.buildNumber` for the native binary and auto-increments the remote value. To produce native
-build `21`:
+The EAS remote iOS value was initially `8`. The release owner confirmed App Store Connect shows
+build `8` and build `21` is unused. On July 10, 2026, the EAS baseline was set to `20` and verified
+with `eas build:version:get`.
 
-1. Run `pnpm exec eas build:version:get --platform ios --profile production`.
-2. Confirm the remote value and the highest build already used in App Store Connect.
-3. Run `pnpm exec eas build:version:set --platform ios --profile production` interactively.
-4. Set the last-used/baseline value to `20` only after confirming build `21` is unused.
-5. Run the production build; auto-increment should produce native build `21`.
-6. Verify the processed binary reports build `21` before selecting it in TestFlight.
+With remote versioning and production auto-increment enabled, the next production iOS build is
+expected to become build `21`.
+
+1. Immediately before building, confirm the remote baseline still reports `20`.
+2. Run `pnpm build:ios`.
+3. Stop if EAS proposes any native build number other than `21`.
+4. Verify the finished and processed binary reports `0.1.0 (21)` before selecting it in TestFlight.
 
 Do not commit credentials or automate an Apple login through source files.
