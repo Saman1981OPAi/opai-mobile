@@ -6,14 +6,17 @@
 - Bundle identifier: `com.opaiapp.police`
 - Version: `0.1.0`
 - Beta app version label: `0.1.0-beta`
-- Build number: `18`
+- Target build number: `21`
 - Orientation: default
 - Supports iPad: true
 - Encryption flag: `ITSAppUsesNonExemptEncryption` is false
+- App Transport Security: arbitrary network loads are explicitly disabled
 
 ## Permission Review
 
 - Notifications: may be requested only after an in-app explanation. Used for local prototype reminders only.
+- Expo introspection includes the notification entitlement required by the installed notifications
+  module. The current app does not request, generate, transmit, or store an APNs device token.
 - Camera: no required permission in current prototype.
 - Microphone: no required permission in current prototype.
 - Photo Library: no required permission in current prototype.

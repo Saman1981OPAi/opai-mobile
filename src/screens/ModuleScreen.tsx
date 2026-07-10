@@ -3925,7 +3925,7 @@ function SettingsScreen({
           <SettingsFact label="Legal" value="legal@opaiapp.com" />
           <SettingsFact label="Website" value="https://opaiapp.com" />
           <SettingsFact label="Contact URL" value="https://opaiapp.com/contact" />
-          <SettingsFact label="Support URL" value="https://opaiapp.com/support pending if not live" />
+          <SettingsFact label="Support URL" value="https://opaiapp.com/support" />
           <SettingsFact label="App status" value={releaseInfo.status} />
           <SettingsFact label="Version" value={releaseInfo.appVersion} />
           <SettingsFact label="Build" value={releaseInfo.buildNumber} />

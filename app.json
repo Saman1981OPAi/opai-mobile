@@ -21,7 +21,10 @@
       "bundleIdentifier": "com.opaiapp.police",
       "buildNumber": "21",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false
+        }
       }
     },
     "android": {
@@ -40,7 +43,7 @@
       "release": {
         "appVersion": "0.1.0-beta",
         "buildNumber": "21",
-        "status": "Internal TestFlight Beta Candidate"
+        "status": "Testing / Pre-Launch / Local Prototype"
       },
       "eas": {
         "projectId": "c9044294-c57a-47f8-bb2e-15721c8882a2"
