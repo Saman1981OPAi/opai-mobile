@@ -180,6 +180,12 @@ tester setup, physical-device QA, feedback and monitoring workflows, and manual 
 actions. The remote EAS counter must be synchronized before the reviewed production build; no
 Apple credential is stored in the repository.
 
+Sprint 022 reviews all available beta evidence and applies a focused internal-QA stabilization pass.
+No real tester submission or Apple review issue was available, so findings are explicitly labelled
+as simulated QA. The sprint resets scroll position on module changes, improves form keyboard
+handling, increases interactive touch targets, and documents feedback, physical-device, App Store,
+hotfix, limitations, and release-freeze status. Target build `21` remains pending review and upload.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -432,6 +438,21 @@ Sprint 021 prepares target build `21` and the controlled internal-beta launch wo
 - `docs/hotfix-readiness-confirmation.md`
 - `docs/release-freeze-confirmation.md`
 - `docs/app-store-connect-manual-actions.md`
+
+## Sprint 022 Internal Beta Feedback Fixes
+
+Sprint 022 adds focused navigation, keyboard, and accessibility fixes plus evidence-based beta
+triage. See:
+
+- `docs/sprint-022-internal-beta-feedback-fixes.md`
+- `docs/beta-feedback-triage.md`
+- `docs/real-device-smoke-test-results.md`
+- `docs/sprint-022-accessibility-fixes.md`
+- `docs/app-store-testflight-issues.md`
+- `docs/sprint-022-feedback-summary.md`
+- `docs/sprint-022-hotfix-readiness.md`
+- `docs/sprint-022-release-freeze-compliance.md`
+- `docs/known-limitations-beta.md`
 
 ## Product Principles
 

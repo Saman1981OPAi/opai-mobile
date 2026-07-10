@@ -585,7 +585,12 @@ function ErrorText({ message }: { message: string }) {
 
 function TextButton({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [pressed ? styles.pressed : null]}>
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.textButtonControl, pressed ? styles.pressed : null]}
+    >
       <Text style={styles.textButton}>{label}</Text>
     </Pressable>
   );
@@ -839,5 +844,11 @@ const styles = StyleSheet.create({
     fontSize: typography.small,
     fontWeight: "900",
     textAlign: "center"
+  },
+  textButtonControl: {
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 44,
+    paddingHorizontal: spacing.md
   }
 });
