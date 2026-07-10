@@ -30,21 +30,11 @@ Observed TestFlight status:
 
 ## TestFlight Real-Device Certification
 
-- [ ] Install Build 21 through TestFlight on a physical iPhone.
-- [ ] Confirm app launches successfully.
-- [ ] Confirm the app displays Testing / Pre-Launch status.
-- [ ] Confirm mock authentication works.
-- [ ] Confirm mock sign-out works.
-- [ ] Confirm Home navigation works.
-- [ ] Confirm Start My Shift works.
-- [ ] Confirm New Incident workflow works.
-- [ ] Confirm AI Assistant mock workflow works.
-- [ ] Confirm Translation workflow works.
-- [ ] Confirm Calendar, Court, Training, Notes & Files, Settings workflows work.
-- [ ] Confirm local notifications behavior if prompted.
-- [ ] Confirm no production backend, OpenAI, database, payment, analytics, tracking, or police-service integration is active.
-- [ ] Confirm no official police or government insignia is present.
-- [ ] Confirm legal, privacy, AI, PTSD, translation, incident, reminder, and file disclaimers are visible where appropriate.
+- [ ] Complete the full physical certification checklist in `docs/build-21-testflight-physical-certification.md`.
+- [ ] Confirm Build 21 is installed through TestFlight on a physical iPhone.
+- [ ] Confirm physical iPhone smoke test passes.
+- [ ] Confirm no critical defects are found.
+- [ ] Record certification as passed or failed.
 
 ## Duplicate Submission Note
 
@@ -65,3 +55,5 @@ Public submission remains blocked until:
 1. Build 21 is installed on a physical iPhone through TestFlight.
 2. Build 21 passes complete real-device certification.
 3. Any final Apple export-compliance or beta-review prompts are completed accurately if Apple presents them.
+
+If physical certification passes, status may move to **CONDITIONAL GO**. If any critical test fails, record **BUILD 21 TESTFLIGHT CERTIFICATION: FAILED** and **HOTFIX REQUIRED**. Any replacement binary must use Build 22.

@@ -19,6 +19,7 @@ Date: July 10, 2026
 - Installed through TestFlight: no
 - Real-device certification complete: no
 - Public submission decision: NO-GO
+- Next possible decision after real-device certification: CONDITIONAL GO
 
 ## Build 21
 
@@ -46,6 +47,32 @@ Public submission remains NO-GO until:
 1. Build 21 is installed through TestFlight on a physical iPhone.
 2. Build 21 passes real-device certification.
 3. Any Apple export-compliance or beta-review prompts are completed accurately if presented.
+
+If every real-device certification check passes, record:
+
+```text
+BUILD 21 TESTFLIGHT CERTIFICATION: PASSED
+
+Build: 21
+EAS Build ID: 17c847f7-6ac2-476f-83ba-b2e90ea95841
+IPA generated: Yes
+Uploaded: Yes
+Apple processing: Complete
+Installed through TestFlight: Yes
+Physical iPhone smoke test: Passed
+Critical defects: None
+```
+
+At that point public-submission status becomes **CONDITIONAL GO**. Conditional means final App Store metadata, screenshots, privacy answers, age rating, content rights, export compliance, and App Review notes still require final review before pressing Submit for Review.
+
+If any critical test fails, record:
+
+```text
+BUILD 21 TESTFLIGHT CERTIFICATION: FAILED
+HOTFIX REQUIRED
+```
+
+After Build 21 has been uploaded to Apple, any replacement binary must use Build 22, not another Build 21.
 
 ## Android
 
