@@ -25,8 +25,10 @@ Do not use `--latest` when the exact build ID is available.
 - Submission URL: https://expo.dev/accounts/ebrahimi-holdings/projects/opai-police/submissions/0bebc73a-ea44-486f-b0b8-06ffead7dca8
 - ASC App ID: `6788187875`
 - Upload status: successful
-- Apple processing: pending confirmation
-- TestFlight visibility: pending Apple processing
+- Apple processing: complete / binary validated
+- TestFlight visibility: visible as `0.1.0 (22)`
+- Internal groups: `admin@opaiapp.com` and `Team (Expo)`
+- What to Test text: saved
 
 ## Upload Rules
 
@@ -40,11 +42,10 @@ Do not use `--latest` when the exact build ID is available.
 
 ## After Upload
 
-1. Wait for App Store Connect processing.
-2. Confirm Build 22 appears in TestFlight.
-3. Complete export compliance if Apple prompts.
-4. Assign internal testers.
-5. Install through TestFlight on a physical iPhone.
-6. Complete the Build 22 physical certification checklist.
+1. Confirm any remaining App Store Connect compliance prompts, if Apple presents them.
+2. Open TestFlight on a physical iPhone using the assigned internal tester account.
+3. Install Build 22.
+4. Complete the Build 22 physical certification checklist.
+5. Record pass/fail results in `docs/build-22-testflight-certification.md`.
 
 Public submission remains `NO-GO` until all post-upload gates pass.

@@ -4,7 +4,7 @@
 
 `NOT CERTIFIED`
 
-Build 22 has been generated and uploaded to App Store Connect. It has not yet been confirmed as processed by Apple, installed through TestFlight, or physically tested on a real iPhone.
+Build 22 has been generated, uploaded to App Store Connect, processed by Apple, and is visible in iOS TestFlight. It has not yet been installed through TestFlight or physically tested on a real iPhone.
 
 ## Build Details
 
@@ -16,8 +16,12 @@ Build 22 has been generated and uploaded to App Store Connect. It has not yet be
 - IPA generated: yes
 - Uploaded to App Store Connect: yes
 - EAS Submission ID: `0bebc73a-ea44-486f-b0b8-06ffead7dca8`
-- Apple processing complete: no
-- Appears in TestFlight: no
+- Apple processing complete: yes
+- App Store Connect binary state: `Validated`
+- Build list status: `Ready to Submit`
+- Appears in TestFlight: yes
+- Internal groups assigned: `admin@opaiapp.com`, `Team (Expo)`
+- What to Test text saved: yes
 - Installed through TestFlight: no
 - Physical iPhone smoke test: not started
 

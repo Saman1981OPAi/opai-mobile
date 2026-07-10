@@ -29,10 +29,13 @@ The exact Build 22 artifact was submitted. `--latest` was not used. `--auto-subm
 ## Upload Status
 
 - EAS submission status: uploaded successfully
-- Apple processing status: processing / pending confirmation in App Store Connect
-- TestFlight status: pending Apple processing
+- Apple processing status: complete / binary validated
+- TestFlight status: visible in iOS TestFlight as `0.1.0 (22)`
 - Export compliance: pending App Store Connect confirmation if Apple prompts
-- Internal testers assigned: pending
+- Export compliance observed in Build Metadata: `App Uses Non-Exempt Encryption: No`
+- Internal groups assigned: `admin@opaiapp.com` and `Team (Expo)`
+- Internal tester count shown by App Store Connect: 1 tester in each assigned internal group
+- What to Test text: saved
 - Real-device testing completed: no
 
 ## Credential Handling
@@ -48,4 +51,21 @@ No Apple credentials, EAS tokens, App Store Connect private keys, certificates, 
 
 Public submission remains `NO-GO`.
 
-Build 22 must finish Apple processing, appear in TestFlight, be installed on a physical iPhone, and pass the full certification checklist before any public App Review decision.
+Build 22 must still be installed on a physical iPhone and pass the full certification checklist before any public App Review decision.
+
+## App Store Connect Verification
+
+Observed on July 10, 2026:
+
+- Build detail heading: `0.1.0 (22)`
+- Binary State: `Validated`
+- Bundle Short Version String: `0.1.0`
+- Bundle Version String: `22`
+- Bundle ID: `com.opaiapp.police`
+- Upload Date: `Jul 10, 2026 at 7:18 PM`
+- App Uses Non-Exempt Encryption: `No`
+- Entitlement includes `aps-environment: production`
+- Groups assigned:
+  - `admin@opaiapp.com` / Internal / 1 tester
+  - `Team (Expo)` / Internal / 1 tester
+- Individual testers on the build detail page: 0
