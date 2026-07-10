@@ -11,6 +11,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "plugins": [
+      "expo-notifications"
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -20,6 +23,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.opaiapp.police",
       "buildNumber": "21",
+      "entitlements": {
+        "aps-environment": "production"
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
