@@ -11,10 +11,11 @@ Date: July 10, 2026
 - IPA generated: yes
 - Uploaded to App Store Connect: yes, via EAS Submit
 - EAS submission complete: yes
-- Processing complete: not yet independently confirmed in App Store Connect
-- Appears in TestFlight: not yet independently confirmed
-- Export compliance complete: not yet confirmed
-- Internal testers assigned: not yet confirmed
+- Processing complete: yes, Build Uploads shows `Complete`
+- Appears in TestFlight: yes
+- TestFlight build status: `Ready to Submit`
+- Export compliance complete: no `Missing Compliance` prompt observed at time of review
+- Internal testers assigned: yes, `Team (Expo)` internal group with 1 tester
 - Installed through TestFlight: no
 - Real-device certification complete: no
 - Public submission decision: NO-GO
@@ -42,10 +43,9 @@ Date: July 10, 2026
 
 Public submission remains NO-GO until:
 
-1. Build 21 processing completes in App Store Connect.
-2. Build 21 appears in TestFlight.
-3. Build 21 is installed through TestFlight on a physical iPhone.
-4. Build 21 passes real-device certification.
+1. Build 21 is installed through TestFlight on a physical iPhone.
+2. Build 21 passes real-device certification.
+3. Any Apple export-compliance or beta-review prompts are completed accurately if presented.
 
 ## Android
 

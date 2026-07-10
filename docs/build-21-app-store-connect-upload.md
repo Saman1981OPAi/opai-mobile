@@ -50,12 +50,21 @@ Duplicate queued submission record:
 
 ## App Store Connect Status
 
-- App Store Connect processing status: not yet independently confirmed in App Store Connect.
-- Build 21 appears in TestFlight: not yet independently confirmed.
-- Export compliance action required: not yet confirmed.
-- Internal testers assigned: not yet confirmed.
+- App Store Connect processing status: `Complete` in Build Uploads.
+- Build 21 appears in TestFlight: yes.
+- TestFlight build status: `Ready to Submit`.
+- Export compliance action required: no `Missing Compliance` prompt observed on the Build 21 detail page at the time of review.
+- Internal testers assigned: yes, `Team (Expo)` internal group with 1 tester.
 - Real-device TestFlight installation complete: no.
 - Real-device certification complete: no.
+
+Observed App Store Connect path:
+
+- App: OPAi
+- Section: TestFlight > iOS
+- Version/build: `0.1.0 (21)`
+- Build upload created: July 10, 2026 at 3:08 PM
+- Build detail page: `https://appstoreconnect.apple.com/teams/73a28bc6-14dc-4b70-836c-dd1239462981/apps/6788187875/testflight/ios/d5960346-13e7-472e-b235-535260ec6136`
 
 ## Security Confirmation
 

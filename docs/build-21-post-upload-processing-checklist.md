@@ -13,13 +13,20 @@ Date: July 10, 2026
 
 ## App Store Connect Processing
 
-- [ ] Confirm Build 21 appears under App Store Connect builds.
-- [ ] Confirm Apple processing completes successfully.
+- [x] Confirm Build 21 appears under App Store Connect builds.
+- [x] Confirm Apple processing completes successfully.
 - [ ] Confirm no missing compliance, encryption, privacy, or export prompts block TestFlight.
-- [ ] Confirm export compliance status.
-- [ ] Confirm TestFlight availability for Build 21.
-- [ ] Confirm internal tester group assignment.
+- [x] Confirm export compliance status: no `Missing Compliance` prompt observed at time of review.
+- [x] Confirm TestFlight availability for Build 21.
+- [x] Confirm internal tester group assignment: `Team (Expo)` internal group with 1 tester.
 - [ ] Confirm tester notification status.
+
+Observed TestFlight status:
+
+- Build upload status: `Complete`
+- TestFlight build row status: `Ready to Submit`
+- Build detail: `0.1.0 (21)`
+- Individual testers on build detail page: 0
 
 ## TestFlight Real-Device Certification
 
@@ -55,8 +62,6 @@ Current public App Store submission decision: **NO-GO**.
 
 Public submission remains blocked until:
 
-1. Build 21 is confirmed in App Store Connect.
-2. Apple processing is complete.
-3. Build 21 appears in TestFlight.
-4. Build 21 is installed on a physical iPhone.
-5. Build 21 passes complete real-device certification.
+1. Build 21 is installed on a physical iPhone through TestFlight.
+2. Build 21 passes complete real-device certification.
+3. Any final Apple export-compliance or beta-review prompts are completed accurately if Apple presents them.
