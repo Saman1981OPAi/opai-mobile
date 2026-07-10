@@ -1,11 +1,11 @@
 # Build 21 Execution Checklist
 
-Prepared July 10, 2026 from `main` commit `77768df` plus the reviewed readiness corrections in this
-branch. This checklist prepares execution; it does not generate, upload, submit, or install a build.
+Prepared July 10, 2026 from reviewed `main` commit `0550fbe`. This checklist prepares execution; it
+does not generate, upload, submit, or install a build.
 
 ## Source and Release Identity
 
-- [x] Branch started from clean, current `main` at `77768df`.
+- [x] Reviewed Build 21 preparation is merged in clean `main` at `0550fbe`.
 - [x] Displayed version: `0.1.0-beta`.
 - [x] Native iOS version: `0.1.0`.
 - [x] Target build: `21`.
@@ -35,11 +35,10 @@ not implement remote push. Reconfirm the production archive entitlements before 
 - [x] EAS authentication succeeds and the authenticated account has Owner access to
   `ebrahimi-holdings`.
 - [x] `eas.json` uses remote app versioning and production auto-increment.
-- [x] Read-only audit found the remote iOS build number is currently `8`.
-- [ ] Confirm in App Store Connect that build `21` has never been used.
-- [ ] Run `pnpm exec eas build:version:set --platform ios --profile production` interactively.
-- [ ] Set the remote baseline to `20` only after the unused-build check.
-- [ ] Re-run `eas build:version:get` and record the remote baseline.
+- [x] Initial read-only audit found the EAS remote iOS build number was `8`.
+- [x] Release owner confirmed App Store Connect currently shows build `8` and build `21` is unused.
+- [x] EAS remote iOS baseline was set to `20` on July 10, 2026.
+- [x] `eas build:version:get` independently verified remote baseline `20`.
 - [ ] Start the production iOS build and confirm auto-increment produces build `21`.
 
 Do not commit Expo, Apple, App Store Connect, signing, certificate, password, session, or two-factor
@@ -75,6 +74,7 @@ credentials.
 
 ## Build and Upload Execution - Manual
 
+- [ ] Immediately before building, verify the remote baseline still reports `20`.
 - [ ] Generate the signed iOS production build.
 - [ ] Verify EAS reports native version `0.1.0` and build `21`.
 - [ ] Inspect permissions, entitlements, signing identity, icon, splash, and dependency report.
@@ -85,3 +85,12 @@ credentials.
 - [ ] Complete and record real-device smoke/accessibility certification.
 - [ ] Certify screenshots, App Privacy, rating, rights, export, and review notes against the binary.
 - [ ] Change public-submission go/no-go only after every manual gate has evidence.
+
+Human execution command:
+
+```bash
+pnpm build:ios
+```
+
+Expected result: EAS production auto-increment advances baseline `20` and generates native iOS
+build `21`. Stop if EAS proposes any other build number.

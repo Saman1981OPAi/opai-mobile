@@ -199,7 +199,9 @@ build `21` completes the existing manual gates.
 
 Build 21 execution preparation confirms the iOS release identity, hardens App Transport Security,
 aligns the in-app testing/support metadata, validates exports and local launch, and records the EAS
-remote-version procedure. It does not generate, upload, submit, or install the signed build.
+remote-version procedure. The EAS remote iOS baseline is now verified at `20`; the next production
+build is expected to become build `21`. It does not mean the build has been generated, uploaded,
+submitted, or installed.
 
 ## Apple Build & Upload
 
@@ -511,6 +513,7 @@ The execution-preparation checklist records validated source/configuration facts
 manual EAS, App Store Connect, and physical-device gates:
 
 - `docs/build-21-execution-checklist.md`
+- `docs/build-21-eas-baseline-confirmation.md`
 - `docs/version-build-number-review.md`
 - `docs/ios-permission-audit.md`
 - `docs/testflight-upload-instructions.md`
