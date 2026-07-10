@@ -174,6 +174,12 @@ templates, hotfix/build-replacement procedures, tester onboarding, feedback inta
 privacy/legal checks, and release-freeze rules. It adds no product feature or production
 integration, and Android production release remains paused.
 
+Sprint 021 prepares target build `21` for the internal iOS TestFlight launch. It adds EAS remote
+version synchronization guidance, release/pre-upload checklists, upload instructions, internal
+tester setup, physical-device QA, feedback and monitoring workflows, and manual App Store Connect
+actions. The remote EAS counter must be synchronized before the reviewed production build; no
+Apple credential is stored in the repository.
+
 ## Apple Build & Upload
 
 This project is prepared for EAS Build and App Store Connect upload.
@@ -185,6 +191,8 @@ pnpm submit:ios
 
 Apple requires an active Apple Developer Program account, an App Store Connect app record, and authentication during build/signing and upload.
 Apple account email addresses are not stored in the application config or displayed inside the iOS app.
+Review `docs/version-build-number-review.md` and `docs/testflight-upload-instructions.md` before
+running these commands because the production profile uses EAS remote versioning.
 
 ## Validation
 
@@ -325,8 +333,8 @@ visibility. Current beta values:
 
 - App version: `0.1.0-beta`
 - Native Expo version: `0.1.0`
-- Build: `19`
-- Status: TestFlight Submission Package
+- Target build: `21`
+- Status: Internal TestFlight Beta Candidate
 - Platform priority: iOS-first
 
 See:
@@ -405,6 +413,25 @@ Sprint 020 prepares controlled response and beta-operations guidance for build `
 - `docs/screenshot-correction-procedure.md`
 - `docs/privacy-legal-final-verification.md`
 - `docs/release-freeze-rules.md`
+
+## Sprint 021 TestFlight Upload Execution and Internal Beta Launch
+
+Sprint 021 prepares target build `21` and the controlled internal-beta launch workflow. See:
+
+- `docs/sprint-021-testflight-upload-execution.md`
+- `docs/ios-release-branch-checklist.md`
+- `docs/final-pre-upload-build-checklist.md`
+- `docs/version-build-number-review.md`
+- `docs/testflight-upload-instructions.md`
+- `docs/internal-testflight-group-setup.md`
+- `docs/app-review-notes-final-confirmation.md`
+- `docs/real-device-smoke-test-plan.md`
+- `docs/testflight-feedback-workflow.md`
+- `docs/internal-beta-launch-announcement.md`
+- `docs/post-upload-monitoring-checklist.md`
+- `docs/hotfix-readiness-confirmation.md`
+- `docs/release-freeze-confirmation.md`
+- `docs/app-store-connect-manual-actions.md`
 
 ## Product Principles
 

@@ -10,7 +10,7 @@ Complete against the exact selected build and current App Store Connect record.
 - [ ] App Review notes, Beta Notes, and reviewer access instructions are entered.
 - [ ] iPhone/iPad screenshots have accepted dimensions and match the current build.
 - [ ] App icon is correct in the processed build and store record.
-- [ ] Build `19` is processed and selected.
+- [ ] Build `21` is processed and selected.
 - [ ] Export compliance, content rights, age rating, and App Privacy are complete.
 - [ ] Internal test information and approved testers are added.
 - [ ] No Android or Google Play production workflow has been started.

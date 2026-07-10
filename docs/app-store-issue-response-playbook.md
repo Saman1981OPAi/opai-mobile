@@ -45,7 +45,7 @@ features while a submission is under review.
 - Apple may say: screenshots are the wrong size, show unavailable behavior, or do not represent the
   current build.
 - Likely cause: incorrect export canvas, device-frame crop, stale mockup, or unsupported claim.
-- Investigate: inspect pixel dimensions and compare each screen with build `19` on-device.
+- Investigate: inspect pixel dimensions and compare each screen with the selected build on-device.
 - Fix: re-export accepted PNG/JPG/JPEG dimensions and replace only the affected assets.
 - Response: confirm corrected screenshots now match the current build.
 - Hotfix: not required unless the underlying UI is actually broken.

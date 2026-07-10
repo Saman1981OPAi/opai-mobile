@@ -7,7 +7,7 @@ or physical-device review.
 
 - [ ] Final signed iOS build exports successfully through EAS.
 - [x] Native version `0.1.0` and displayed beta version `0.1.0-beta` are confirmed.
-- [x] Build number `19` is confirmed.
+- [x] Target build number `21` is confirmed; EAS remote synchronization remains a pre-build action.
 - [x] App icon and splash assets are configured.
 - [x] Display name is `OPAi Police`.
 - [x] Bundle identifier is `com.opaiapp.police`.
@@ -39,7 +39,7 @@ or physical-device review.
 
 - [x] App icon and splash paths exist in configuration.
 - [x] Accepted screenshot dimensions and recommended ordering are documented.
-- [ ] Final iPhone and iPad screenshots are captured from build `19` and manually approved.
+- [ ] Final iPhone and iPad screenshots are captured from build `21` and manually approved.
 - [ ] Screenshots are checked for real data, protected marks, third-party imagery, and overclaims.
 
 ## Testing
