@@ -9,12 +9,15 @@
 - [ ] Physical iPhone and iPad TestFlight certification is recorded.
 - [ ] Screenshots and App Store questionnaires are certified against build `21`.
 - [ ] Asset provenance and support mailbox delivery are confirmed.
+- [ ] A named support-inbox owner and daily review cadence are recorded.
 - [ ] Release owner changes the go/no-go record to GO.
 
 ## While Waiting for Review
 
 - [ ] Record submission ID, version, build, commit, submission time, and owner.
 - [ ] Check App Store Connect at least daily without repeatedly editing metadata.
+- [ ] Check all short and canonical legal/support URLs daily using the URL-monitoring procedure.
+- [ ] Triage support inbox messages using the support-inbox workflow.
 - [ ] Log every Apple message verbatim without credentials or personal information.
 - [ ] Assign severity, owner, due date, and metadata-or-binary disposition.
 - [ ] Keep the release freeze active.
@@ -31,6 +34,7 @@
 
 - [ ] Record the exact response, attachments, timestamp, and Apple status.
 - [ ] Re-check public URLs and edited metadata.
+- [ ] Record URL-check evidence and support-message disposition.
 - [ ] If a replacement binary is required, use the approved build-replacement procedure.
 - [ ] Re-run affected-flow, typecheck, export, smoke, integration, and secret checks.
 - [ ] Preserve every unresolved item in the issue log.

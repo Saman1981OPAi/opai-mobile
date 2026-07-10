@@ -8,6 +8,8 @@ responses without submitting a build, changing runtime behavior, or leaving the 
 ## Delivered
 
 - Public submission support checklist
+- Support inbox intake, sanitization, triage, escalation, and closure workflow
+- Scheduled Privacy, Terms, Support, and canonical URL monitoring
 - Apple public-review response playbook and copy-ready templates
 - Review issue and submission status logs
 - Evidence checklist for every response or correction

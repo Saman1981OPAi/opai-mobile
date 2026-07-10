@@ -498,6 +498,8 @@ See:
 - `docs/apple-review-evidence-checklist.md`
 - `docs/public-submission-status-log.md`
 - `docs/public-build-replacement-readiness.md`
+- `docs/support-inbox-workflow.md`
+- `docs/public-legal-url-monitoring.md`
 
 ## Product Principles
 
