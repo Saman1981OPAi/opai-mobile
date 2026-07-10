@@ -4334,7 +4334,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     gap: spacing.xs,
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.xs
   },
@@ -4585,7 +4585,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     gap: spacing.xs,
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.xs
   },
@@ -4675,7 +4675,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(77,163,255,0.22)",
     borderRadius: radius.full,
     borderWidth: 1,
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm
   },

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { BottomNavigation } from "@/components/ui/BottomNavigation";
 import { ModuleScreen } from "@/screens/ModuleScreen";
@@ -27,9 +28,22 @@ export function AppShell({
   onUpdateLocalData,
   profile
 }: AppShellProps) {
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ animated: false, y: 0 });
+  }, [activeModule.id]);
+
   return (
     <View style={styles.shell}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        automaticallyAdjustKeyboardInsets
+        contentContainerStyle={styles.content}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+      >
         <ModuleScreen
           localData={localData}
           module={activeModule}
