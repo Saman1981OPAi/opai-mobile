@@ -7,7 +7,7 @@ until the manual binary and real-device gates are complete.
 
 ## Go Criteria
 
-- [ ] Sprint 023 reviewed and merged.
+- [x] Sprint 023 reviewed and merged.
 - [x] Source typecheck and local Expo exports pass.
 - [x] Public marketing, privacy, terms, and support URLs are live.
 - [ ] Build `21` generated from the reviewed commit.

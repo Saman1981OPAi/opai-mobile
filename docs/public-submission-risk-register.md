@@ -9,6 +9,7 @@
 | Short public URLs fail | Low | High | Static aliases deployed; re-check before submission | Use canonical URL temporarily and repair hosting |
 | Screenshot dimensions or crop fail | Medium | Medium | Validate exact App Store Connect slots | Resize from source and re-upload without distortion |
 | Testing language makes app appear incomplete | Medium | High | Explain coherent local prototype purpose and working paths | Adjust metadata or defer public submission until production scope |
+| Apple considers the prototype below minimum functionality | Medium | High | Demonstrate connected local productivity value without overstating mock features | Hold submission and strengthen the release rather than argue unsupported capability |
 | Build `21` differs from reviewed source | Medium | High | Record commit SHA and EAS build metadata | Reject binary and generate a replacement build |
 | No physical-device certification | High | High | Complete TestFlight matrix on iPhone and iPad | Maintain NO-GO until signed evidence exists |
 | Asset provenance is incomplete | Medium | High | Obtain ownership/license confirmation | Replace any asset without reliable provenance |
