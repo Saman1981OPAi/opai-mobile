@@ -26,6 +26,14 @@ export const modules: AppModule[] = [
     summary: "Create local report drafts with notes, people, reminders, and AI review placeholders."
   },
   {
+    id: "deviceTesting",
+    label: "Device Testing",
+    shortLabel: "Device Tests",
+    icon: "DT",
+    priority: "primary",
+    summary: "Open verified local guide workflows for police equipment testing and references."
+  },
+  {
     id: "translation",
     label: "Translation",
     shortLabel: "Translate",
