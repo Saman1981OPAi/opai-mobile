@@ -19,11 +19,11 @@ export const modules: AppModule[] = [
   },
   {
     id: "incident",
-    label: "New Incident",
-    shortLabel: "Incident",
+    label: "Report Writing",
+    shortLabel: "Report",
     icon: "IN",
     priority: "primary",
-    summary: "Capture incident details, people, notes, media, documents, and AI drafting support."
+    summary: "Create local report drafts with notes, people, reminders, and AI review placeholders."
   },
   {
     id: "translation",

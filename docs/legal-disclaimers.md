@@ -28,9 +28,9 @@ OPAi translation features are productivity aids only. Translation output may be 
 
 OPAi reminders are productivity aids only. Users remain responsible for verifying court dates, training schedules, qualification deadlines, and official obligations through authorized systems, supervisors, and service policies.
 
-## Incident Disclaimer
+## Report Writing Disclaimer
 
-New Incident drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations.
+Report Writing drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations.
 
 ## Files Disclaimer
 

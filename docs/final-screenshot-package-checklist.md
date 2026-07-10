@@ -20,7 +20,7 @@ accepted dimensions before upload.
 
 1. Home Dashboard
 2. Start My Shift
-3. New Incident, OPAi Assistant, or Translation
+3. Report Writing, OPAi Assistant, or Translation
 
 ### iPad
 

@@ -27,8 +27,8 @@ export function EventCard({ accent, active = false, date, icon, meta, onPress, t
         <MaterialCommunityIcons name={icon} size={26} color={accent} />
       </View>
       <View style={styles.copy}>
-        <Text numberOfLines={1} style={styles.title}>{title}</Text>
-        <Text numberOfLines={1} style={styles.meta}>{meta}</Text>
+        <Text numberOfLines={2} style={styles.title}>{title}</Text>
+        <Text numberOfLines={2} style={styles.meta}>{meta}</Text>
       </View>
       <View style={styles.time}>
         <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.date, { color: accent }]}>{date}</Text>
@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
     borderColor: colors.primaryBlue
   },
   copy: {
-    flex: 1
+    flex: 1,
+    minWidth: 0
   },
   date: {
     fontSize: 13,
@@ -92,7 +93,8 @@ const styles = StyleSheet.create({
     marginTop: 3
   },
   time: {
-    width: 62
+    flexShrink: 0,
+    width: 74
   },
   title: {
     color: colors.textPrimary,

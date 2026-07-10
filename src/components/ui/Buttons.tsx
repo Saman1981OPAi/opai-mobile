@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
   primaryText: {
     color: colors.textPrimary,
     fontSize: 18,
+    flexShrink: 1,
     fontWeight: "900"
   },
   secondary: {
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
   secondaryText: {
     color: colors.textPrimary,
     fontSize: 16,
+    flexShrink: 1,
     fontWeight: "800"
   }
 });

@@ -14,7 +14,7 @@ export function AppHeader({ eyebrow = "Canadian Police Officers", title, showTes
     <View style={styles.wrap}>
       <BrandMark compact={!title} />
       <View style={styles.copy}>
-        {title ? <Text numberOfLines={1} style={styles.title}>{title}</Text> : null}
+        {title ? <Text numberOfLines={1} adjustsFontSizeToFit style={styles.title}>{title}</Text> : null}
         <View style={styles.badgeRow}>
           <View style={styles.badge}>
             <MaterialCommunityIcons name="leaf-maple" size={15} color={colors.canadianRed} />
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   copy: {
-    flex: 1
+    flex: 1,
+    minWidth: 0
   },
   testingBadge: {
     borderColor: "rgba(127,255,212,0.35)"

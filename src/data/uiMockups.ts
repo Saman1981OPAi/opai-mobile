@@ -13,7 +13,7 @@ export type Feature = {
 
 export const homeFeatures: Feature[] = [
   { id: "shift", icon: "shield-check-outline", title: "Shift", subtitle: "Ready" },
-  { id: "incident", icon: "file-plus-outline", title: "Incident", subtitle: "Report" },
+  { id: "incident", icon: "file-plus-outline", title: "Report", subtitle: "Draft" },
   { id: "ai", icon: "message-text-outline", title: "AI", subtitle: "Ask" },
   { id: "translation", icon: "translate", title: "Translate", subtitle: "Voice" },
   { id: "calendar", icon: "calendar-month-outline", title: "Calendar", subtitle: "Events" },
@@ -106,7 +106,7 @@ export const trainingReminders = [
 ];
 
 export const followUpReminders = [
-  { icon: "clipboard-check-outline" as MciIcon, title: "Witness Statement", subtitle: "Incident #25-01873" },
+  { icon: "clipboard-check-outline" as MciIcon, title: "Witness Note", subtitle: "Report #25-01873" },
   { icon: "camera-outline" as MciIcon, title: "Evidence Photos", subtitle: "Attach before draft" },
   { icon: "calendar-clock" as MciIcon, title: "Supervisor Review", subtitle: "Placeholder task" }
 ];
@@ -114,7 +114,7 @@ export const followUpReminders = [
 export const incidentExamples = [
   { icon: "car-emergency" as MciIcon, title: "Traffic Stop", subtitle: "Local example" },
   { icon: "home-alert-outline" as MciIcon, title: "Disturbance", subtitle: "Placeholder flow" },
-  { icon: "walk" as MciIcon, title: "Foot Patrol", subtitle: "Notes template" }
+  { icon: "walk" as MciIcon, title: "Foot Patrol", subtitle: "Report template" }
 ];
 
 export const translationExamples = [

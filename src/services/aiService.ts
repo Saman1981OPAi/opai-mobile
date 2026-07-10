@@ -8,7 +8,7 @@ const categories: AICategory[] = [
   { description: "General support for local prototype workflows.", icon: "chat-processing-outline", id: "general", label: "General Support", shortLabel: "General" },
   { description: "Mock non-mandatory readiness reminders for the start of duty.", icon: "shield-check-outline", id: "shift_readiness", label: "Shift Readiness Helper", shortLabel: "Shift" },
   { description: "Mock review checklist for report clarity and completeness.", icon: "file-search-outline", id: "report_review", label: "Report Review", shortLabel: "Report" },
-  { description: "Mock incident note organization and summary support.", icon: "file-document-outline", id: "incident_summary", label: "Incident Note Organizer", shortLabel: "Incident" },
+  { description: "Mock report note organization and summary support.", icon: "file-document-outline", id: "incident_summary", label: "Report Note Organizer", shortLabel: "Report" },
   { description: "Mock next-step suggestions for local follow-ups.", icon: "clipboard-check-outline", id: "follow_up", label: "Follow-Up Suggestions", shortLabel: "Follow-Ups" },
   { description: "Mock court preparation reminders only.", icon: "scale-balance", id: "court", label: "Court Reminder Helper", shortLabel: "Court" },
   { description: "Mock calendar and reminder organization.", icon: "calendar-clock-outline", id: "calendar", label: "Calendar Assistant", shortLabel: "Calendar" },
@@ -22,7 +22,7 @@ const categories: AICategory[] = [
 
 const suggestedActions: AISuggestedAction[] = [
   { category: "report_review", icon: "file-search-outline", id: "review-report", prompt: "Review this report for clarity and completeness.", subtitle: "Mock checklist", title: "Review Report" },
-  { category: "incident_summary", icon: "file-document-outline", id: "summarize-incident", prompt: "Summarize this incident draft.", subtitle: "Local draft aid", title: "Summarize Incident" },
+  { category: "incident_summary", icon: "file-document-outline", id: "summarize-incident", prompt: "Summarize this report draft.", subtitle: "Local draft aid", title: "Summarize Report" },
   { category: "follow_up", icon: "clipboard-check-outline", id: "suggest-followups", prompt: "Suggest follow-up tasks for this incident.", subtitle: "Next steps", title: "Suggest Follow-Ups" },
   { category: "court", icon: "scale-balance", id: "court-checklist", prompt: "Prepare a court preparation checklist.", subtitle: "Preparation", title: "Prepare Court Checklist" },
   { category: "general", icon: "folder-text-outline", id: "organize-notes", prompt: "Organize these notes into themes.", subtitle: "Structure", title: "Organize Notes" },
