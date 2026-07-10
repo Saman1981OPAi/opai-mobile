@@ -30,11 +30,13 @@ Observed TestFlight status:
 
 ## TestFlight Real-Device Certification
 
-- [ ] Complete the full physical certification checklist in `docs/build-21-testflight-physical-certification.md`.
-- [ ] Confirm Build 21 is installed through TestFlight on a physical iPhone.
+- [x] Complete the full physical certification checklist in `docs/build-21-testflight-physical-certification.md`.
+- [x] Confirm Build 21 is installed through TestFlight on a physical iPhone.
+- [x] Record certification as passed or failed.
+- [x] Record Build 21 certification result: **FAILED - HOTFIX REQUIRED**.
+- [x] Record Build 22 is required.
 - [ ] Confirm physical iPhone smoke test passes.
 - [ ] Confirm no critical defects are found.
-- [ ] Record certification as passed or failed.
 
 ## Duplicate Submission Note
 
@@ -50,10 +52,19 @@ This duplicate record targets the same existing Build 21 artifact. It must be mo
 
 Current public App Store submission decision: **NO-GO**.
 
+Build 21 physical testing result: **FAILED - HOTFIX REQUIRED**.
+
+Observed release-blocking findings:
+
+- Text overflow on iPhone.
+- Dense wording.
+- Need for icon-based navigation.
+- Home Dashboard requires time, date, location, and weather.
+
 Public submission remains blocked until:
 
 1. Build 21 is installed on a physical iPhone through TestFlight.
 2. Build 21 passes complete real-device certification.
 3. Any final Apple export-compliance or beta-review prompts are completed accurately if Apple presents them.
 
-If physical certification passes, status may move to **CONDITIONAL GO**. If any critical test fails, record **BUILD 21 TESTFLIGHT CERTIFICATION: FAILED** and **HOTFIX REQUIRED**. Any replacement binary must use Build 22.
+Build 21 must not be submitted publicly. Any replacement binary must use Build 22.

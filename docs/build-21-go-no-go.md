@@ -16,10 +16,12 @@ Date: July 10, 2026
 - TestFlight build status: `Ready to Submit`
 - Export compliance complete: no `Missing Compliance` prompt observed at time of review
 - Internal testers assigned: yes, `Team (Expo)` internal group with 1 tester
-- Installed through TestFlight: no
-- Real-device certification complete: no
+- Installed through TestFlight: yes
+- Real-device certification complete: yes, failed
+- Build 21 TestFlight certification: FAILED - HOTFIX REQUIRED
 - Public submission decision: NO-GO
 - Next possible decision after real-device certification: CONDITIONAL GO
+- Replacement binary: Build 22 required
 
 ## Build 21
 
@@ -42,35 +44,27 @@ Date: July 10, 2026
 
 ## Rule
 
-Public submission remains NO-GO until:
+Public submission remains NO-GO.
 
-1. Build 21 is installed through TestFlight on a physical iPhone.
-2. Build 21 passes real-device certification.
-3. Any Apple export-compliance or beta-review prompts are completed accurately if presented.
+Build 21 must not be submitted publicly because physical iPhone testing found release-blocking layout and copy-density defects.
 
-If every real-device certification check passes, record:
-
-```text
-BUILD 21 TESTFLIGHT CERTIFICATION: PASSED
-
-Build: 21
-EAS Build ID: 17c847f7-6ac2-476f-83ba-b2e90ea95841
-IPA generated: Yes
-Uploaded: Yes
-Apple processing: Complete
-Installed through TestFlight: Yes
-Physical iPhone smoke test: Passed
-Critical defects: None
-```
-
-At that point public-submission status becomes **CONDITIONAL GO**. Conditional means final App Store metadata, screenshots, privacy answers, age rating, content rights, export compliance, and App Review notes still require final review before pressing Submit for Review.
-
-If any critical test fails, record:
+Build 21 certification result:
 
 ```text
 BUILD 21 TESTFLIGHT CERTIFICATION: FAILED
 HOTFIX REQUIRED
 ```
+
+Build 22 is required before the next public-submission decision.
+
+Build 22 must address:
+
+- iPhone text overflow.
+- Dense wording.
+- Icon-based navigation and stronger visual hierarchy.
+- Home Dashboard time, date, location, and weather.
+- OPAi WhatsApp Updates Channel.
+- Social link additions and Report Writing naming updates.
 
 After Build 21 has been uploaded to Apple, any replacement binary must use Build 22, not another Build 21.
 

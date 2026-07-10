@@ -4,9 +4,9 @@ Date: July 10, 2026
 
 ## Certification Status
 
-BUILD 21 TESTFLIGHT CERTIFICATION: **PENDING**
+BUILD 21 TESTFLIGHT CERTIFICATION: **FAILED - HOTFIX REQUIRED**
 
-Build 21 is not certified until this checklist passes on a physical iPhone through TestFlight.
+Build 21 was installed and tested through TestFlight on a physical iPhone. The build must not be submitted publicly.
 
 ## Build Record
 
@@ -16,16 +16,24 @@ Build 21 is not certified until this checklist passes on a physical iPhone throu
 - IPA generated: Yes
 - Uploaded: Yes
 - Apple processing: Complete
-- Installed through TestFlight: Pending
-- Physical iPhone smoke test: Pending
-- Critical defects: Pending
+- Installed through TestFlight: Yes
+- Physical iPhone smoke test: Failed
+- Critical defects: Text/layout containment defects
+
+## Physical Test Findings
+
+- Text overflow on iPhone.
+- Dense wording in several screens.
+- Need for icon-based navigation and stronger hierarchy.
+- Home Dashboard requires time, date, location, and weather.
+- Build 22 is required before public submission.
 
 ## Installation and Identity
 
+- [x] App installs through TestFlight.
 - [ ] Build number shown is `21`.
 - [ ] App name is `OPAi Police`.
 - [ ] Correct app icon appears.
-- [ ] App installs through TestFlight.
 - [ ] App launches without crashing.
 - [ ] Splash screen displays correctly.
 
@@ -122,7 +130,7 @@ Conditional means final App Store metadata, screenshots, privacy answers, age ra
 
 ## Failure Recording Template
 
-Use this if any critical certification test fails:
+Certification result:
 
 ```text
 BUILD 21 TESTFLIGHT CERTIFICATION: FAILED
