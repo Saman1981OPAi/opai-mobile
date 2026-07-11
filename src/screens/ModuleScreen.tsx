@@ -9,7 +9,6 @@ import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EventCard } from "@/components/ui/EventCard";
-import { FeatureCard } from "@/components/ui/FeatureCard";
 import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -614,6 +613,8 @@ function ScreenFrame({
   );
 }
 
+const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "deviceTesting", "translation", "calendar", "ai"];
+
 function HomeDashboardScreen({
   isTablet,
   localData,
@@ -629,34 +630,28 @@ function HomeDashboardScreen({
 }) {
   const dashboard = dashboardService.getDashboard(localData);
   const dutySummary = workflowService.getHomeSummary(localData);
+  const primaryActions = primaryHomeActionIds
+    .map((id) => dashboard.features.find((feature) => feature.id === id))
+    .filter((feature): feature is NonNullable<typeof feature> => Boolean(feature));
 
   return (
     <ScreenFrame activeModule="dashboard" isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title="Home" />
-      <View style={[styles.hero, isTablet ? styles.heroTablet : null]}>
-        <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>AI partner on duty.</Text>
-          <Text style={styles.heroSub}>Reports. Weather. Reminders.</Text>
-        </View>
-        <View style={styles.heroIcon}>
-          <MaterialCommunityIcons name="shield-check-outline" size={42} color={colors.primaryBlue} />
-        </View>
-      </View>
-
+      <HomeHeroCard />
       <TodayContextCard />
 
-      <View style={[styles.grid, isTablet ? styles.gridTablet : null]}>
-        {dashboard.features.map((feature) => (
-          <FeatureCard
-            compact={isTablet}
+      <View style={[styles.homeActionGrid, isTablet ? styles.homeActionGridTablet : null]}>
+        {primaryActions.map((feature) => (
+          <HomeQuickActionCard
             icon={feature.icon}
             key={feature.id}
             onPress={() => onSelectModule(feature.id)}
-            subtitle={feature.subtitle}
             title={feature.title}
           />
         ))}
       </View>
+
+      <CommunityLinksCard compact />
 
       <SectionHeader icon="view-dashboard-outline" title="Duty Snapshot" />
       <View style={[styles.summaryGrid, isTablet ? styles.summaryGridTablet : null]}>
@@ -682,11 +677,65 @@ function HomeDashboardScreen({
       </View>
 
       <PTSDRibbonCard />
-      <CommunityLinksCard compact />
       <AIInputBar onPress={() => onSelectModule("ai")} placeholder="Ask OPAi..." />
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
     </ScreenFrame>
+  );
+}
+
+function HomeHeroCard() {
+  const chips = [
+    { icon: "file-document-outline" as MciIcon, label: "Report" },
+    { icon: "weather-partly-cloudy" as MciIcon, label: "Weather" },
+    { icon: "bell-outline" as MciIcon, label: "Reminders" },
+    { icon: "gauge" as MciIcon, label: "Devices" }
+  ];
+
+  return (
+    <View style={styles.homeHero}>
+      <View style={styles.homeHeroCopy}>
+        <Text numberOfLines={2} adjustsFontSizeToFit style={styles.homeHeroTitle}>Ready for duty</Text>
+        <View style={styles.homeHeroChips}>
+          {chips.map((chip) => (
+            <View key={chip.label} style={styles.homeHeroChip}>
+              <MaterialCommunityIcons name={chip.icon} size={14} color={colors.accentBlue} />
+              <Text numberOfLines={1} style={styles.homeHeroChipText}>{chip.label}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+      <View style={styles.homeHeroMark}>
+        <MaterialCommunityIcons name="shield-star-outline" size={38} color={colors.primaryBlue} />
+        <View style={styles.homeHeroSpark}>
+          <MaterialCommunityIcons name="star-four-points" size={16} color={colors.ptsdGreen} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function HomeQuickActionCard({
+  icon,
+  onPress,
+  title
+}: {
+  icon: MciIcon;
+  onPress: () => void;
+  title: string;
+}) {
+  return (
+    <Pressable
+      accessibilityLabel={`Open ${title}`}
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.homeActionCard, pressed ? styles.pressed : null]}
+    >
+      <View style={styles.homeActionIcon}>
+        <MaterialCommunityIcons name={icon} size={29} color={colors.primaryBlue} />
+      </View>
+      <Text numberOfLines={1} adjustsFontSizeToFit style={styles.homeActionTitle}>{title}</Text>
+    </Pressable>
   );
 }
 
@@ -4179,8 +4228,8 @@ function CommunityLinksCard({ compact = false }: { compact?: boolean }) {
       <View style={styles.localDataHeader}>
         <MaterialCommunityIcons name="bullhorn-outline" size={22} color={colors.ptsdGreen} />
         <View style={styles.profileCopy}>
-          <Text style={styles.communityTitle}>OPAi updates</Text>
-          <Text numberOfLines={compact ? 1 : 2} style={styles.communityMeta}>Official community links. Opens outside the app.</Text>
+          <Text style={styles.communityTitle}>Updates</Text>
+          <Text numberOfLines={1} style={styles.communityMeta}>Follow OPAi - opens external services</Text>
         </View>
       </View>
       <View style={styles.communityActions}>
@@ -4446,28 +4495,32 @@ const styles = StyleSheet.create({
   communityActions: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.sm
+    gap: spacing.sm,
+    justifyContent: "space-between"
   },
   communityCard: {
-    backgroundColor: "rgba(3,18,30,0.82)",
-    borderColor: "rgba(127,255,212,0.30)",
-    borderRadius: radius.lg,
+    backgroundColor: "rgba(3,18,30,0.88)",
+    borderColor: "rgba(127,255,212,0.34)",
+    borderRadius: radius.xxl,
     borderWidth: 1,
-    gap: spacing.sm,
+    gap: spacing.base,
     padding: spacing.md
   },
   communityCardCompact: {
-    padding: spacing.base
+    padding: spacing.md
   },
   communityLink: {
     alignItems: "center",
-    backgroundColor: "rgba(10,132,255,0.10)",
-    borderColor: "rgba(77,163,255,0.24)",
+    backgroundColor: "rgba(10,132,255,0.12)",
+    borderColor: "rgba(77,163,255,0.30)",
     borderRadius: radius.full,
     borderWidth: 1,
     flexDirection: "row",
+    flexGrow: 1,
     gap: spacing.xs,
-    minHeight: 38,
+    justifyContent: "center",
+    minHeight: 42,
+    minWidth: 96,
     paddingHorizontal: spacing.sm
   },
   communityLinkText: {
@@ -4482,7 +4535,7 @@ const styles = StyleSheet.create({
   },
   communityTitle: {
     color: colors.textPrimary,
-    fontSize: typography.small,
+    fontSize: typography.h3,
     fontWeight: "900"
   },
   contentTablet: {
@@ -4497,6 +4550,113 @@ const styles = StyleSheet.create({
   },
   gridTablet: {
     justifyContent: "flex-start"
+  },
+  homeActionCard: {
+    alignItems: "center",
+    backgroundColor: "rgba(6,29,56,0.78)",
+    borderColor: "rgba(77,163,255,0.24)",
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    flexBasis: "48%",
+    flexGrow: 1,
+    gap: spacing.sm,
+    justifyContent: "center",
+    minHeight: 104,
+    minWidth: 142,
+    padding: spacing.base
+  },
+  homeActionGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    justifyContent: "space-between"
+  },
+  homeActionGridTablet: {
+    justifyContent: "flex-start"
+  },
+  homeActionIcon: {
+    alignItems: "center",
+    backgroundColor: "rgba(10,132,255,0.13)",
+    borderColor: "rgba(77,163,255,0.22)",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    height: 52,
+    justifyContent: "center",
+    width: 52
+  },
+  homeActionTitle: {
+    color: colors.textPrimary,
+    fontSize: typography.h3,
+    fontWeight: "900",
+    maxWidth: "100%",
+    textAlign: "center"
+  },
+  homeHero: {
+    alignItems: "center",
+    backgroundColor: "rgba(6,29,56,0.56)",
+    borderColor: "rgba(77,163,255,0.22)",
+    borderRadius: radius.xxl,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.md,
+    overflow: "hidden",
+    padding: spacing.md
+  },
+  homeHeroChip: {
+    alignItems: "center",
+    backgroundColor: "rgba(10,132,255,0.12)",
+    borderColor: "rgba(77,163,255,0.28)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.xs,
+    minHeight: 30,
+    paddingHorizontal: spacing.sm
+  },
+  homeHeroChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.xs,
+    marginTop: spacing.base
+  },
+  homeHeroChipText: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    fontWeight: "900"
+  },
+  homeHeroCopy: {
+    flex: 1,
+    minWidth: 0
+  },
+  homeHeroMark: {
+    alignItems: "center",
+    backgroundColor: "rgba(10,132,255,0.14)",
+    borderColor: "rgba(77,163,255,0.32)",
+    borderRadius: radius.xxl,
+    borderWidth: 1,
+    height: 82,
+    justifyContent: "center",
+    position: "relative",
+    width: 82
+  },
+  homeHeroSpark: {
+    alignItems: "center",
+    backgroundColor: "rgba(127,255,212,0.12)",
+    borderColor: "rgba(127,255,212,0.30)",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    bottom: -4,
+    height: 30,
+    justifyContent: "center",
+    position: "absolute",
+    right: -4,
+    width: 30
+  },
+  homeHeroTitle: {
+    color: colors.textPrimary,
+    fontSize: 36,
+    fontWeight: "900",
+    lineHeight: 40
   },
   hero: {
     alignItems: "center",

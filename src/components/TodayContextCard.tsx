@@ -58,22 +58,15 @@ export function TodayContextCard() {
     }));
     buttons.push({ text: "Cancel", style: "cancel" });
 
-    Alert.alert(
-      "Weather City",
-      "Choose a Canadian city for local weather.",
-      buttons
-    );
+    Alert.alert("Weather City", "Choose a Canadian city for local weather.", buttons);
   };
 
   return (
     <View style={styles.card}>
       <View style={styles.primaryRow}>
-        <View style={styles.iconBubble}>
-          <Ionicons name="time-outline" size={22} color={colors.primaryBlue} />
-        </View>
         <View style={styles.copy}>
           <Text numberOfLines={1} adjustsFontSizeToFit style={styles.time}>{today.timeLabel}</Text>
-          <Text numberOfLines={1} style={styles.date}>{today.dayLabel} · {today.dateLabel}</Text>
+          <Text numberOfLines={1} style={styles.date}>{today.dayLabel}, {today.dateLabel}</Text>
         </View>
         <View style={styles.weatherPill}>
           <MaterialCommunityIcons name="weather-partly-cloudy" size={18} color={colors.ptsdGreen} />
@@ -84,14 +77,13 @@ export function TodayContextCard() {
       </View>
 
       <View style={styles.weatherRow}>
+        <Ionicons name="location-outline" size={17} color={colors.accentBlue} />
         <View style={styles.copy}>
           <Text numberOfLines={1} style={styles.weatherTitle}>
             {weather ? weather.city : "Loading weather"}
           </Text>
           <Text numberOfLines={1} style={styles.weatherMeta}>
-            {weather && weather.source !== "Unavailable"
-              ? `${weather.condition} · Feels ${weather.feelsLikeC}C · H ${weather.highC} / L ${weather.lowC}`
-              : "Open-Meteo preview · no API key"}
+            {weather && weather.source !== "Unavailable" ? weather.condition : "Weather preview"}
           </Text>
         </View>
       </View>
@@ -118,6 +110,7 @@ function SmallAction({
 }) {
   return (
     <Pressable
+      accessibilityLabel={`${label} weather`}
       accessibilityRole="button"
       disabled={disabled}
       onPress={onPress}
@@ -149,14 +142,15 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.sm
+    gap: spacing.sm,
+    justifyContent: "space-between"
   },
   card: {
     backgroundColor: "rgba(7,23,42,0.82)",
     borderColor: "rgba(77,163,255,0.28)",
-    borderRadius: radius.xl,
+    borderRadius: radius.xxl,
     borderWidth: 1,
-    gap: spacing.sm,
+    gap: spacing.base,
     padding: spacing.md
   },
   copy: {
@@ -172,14 +166,6 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.55
   },
-  iconBubble: {
-    alignItems: "center",
-    backgroundColor: "rgba(10,132,255,0.14)",
-    borderRadius: radius.lg,
-    height: 42,
-    justifyContent: "center",
-    width: 42
-  },
   pressed: {
     opacity: 0.72
   },
@@ -190,9 +176,10 @@ const styles = StyleSheet.create({
   },
   time: {
     color: colors.textPrimary,
-    fontSize: typography.h2,
+    fontSize: 34,
     fontVariant: ["tabular-nums"],
-    fontWeight: "900"
+    fontWeight: "900",
+    lineHeight: 38
   },
   weatherMeta: {
     color: colors.textMuted,
@@ -206,12 +193,15 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     borderWidth: 1,
     flexDirection: "row",
+    flexShrink: 0,
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs
   },
   weatherRow: {
-    flexDirection: "row"
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.sm
   },
   weatherTemp: {
     color: colors.ptsdGreen,

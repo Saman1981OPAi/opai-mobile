@@ -12,12 +12,12 @@ export type Feature = {
 };
 
 export const homeFeatures: Feature[] = [
-  { id: "shift", icon: "shield-check-outline", title: "Shift", subtitle: "Ready" },
+  { id: "shift", icon: "shield-check-outline", title: "Start Shift", subtitle: "Ready" },
   { id: "incident", icon: "file-plus-outline", title: "Report", subtitle: "Draft" },
-  { id: "deviceTesting", icon: "gauge", title: "Device Tests", subtitle: "Guides" },
-  { id: "ai", icon: "message-text-outline", title: "AI", subtitle: "Ask" },
+  { id: "deviceTesting", icon: "gauge", title: "Devices", subtitle: "Guides" },
   { id: "translation", icon: "translate", title: "Translate", subtitle: "Voice" },
   { id: "calendar", icon: "calendar-month-outline", title: "Calendar", subtitle: "Events" },
+  { id: "ai", icon: "message-text-outline", title: "OPAi", subtitle: "Ask" },
   { id: "court", icon: "scale-balance", title: "Court", subtitle: "Dates" },
   { id: "training", icon: "school-outline", title: "Training", subtitle: "Renewals" },
   { id: "notes", icon: "folder-outline", title: "Files", subtitle: "Notes" },

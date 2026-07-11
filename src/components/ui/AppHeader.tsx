@@ -9,23 +9,23 @@ type AppHeaderProps = {
   showTesting?: boolean;
 };
 
-export function AppHeader({ eyebrow = "Canadian Police Officers", title, showTesting = true }: AppHeaderProps) {
+export function AppHeader({ eyebrow = "Canada Police", title, showTesting = true }: AppHeaderProps) {
   return (
     <View style={styles.wrap}>
-      <BrandMark compact={!title} />
-      <View style={styles.copy}>
+      <View style={styles.brandSide}>
+        <BrandMark compact />
         {title ? <Text numberOfLines={1} adjustsFontSizeToFit style={styles.title}>{title}</Text> : null}
-        <View style={styles.badgeRow}>
-          <View style={styles.badge}>
-            <MaterialCommunityIcons name="leaf-maple" size={15} color={colors.canadianRed} />
-            <Text numberOfLines={1} style={styles.badgeText}>{eyebrow}</Text>
-          </View>
-          {showTesting ? (
-            <View style={[styles.badge, styles.testingBadge]}>
-              <Text style={styles.testingText}>Testing</Text>
-            </View>
-          ) : null}
+      </View>
+      <View style={styles.badgeColumn}>
+        <View style={styles.badge}>
+          <MaterialCommunityIcons name="leaf-maple" size={14} color={colors.canadianRed} />
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.badgeText}>{eyebrow}</Text>
         </View>
+        {showTesting ? (
+          <View style={[styles.badge, styles.testingBadge]}>
+            <Text numberOfLines={1} style={styles.testingText}>Beta</Text>
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -34,46 +34,54 @@ export function AppHeader({ eyebrow = "Canadian Police Officers", title, showTes
 const styles = StyleSheet.create({
   badge: {
     alignItems: "center",
+    alignSelf: "flex-end",
     borderColor: "rgba(77,163,255,0.25)",
     borderRadius: radius.full,
     borderWidth: 1,
     flexDirection: "row",
     gap: spacing.xs,
+    minHeight: 28,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 5
+    paddingVertical: 4
   },
-  badgeRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+  badgeColumn: {
+    alignItems: "flex-end",
+    flexShrink: 0,
     gap: spacing.xs,
-    marginTop: spacing.xs
+    maxWidth: 132
   },
   badgeText: {
     color: colors.textSecondary,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "800"
   },
-  copy: {
+  brandSide: {
+    alignItems: "center",
+    flexDirection: "row",
     flex: 1,
+    gap: spacing.sm,
     minWidth: 0
   },
   testingBadge: {
+    backgroundColor: "rgba(127,255,212,0.10)",
     borderColor: "rgba(127,255,212,0.35)"
   },
   testingText: {
     color: colors.ptsdGreen,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "900"
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 20,
+    flex: 1,
+    fontSize: 18,
     fontWeight: "900"
   },
   wrap: {
     alignItems: "center",
     flexDirection: "row",
-    gap: spacing.md,
+    gap: spacing.sm,
+    justifyContent: "space-between",
     marginBottom: spacing.lg
   }
 });
