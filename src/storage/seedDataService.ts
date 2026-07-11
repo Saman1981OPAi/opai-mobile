@@ -133,7 +133,7 @@ export function createDefaultCalendarWorkflowEvents(): CalendarWorkflowEvent[] {
       reminderLeadTime: "1Day",
       status: "upcoming",
       time: "13:30",
-      title: "Scenario training",
+      title: "Training",
       type: "Training",
       updatedAt: createdAt
     },
@@ -209,7 +209,7 @@ export function createDefaultTrainingWorkflowEvents(): TrainingWorkflowEvent[] {
       reminderLeadTime: "1Day",
       status: "upcoming",
       time: "13:30",
-      title: "Scenario training",
+      title: "Training",
       updatedAt: createdAt
     },
     {

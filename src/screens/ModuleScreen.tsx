@@ -707,9 +707,6 @@ function HomeHeroCard() {
       </View>
       <View style={styles.homeHeroMark}>
         <MaterialCommunityIcons name="shield-star-outline" size={38} color={colors.primaryBlue} />
-        <View style={styles.homeHeroSpark}>
-          <MaterialCommunityIcons name="star-four-points" size={16} color={colors.ptsdGreen} />
-        </View>
       </View>
     </View>
   );
@@ -1459,11 +1456,13 @@ function AIAssistantScreen({
       <AppHeader title="OPAi Assistant" />
       <View style={styles.aiPanel}>
         <View style={styles.aiOrb}>
-          <MaterialCommunityIcons name="brain" size={44} color={colors.primaryBlue} />
+          <MaterialCommunityIcons name="brain" size={34} color={colors.primaryBlue} />
         </View>
-        <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>OPAi Assistant</Text>
-          <Text style={styles.heroSub}>Mock assistant. Testing only.</Text>
+        <View style={styles.aiHeroCopy}>
+          <Text numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78} style={styles.aiHeroTitle}>
+            OPAi Assistant
+          </Text>
+          <Text numberOfLines={1} style={styles.aiHeroSub}>Mock assistant</Text>
         </View>
         <View style={styles.mockBadge}>
           <Text style={styles.mockBadgeText}>Mock AI</Text>
@@ -4412,18 +4411,36 @@ const styles = StyleSheet.create({
     borderColor: colors.primaryBlue,
     borderRadius: radius.full,
     borderWidth: 1,
-    height: 76,
+    flexShrink: 0,
+    height: 58,
     justifyContent: "center",
-    width: 76
+    width: 58
+  },
+  aiHeroCopy: {
+    flex: 1,
+    minWidth: 0
+  },
+  aiHeroSub: {
+    color: colors.textMuted,
+    fontSize: typography.small,
+    fontWeight: "800",
+    marginTop: spacing.xs
+  },
+  aiHeroTitle: {
+    color: colors.textPrimary,
+    flexShrink: 1,
+    fontSize: 29,
+    fontWeight: "900",
+    lineHeight: 33
   },
   aiPanel: {
     alignItems: "center",
     backgroundColor: "rgba(6,29,56,0.72)",
     borderColor: "rgba(77,163,255,0.28)",
-    borderRadius: radius.xl,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     flexDirection: "row",
-    gap: spacing.md,
+    gap: spacing.sm,
     padding: spacing.md
   },
   blueText: {
@@ -4636,21 +4653,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 82,
     justifyContent: "center",
-    position: "relative",
     width: 82
-  },
-  homeHeroSpark: {
-    alignItems: "center",
-    backgroundColor: "rgba(127,255,212,0.12)",
-    borderColor: "rgba(127,255,212,0.30)",
-    borderRadius: radius.full,
-    borderWidth: 1,
-    bottom: -4,
-    height: 30,
-    justifyContent: "center",
-    position: "absolute",
-    right: -4,
-    width: 30
   },
   homeHeroTitle: {
     color: colors.textPrimary,
@@ -4698,6 +4701,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(127,255,212,0.35)",
     borderRadius: radius.full,
     borderWidth: 1,
+    flexShrink: 0,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs
   },

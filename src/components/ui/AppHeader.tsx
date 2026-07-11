@@ -9,7 +9,7 @@ type AppHeaderProps = {
   showTesting?: boolean;
 };
 
-export function AppHeader({ eyebrow = "Canada Police", title, showTesting = true }: AppHeaderProps) {
+export function AppHeader({ eyebrow = "Canadian Police", title, showTesting = true }: AppHeaderProps) {
   return (
     <View style={styles.wrap}>
       <View style={styles.brandSide}>
@@ -48,11 +48,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     flexShrink: 0,
     gap: spacing.xs,
-    maxWidth: 132
+    maxWidth: 150
   },
   badgeText: {
     color: colors.textSecondary,
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: "800"
   },
   brandSide: {
