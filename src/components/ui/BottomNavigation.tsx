@@ -13,7 +13,7 @@ type NavItem = {
 const items: NavItem[] = [
   { id: "dashboard", label: "Home", icon: "home" },
   { id: "incident", label: "Report", icon: "document-text-outline" },
-  { id: "ai", label: "Chat", icon: "chatbubble-ellipses-outline" },
+  { id: "ai", label: "OPAi", icon: "sparkles-outline" },
   { id: "translation", label: "Translate", icon: "language-outline" },
   { id: "calendar", label: "Calendar", icon: "calendar-outline" }
 ];
@@ -35,11 +35,11 @@ export function BottomNavigation({ activeModule, onSelectModule }: BottomNavigat
             accessibilityState={{ selected: active }}
             key={item.id}
             onPress={() => onSelectModule(item.id)}
-            style={({ pressed }) => [styles.item, pressed ? styles.pressed : null]}
+            style={({ pressed }) => [styles.item, active ? styles.itemActive : null, pressed ? styles.pressed : null]}
           >
             <Ionicons
               name={item.icon}
-              size={27}
+              size={24}
               color={active ? colors.primaryBlue : "rgba(255,255,255,0.68)"}
             />
             <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.label, active ? styles.labelActive : null]}>
@@ -56,14 +56,21 @@ const styles = StyleSheet.create({
   item: {
     alignItems: "center",
     flex: 1,
-    gap: 4,
+    gap: 3,
     justifyContent: "center",
+    maxWidth: 84,
     minWidth: 44,
-    minHeight: 64
+    minHeight: 58
+  },
+  itemActive: {
+    backgroundColor: "rgba(10,132,255,0.10)",
+    borderColor: "rgba(77,163,255,0.24)",
+    borderRadius: 18,
+    borderWidth: 1
   },
   label: {
     color: "rgba(255,255,255,0.68)",
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "800",
     textAlign: "center"
   },
@@ -81,9 +88,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     flexDirection: "row",
     height: layout.bottomNavHeight,
+    justifyContent: "space-between",
     left: 0,
     paddingBottom: 14,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingTop: 7,
     position: "absolute",
     right: 0
