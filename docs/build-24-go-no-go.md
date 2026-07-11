@@ -2,18 +2,26 @@
 
 ## Current Decision
 
-NO-GO for public App Store submission.
+CONDITIONAL GO
 
-Build 24 has been generated and uploaded, but Apple processing and physical iPhone certification are not yet complete.
+`BUILD 24 TESTFLIGHT CERTIFICATION: PASSED`
 
-## Required Next Steps
+`PUBLIC SUBMISSION STATUS: CONDITIONAL GO`
 
-- Confirm Build 24 appears in App Store Connect TestFlight.
-- Resolve export compliance if App Store Connect requests it.
-- Assign the internal tester.
-- Install Build 24 through TestFlight on a physical iPhone.
-- Verify the corrected Home, OPAi Assistant, Calendar, navigation, permissions, local persistence, and legal/support flows.
-- Record the physical certification result.
+Build 24 was generated, uploaded, processed by Apple, installed through TestFlight, and certified on a physical iPhone with no critical defects found.
+
+Public App Store submission has not been performed.
+
+## Final Human Review Required
+
+- Confirm final App Store metadata and descriptions.
+- Confirm screenshots and previews match Build 24.
+- Confirm App Privacy answers.
+- Confirm age rating and content-rights declarations.
+- Confirm export-compliance responses.
+- Confirm App Review contact information and review notes.
+- Confirm the selected binary is Version `0.1.0`, Build `24`.
+
+Do not submit publicly until this final human review is complete.
 
 Any replacement binary after Build 24 must use Build 25 or higher.
-
