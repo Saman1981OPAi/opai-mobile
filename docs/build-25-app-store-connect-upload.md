@@ -8,7 +8,10 @@
 - EAS Submission ID: `f002ac4d-6249-49ad-ba7e-8a3b45c85e1b`
 - Submission URL: `https://expo.dev/accounts/ebrahimi-holdings/projects/opai-police/submissions/f002ac4d-6249-49ad-ba7e-8a3b45c85e1b`
 - Upload status: passed
-- App Store Connect status at first verification: processing
-- Public App Review submission: not performed
+- Apple processing status: complete
+- App Store version: `1.0`
+- Selected build: `25` (`0.1.0`)
+- Public App Review submission: performed manually by the human operator
+- App Review status verified on July 13, 2026: `Waiting for Review`
 
-The exact existing Build 25 artifact was submitted. No replacement build, Android build, or public App Store submission was started.
+The exact existing Build 25 artifact was uploaded and selected for the iOS 1.0 submission. No replacement build or Android build was generated. The human operator submitted the version to Apple after the upload completed.
