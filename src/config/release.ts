@@ -1,6 +1,6 @@
 export const releaseInfo = {
   appVersion: "0.1.0-beta",
-  buildNumber: "22",
+  buildNumber: "25",
   nativeVersion: "0.1.0",
   platformPriority: "iOS-first",
   releaseChannel: "Internal TestFlight Beta Candidate",

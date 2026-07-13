@@ -25,6 +25,13 @@
         "buildType": "apk"
       }
     },
+    "testflight": {
+      "extends": "production",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_OPAI_API_BASE_URL": "https://opai-backend-staging.onrender.com"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "env": {
