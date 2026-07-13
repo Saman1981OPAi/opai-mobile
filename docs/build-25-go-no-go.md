@@ -1,7 +1,11 @@
 # Build 25 GO / NO-GO
 
-**TestFlight build generation: CONDITIONAL GO**
+**TestFlight build generation: PASSED**
 
-The staging integration and static validation pass. Build generation may proceed only after the mobile PR is reviewed and merged, EAS confirms the remote iOS baseline is `24`, and the `testflight` profile resolves to the certified Render staging backend. Production remains intentionally undeployed and `BACKEND_PRODUCTION_DEPLOY_WEBHOOK` remains intentionally unconfigured.
+Build 25 was generated successfully from merged `main` commit `7428d55` using the staging-only `testflight` profile. The IPA was uploaded to App Store Connect and Apple processing began successfully.
+
+**TestFlight certification: PENDING** until processing completes, the build is installed through TestFlight, and the physical-iPhone checklist passes.
 
 **Public App Store submission: NO-GO** until the production backend is intentionally deployed and certified, App Privacy answers are updated, and Build 25 passes physical iPhone certification.
+
+Any replacement binary must use Build 26 or higher.
