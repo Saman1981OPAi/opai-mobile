@@ -58,6 +58,13 @@ export type AIConversation = {
   category: AICategoryId;
   prompt: string;
   mockResponse: string;
+  requestId?: string;
+  verificationRequired?: boolean;
+  warnings?: string[];
+  summary?: string;
+  missingInformation?: string[];
+  sources?: Array<{ title: string; url?: string | null }>;
+  refusalReason?: string;
   relatedIncidentId?: string;
   relatedNoteId?: string;
   createdAt: string;

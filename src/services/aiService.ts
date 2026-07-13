@@ -1,6 +1,7 @@
 import type { LocalAppData, LocalIncidentDraft, LocalNoteFileMetadata } from "@/storage/storageTypes";
 import type { AICategory, AICategoryId, AIConversation, AIPreferences, AIPromptSuggestion, AISuggestedAction } from "@/types/ai";
 import { classifyMockPrompt, getUnsupportedMockMessage, isPlaceholderOnlyClassification } from "@/utils/aiGuardrails";
+import type { AIResponseContract } from "@/services/api/apiTypes";
 
 const nowIso = () => new Date().toISOString();
 
@@ -115,6 +116,35 @@ export const aiService = {
       updatedAt: createdAt
     };
 
+    return relatedIncidentId ? { ...conversation, relatedIncidentId } : conversation;
+  },
+  createLiveConversation({
+    category,
+    prompt,
+    response,
+    relatedIncidentId
+  }: {
+    category: AICategoryId;
+    prompt: string;
+    response: AIResponseContract;
+    relatedIncidentId?: string;
+  }): AIConversation {
+    const createdAt = nowIso();
+    const conversation: AIConversation = {
+      category,
+      createdAt,
+      id: response.conversation_id ?? `ai-conversation-${Date.now()}`,
+      mockResponse: response.answer,
+      prompt,
+      requestId: response.request_id,
+      updatedAt: createdAt,
+      verificationRequired: response.verification_required,
+      warnings: response.warnings,
+      ...(response.summary ? { summary: response.summary } : {}),
+      ...(response.missing_information.length ? { missingInformation: response.missing_information } : {}),
+      ...(response.sources.length ? { sources: response.sources.map(({ title, url }) => ({ title, ...(url ? { url } : {}) })) } : {}),
+      ...(response.refusal_reason ? { refusalReason: response.refusal_reason } : {})
+    };
     return relatedIncidentId ? { ...conversation, relatedIncidentId } : conversation;
   },
   saveAIConversation(localData: LocalAppData, conversation: AIConversation): LocalAppData {
