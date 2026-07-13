@@ -1,5 +1,7 @@
 # OPAi Mobile
 
+Build 25 staging integration uses `EXPO_PUBLIC_OPAI_API_BASE_URL`. Copy `.env.example` to an ignored local environment file for local development; never place backend or OpenAI secrets in the app. Preview/TestFlight targets the certified staging backend, while production remains a separate future environment.
+
 Cross-platform OPAi Police mobile application for iOS and Android, with current launch priority on iOS.
 
 ## Objective

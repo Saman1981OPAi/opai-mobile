@@ -18,6 +18,20 @@
         {
           "locationWhenInUsePermission": "OPAi Police uses your approximate foreground location only when you choose local weather for the Home Dashboard. Location is not tracked in the background."
         }
+      ],
+      "expo-secure-store",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "OPAi Police uses the microphone only when you choose voice translation. Audio is sent securely for translation and is not stored by OPAi."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "OPAi Police accesses only the image you select for translation.",
+          "cameraPermission": "OPAi Police uses the camera only when you choose image translation."
+        }
       ]
     ],
     "splash": {

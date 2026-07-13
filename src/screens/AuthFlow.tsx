@@ -29,14 +29,20 @@ type AuthFlowProps = {
   authStatus: AuthStatus;
   onAuthenticated: (profile: MockUserProfile) => void;
   onAuthStatusChange: (status: AuthStatus) => void;
+  onForgotPassword: (email: string) => Promise<{ message: string }>;
+  onRegister: (email: string, password: string, displayName: string) => Promise<MockUserProfile>;
+  onSignIn: (email: string, password: string) => Promise<MockUserProfile>;
 };
 
-export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: AuthFlowProps) {
+export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onForgotPassword, onRegister, onSignIn }: AuthFlowProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= layout.tabletBreakpoint;
   const [screen, setScreen] = useState<AuthScreen>("welcome");
   const [email, setEmail] = useState(mockUserProfile.email);
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("Officer");
   const [code, setCode] = useState("");
+  const [pendingProfile, setPendingProfile] = useState<MockUserProfile | null>(null);
   const [consent, setConsent] = useState<ConsentState>(emptyConsentState);
   const [authError, setAuthError] = useState("");
   const [loadingAction, setLoadingAction] = useState<"account" | "reset" | "signin" | "verify" | null>(null);
@@ -48,34 +54,58 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
 
   const isValidEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
 
-  const runLocalAction = (action: typeof loadingAction, callback: () => void) => {
-    setLoadingAction(action);
-    setTimeout(() => {
-      callback();
+  const beginVerification = async () => {
+    if (!isValidEmail(email)) {
+      setAuthError("Enter a valid email address.");
+      return;
+    }
+    if (password.length < 8) {
+      setAuthError("Enter your password (at least 8 characters). ");
+      return;
+    }
+
+    setAuthError("");
+    onAuthStatusChange("signingIn");
+    setLoadingAction("signin");
+    try {
+      setPendingProfile(await onSignIn(email.trim(), password));
+      onAuthStatusChange("onboardingRequired");
+      setScreen("consent");
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : "Sign in failed.");
+      onAuthStatusChange("signedOut");
+    } finally {
       setLoadingAction(null);
-    }, 120);
+    }
   };
 
-  const beginVerification = () => {
+  const beginCreateAccount = async () => {
     if (!isValidEmail(email)) {
-      setAuthError("Enter a valid email address to continue with mock authentication.");
+      setAuthError("Enter a valid email address.");
+      return;
+    }
+    if (displayName.trim().length < 2) {
+      setAuthError("Enter your name.");
+      return;
+    }
+    if (password.length < 12) {
+      setAuthError("Use a password with at least 12 characters.");
       return;
     }
 
     setAuthError("");
     onAuthStatusChange("signingIn");
-    runLocalAction("signin", () => setScreen("verification"));
-  };
-
-  const beginCreateAccount = () => {
-    if (!isValidEmail(email)) {
-      setAuthError("Enter a valid email address before creating the local mock account.");
-      return;
+    setLoadingAction("account");
+    try {
+      setPendingProfile(await onRegister(email.trim(), password, displayName.trim()));
+      onAuthStatusChange("onboardingRequired");
+      setScreen("consent");
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : "Account creation failed.");
+      onAuthStatusChange("signedOut");
+    } finally {
+      setLoadingAction(null);
     }
-
-    setAuthError("");
-    onAuthStatusChange("signingIn");
-    runLocalAction("account", () => setScreen("verification"));
   };
 
   const goToConsent = () => {
@@ -86,7 +116,7 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
 
     setAuthError("");
     onAuthStatusChange("onboardingRequired");
-    runLocalAction("verify", () => setScreen("consent"));
+    setScreen("consent");
   };
 
   const completeConsent = () => {
@@ -101,7 +131,7 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
 
   const enterApp = () => {
     onAuthenticated({
-      ...mockUserProfile,
+      ...(pendingProfile ?? mockUserProfile),
       biometricEnabled: authStatus === "biometricPrompt",
       email,
       privacyConsentAccepted: consent.privacy,
@@ -138,8 +168,10 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
               setScreen("biometric");
             }}
             onEmailChange={setEmail}
+            onPasswordChange={setPassword}
             onForgotPassword={() => setScreen("forgotPassword")}
             onSignIn={beginVerification}
+            password={password}
             error={authError}
             loading={loadingAction === "signin"}
           />
@@ -152,6 +184,10 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
             loading={loadingAction === "account"}
             onBack={() => setScreen("welcome")}
             onEmailChange={setEmail}
+            displayName={displayName}
+            onDisplayNameChange={setDisplayName}
+            onPasswordChange={setPassword}
+            password={password}
             onSubmit={beginCreateAccount}
           />
         ) : null}
@@ -169,7 +205,11 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
                 return;
               }
               setAuthError("");
-              runLocalAction("reset", () => onAuthStatusChange("passwordResetRequested"));
+              setLoadingAction("reset");
+              onForgotPassword(email.trim())
+                .then(() => onAuthStatusChange("passwordResetRequested"))
+                .catch((error: unknown) => setAuthError(error instanceof Error ? error.message : "Reset request failed."))
+                .finally(() => setLoadingAction(null));
             }}
             resetRequested={authStatus === "passwordResetRequested"}
           />
@@ -189,7 +229,7 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange }: Au
         {screen === "biometric" ? (
           <BiometricScreen
             onBack={() => setScreen("welcome")}
-            onContinue={goToConsent}
+            onContinue={() => setScreen("signIn")}
           />
         ) : null}
 
@@ -222,7 +262,7 @@ function BrandIntro({ compact }: { compact: boolean }) {
       </View>
       <View style={styles.brandCopy}>
         <Text style={styles.brandTitle}>OPAi Police</Text>
-        <Text style={styles.brandSub}>Authentication foundation</Text>
+        <Text style={styles.brandSub}>Secure staging access</Text>
       </View>
       <View style={styles.testingPill}>
         <Text style={styles.testingPillText}>Testing</Text>
@@ -243,7 +283,7 @@ function WelcomeScreen({
   return (
     <View style={styles.stack}>
       <Text style={styles.heroTitle}>Secure access, built carefully.</Text>
-      <Text style={styles.heroSub}>Mock authentication only. No production systems are connected.</Text>
+      <Text style={styles.heroSub}>Sign in to the secure OPAi staging service.</Text>
       <View style={styles.buttonStack}>
         <PrimaryButton label="Sign In" onPress={onSignIn}>
           <Ionicons name="log-in-outline" size={22} color={colors.textPrimary} />
@@ -251,11 +291,11 @@ function WelcomeScreen({
         <SecondaryButton label="Create Account" onPress={onCreateAccount}>
           <Ionicons name="person-add-outline" size={20} color={colors.primaryBlue} />
         </SecondaryButton>
-        <SecondaryButton label="Biometric Placeholder" onPress={onBiometric}>
+        <SecondaryButton label="Biometrics Coming Soon" onPress={onBiometric}>
           <MaterialCommunityIcons name="face-recognition" size={20} color={colors.primaryBlue} />
         </SecondaryButton>
       </View>
-      <DisclaimerBanner message="Sprint 004 uses local mock authentication only. No backend, network, OpenAI, payment, or police-service connection is active." />
+      <DisclaimerBanner message="Testing environment. Do not enter operational police records, evidence, or sensitive personal information." />
     </View>
   );
 }
@@ -268,7 +308,9 @@ function SignInScreen({
   onBiometric,
   onEmailChange,
   onForgotPassword,
-  onSignIn
+  onPasswordChange,
+  onSignIn,
+  password
 }: {
   email: string;
   error: string;
@@ -277,11 +319,13 @@ function SignInScreen({
   onBiometric: () => void;
   onEmailChange: (value: string) => void;
   onForgotPassword: () => void;
+  onPasswordChange: (value: string) => void;
   onSignIn: () => void;
+  password: string;
 }) {
   return (
     <View style={styles.stack}>
-      <ScreenHeading icon="lock-outline" title="Sign In" subtitle="Use mock credentials for local testing." />
+      <ScreenHeading icon="lock-outline" title="Sign In" subtitle="Secure staging account" />
       <Field
         autoCapitalize="none"
         icon="email-outline"
@@ -290,7 +334,7 @@ function SignInScreen({
         onChangeText={onEmailChange}
         value={email}
       />
-      <Field icon="key-outline" label="Password" placeholder="Mock password" secureTextEntry value="" />
+      <Field icon="key-outline" label="Password" onChangeText={onPasswordChange} placeholder="Password" secureTextEntry value={password} />
       {error ? <ErrorText message={error} /> : null}
       <PrimaryButton label="Continue" loading={loading} onPress={onSignIn}>
         <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
@@ -305,27 +349,32 @@ function SignInScreen({
 }
 
 function CreateAccountScreen({
+  displayName,
   email,
   error,
   loading,
   onBack,
+  onDisplayNameChange,
   onEmailChange,
+  onPasswordChange,
+  password,
   onSubmit
 }: {
+  displayName: string;
   email: string;
   error: string;
   loading: boolean;
   onBack: () => void;
+  onDisplayNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  password: string;
   onSubmit: () => void;
 }) {
   return (
     <View style={styles.stack}>
-      <ScreenHeading icon="account-plus-outline" title="Create Account" subtitle="Placeholder profile for review." />
-      <View style={styles.fieldGrid}>
-        <Field icon="account-outline" label="First Name" value="Sam" />
-        <Field icon="account-outline" label="Last Name" value="Officer" />
-      </View>
+      <ScreenHeading icon="account-plus-outline" title="Create Account" subtitle="Secure staging account" />
+      <Field icon="account-outline" label="Display Name" onChangeText={onDisplayNameChange} value={displayName} />
       <Field
         autoCapitalize="none"
         icon="email-outline"
@@ -334,9 +383,9 @@ function CreateAccountScreen({
         onChangeText={onEmailChange}
         value={email}
       />
-      <Field icon="briefcase-outline" label="Role" value="Canadian Police Officer" />
+      <Field icon="key-outline" label="Password" onChangeText={onPasswordChange} placeholder="12 or more characters" secureTextEntry value={password} />
       {error ? <ErrorText message={error} /> : null}
-      <PrimaryButton label="Create Mock Account" loading={loading} onPress={onSubmit}>
+      <PrimaryButton label="Create Account" loading={loading} onPress={onSubmit}>
         <Ionicons name="checkmark-circle-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <TextButton label="Back" onPress={onBack} />
@@ -367,9 +416,9 @@ function ForgotPasswordScreen({
         <ScreenHeading
           icon="email-check-outline"
           title="Reset Requested"
-          subtitle="Mock password reset state is active."
+          subtitle="If the account exists, reset instructions were requested."
         />
-        <DisclaimerBanner message="No email was sent. Production password reset will require secure backend email verification." />
+        <DisclaimerBanner message="For privacy, OPAi does not confirm whether an email address is registered." />
         <PrimaryButton label="Back to Sign In" onPress={onBack}>
           <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
         </PrimaryButton>
@@ -379,7 +428,7 @@ function ForgotPasswordScreen({
 
   return (
     <View style={styles.stack}>
-      <ScreenHeading icon="lock-reset" title="Password Reset" subtitle="Local placeholder only." />
+      <ScreenHeading icon="lock-reset" title="Password Reset" subtitle="Request secure account recovery." />
       <Field
         autoCapitalize="none"
         icon="email-outline"
@@ -392,7 +441,7 @@ function ForgotPasswordScreen({
       <PrimaryButton label="Request Reset" loading={loading} onPress={onSubmit}>
         <Ionicons name="mail-unread-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
-      <DisclaimerBanner message="Password reset architecture is reserved for a secure backend. This screen does not send email." />
+      <DisclaimerBanner message="Reset delivery depends on the staging email configuration. Never share a reset code with anyone." />
       <TextButton label="Back" onPress={onBack} />
     </View>
   );
@@ -442,9 +491,9 @@ function BiometricScreen({ onBack, onContinue }: { onBack: () => void; onContinu
       <ScreenHeading
         icon="fingerprint"
         title="Biometric Unlock"
-        subtitle="Face ID, Touch ID, and device biometrics are placeholders in this sprint."
+        subtitle="Face ID, Touch ID, and device biometrics are not active in this build."
       />
-      <PrimaryButton label="Continue Locally" onPress={onContinue}>
+      <PrimaryButton label="Use Email Sign In" onPress={onContinue}>
         <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <SecondaryButton label="Use Email Instead" onPress={onBack}>

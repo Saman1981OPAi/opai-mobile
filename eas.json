@@ -15,7 +15,7 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_APP_ENV": "staging",
-        "EXPO_PUBLIC_API_BASE_URL": "https://api-staging.opaiapp.com/api/v1"
+        "EXPO_PUBLIC_OPAI_API_BASE_URL": "https://opai-backend-staging.onrender.com"
       },
       "ios": {
         "simulator": false,
@@ -29,7 +29,7 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
-        "EXPO_PUBLIC_API_BASE_URL": "https://api.opaiapp.com/api/v1"
+        "EXPO_PUBLIC_OPAI_API_BASE_URL": "https://api.opaiapp.com"
       },
       "ios": {
         "resourceClass": "m-medium"

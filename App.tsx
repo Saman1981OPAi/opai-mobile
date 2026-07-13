@@ -6,6 +6,9 @@ import { AppShell } from "@/components/AppShell";
 import { emptyConsentState } from "@/data/authMock";
 import { modules } from "@/data/modules";
 import { AuthFlow } from "@/screens/AuthFlow";
+import { authApi } from "@/services/api/authApi";
+import { secureSession } from "@/services/api/secureSession";
+import type { OfficerProfileResponse } from "@/services/api/apiTypes";
 import { persistenceService } from "@/storage/persistenceService";
 import { createDefaultLocalAppData } from "@/storage/seedDataService";
 import type { LocalAppData } from "@/storage/storageTypes";
@@ -27,15 +30,21 @@ export default function App() {
   useEffect(() => {
     let mounted = true;
 
-    persistenceService.loadOrSeed().then((data) => {
+    Promise.all([persistenceService.loadOrSeed(), authApi.restore()]).then(([data, restoredProfile]) => {
       if (!mounted) {
         return;
       }
 
       setLocalData(data);
-      if (data.auth.status === "signedIn" && data.auth.profile) {
-        setProfile(data.auth.profile);
+      if (restoredProfile && data.auth.consent.aiProcessing) {
+        const nextProfile = mapOfficerProfile(restoredProfile, data.auth.profile);
+        setProfile(nextProfile);
         setAuthStatus("signedIn");
+      } else if (restoredProfile) {
+        void secureSession.clear();
+        setLocalData({ ...data, auth: { ...data.auth, profile: null, status: "signedOut" } });
+      } else if (data.auth.status === "signedIn") {
+        setLocalData({ ...data, auth: { ...data.auth, profile: null, status: "signedOut" } });
       }
     });
 
@@ -57,6 +66,7 @@ export default function App() {
     const acceptedAt = new Date().toISOString();
     const acceptedConsent = {
       aiDisclaimer: true,
+      aiProcessing: true,
       privacy: true,
       prototypeDisclaimer: true,
       ptsdDisclaimer: true,
@@ -75,6 +85,7 @@ export default function App() {
         consent: acceptedConsent,
         consentAcceptedAt: {
           aiDisclaimer: acceptedAt,
+          aiProcessing: acceptedAt,
           privacy: acceptedAt,
           prototypeDisclaimer: acceptedAt,
           ptsdDisclaimer: acceptedAt,
@@ -96,7 +107,8 @@ export default function App() {
     }));
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await authApi.signOut();
     setProfile(null);
     setAuthStatus("signedOut");
     setActiveModule("dashboard");
@@ -121,6 +133,7 @@ export default function App() {
   };
 
   const handleClearLocalData = async () => {
+    await secureSession.clear();
     await persistenceService.clearAll();
     const seeded = createDefaultLocalAppData({
       biometricPreference: "disabled",
@@ -170,9 +183,33 @@ export default function App() {
             authStatus={authStatus}
             onAuthenticated={handleAuthenticated}
             onAuthStatusChange={setAuthStatus}
+            onForgotPassword={(email) => authApi.forgotPassword(email)}
+            onRegister={async (email, password, displayName) => mapOfficerProfile(await authApi.register(email, password, displayName))}
+            onSignIn={async (email, password) => mapOfficerProfile(await authApi.signIn(email, password))}
           />
         )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
+}
+
+function mapOfficerProfile(profile: OfficerProfileResponse, previous?: MockUserProfile | null): MockUserProfile {
+  const [firstName = "Officer", ...lastNameParts] = profile.display_name.trim().split(/\s+/);
+  return {
+    userId: profile.id,
+    firstName,
+    lastName: lastNameParts.join(" ") || "",
+    email: profile.email,
+    role: profile.role,
+    preferredLanguage: previous?.preferredLanguage ?? "English",
+    biometricEnabled: previous?.biometricEnabled ?? false,
+    notificationPreferences: previous?.notificationPreferences ?? {
+      courtReminders: true,
+      shiftReminders: true,
+      trainingReminders: true,
+      wellnessReminders: true
+    },
+    privacyConsentAccepted: previous?.privacyConsentAccepted ?? false,
+    termsAccepted: previous?.termsAccepted ?? false
+  };
 }

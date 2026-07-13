@@ -10,6 +10,7 @@ export type ConsentKey =
   | "terms"
   | "privacy"
   | "aiDisclaimer"
+  | "aiProcessing"
   | "ptsdDisclaimer"
   | "translationDisclaimer"
   | "prototypeDisclaimer";

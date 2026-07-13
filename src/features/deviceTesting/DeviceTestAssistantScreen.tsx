@@ -7,6 +7,8 @@ import { DeviceTestStepCard } from "@/features/deviceTesting/DeviceTestStepCard"
 import { personalReferenceOnlyNotice } from "@/features/deviceTesting/deviceTestingGuardrails";
 import type { DeviceTestGuide } from "@/features/deviceTesting/deviceTestingTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
+import { deviceTestingApi } from "@/services/api/deviceTestingApi";
+import type { DeviceTestingExplainResponse } from "@/services/api/apiTypes";
 
 type DeviceTestAssistantScreenProps = {
   guide: DeviceTestGuide;
@@ -17,15 +19,24 @@ export function DeviceTestAssistantScreen({ guide, onBack }: DeviceTestAssistant
   const steps = useMemo(() => [...guide.inspectionSteps, ...guide.testSteps], [guide.inspectionSteps, guide.testSteps]);
   const [currentStep, setCurrentStep] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [explanation, setExplanation] = useState<DeviceTestingExplainResponse | null>(null);
+  const [loadingExplanation, setLoadingExplanation] = useState(false);
   const safeStep = steps[currentStep] ?? steps[0];
   const followUps = safeStep ? getSuggestedFollowUps(guide.id, safeStep.id) : [];
 
-  const showLocalFollowUp = (prompt: string) => {
-    const message =
-      prompt === "Show official source"
-        ? "Open the official source link below. External sources may require internet access."
-        : "This beta uses curated local guide content only. Verify the selected step against the official source and service procedure.";
-    Alert.alert("Curated Local OPAi Response", message);
+  const showLocalFollowUp = async (prompt: string) => {
+    if (prompt === "Show official source") {
+      Alert.alert("Official source", "Use the source link below. External sources may require internet access.");
+      return;
+    }
+    setLoadingExplanation(true);
+    try {
+      setExplanation(await deviceTestingApi.explain(guide.id, prompt, safeStep ? [safeStep.id] : []));
+    } catch (error) {
+      Alert.alert("AI explanation unavailable", `${error instanceof Error ? error.message : "Try again later."}\n\nThe verified offline guide remains available.`);
+    } finally {
+      setLoadingExplanation(false);
+    }
   };
 
   return (
@@ -124,11 +135,22 @@ export function DeviceTestAssistantScreen({ guide, onBack }: DeviceTestAssistant
 
       <View style={styles.followUps}>
         {followUps.map((prompt) => (
-          <Pressable key={prompt} accessibilityRole="button" onPress={() => showLocalFollowUp(prompt)} style={styles.chip}>
+          <Pressable key={prompt} accessibilityRole="button" onPress={() => void showLocalFollowUp(prompt)} style={styles.chip}>
             <Text numberOfLines={1} style={styles.chipText}>{prompt}</Text>
           </Pressable>
         ))}
       </View>
+
+      {loadingExplanation ? <Text style={styles.personal}>Preparing source-grounded explanation...</Text> : null}
+      {explanation ? (
+        <View style={styles.sourcePanel}>
+          <Text style={styles.metaTitle}>{explanation.title}</Text>
+          <Text style={styles.sourceText}>{explanation.answer}</Text>
+          <Text style={styles.sourceMeta}>Source revision: {explanation.source_revision}</Text>
+          {explanation.warnings.map((warning) => <Text key={warning} style={styles.fail}>- {warning}</Text>)}
+          <Text style={styles.personal}>AI-generated explanation. Verify against the official source and current service procedure.</Text>
+        </View>
+      ) : null}
 
       <View style={styles.metaPanel}>
         <Text style={styles.metaTitle}>Limitations</Text>

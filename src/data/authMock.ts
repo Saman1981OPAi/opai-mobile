@@ -2,6 +2,7 @@ import type { ConsentKey, ConsentState, MockUserProfile } from "@/types/auth";
 
 export const emptyConsentState: ConsentState = {
   aiDisclaimer: false,
+  aiProcessing: false,
   privacy: false,
   prototypeDisclaimer: false,
   ptsdDisclaimer: false,
@@ -25,6 +26,11 @@ export const consentItems: Array<{ key: ConsentKey; title: string; description: 
     key: "aiDisclaimer",
     title: "AI Disclaimer",
     description: "AI-generated responses may be incomplete or inaccurate and must be verified."
+  },
+  {
+    key: "aiProcessing",
+    title: "AI & Translation Processing",
+    description: "Text, audio, selected images, and selected documents may be sent securely to OPAi and OpenAI only when you request an AI or translation feature. Outputs require verification."
   },
   {
     key: "ptsdDisclaimer",

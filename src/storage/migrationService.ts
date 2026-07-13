@@ -24,6 +24,7 @@ import type { ConsentState } from "@/types/auth";
 
 const normalizeConsent = (consent: Partial<ConsentState> | undefined): ConsentState => ({
   aiDisclaimer: Boolean(consent?.aiDisclaimer),
+  aiProcessing: Boolean(consent?.aiProcessing),
   privacy: Boolean(consent?.privacy),
   prototypeDisclaimer: Boolean(consent?.prototypeDisclaimer),
   ptsdDisclaimer: Boolean(consent?.ptsdDisclaimer),
