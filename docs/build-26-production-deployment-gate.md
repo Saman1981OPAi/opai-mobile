@@ -7,6 +7,8 @@ Every item below must pass before Build 26 is generated.
 ## Infrastructure
 
 - [ ] Approved production Render service or production host is live.
+- [ ] Hosting region and Canadian privacy/data-residency posture are approved.
+- [ ] Paid hosting plan and monthly spend are approved before purchase.
 - [ ] Dedicated production PostgreSQL database is live and protected.
 - [ ] Production backups, retention and restore testing are configured.
 - [ ] Production domain and TLS are active.

@@ -2,6 +2,8 @@
 
 Do not record secret values in Git, documentation, screenshots, logs or the mobile application.
 
+Audit on July 13, 2026: the GitHub `production` environment exists and currently contains no secrets or variables.
+
 | Configuration | Location | Required status |
 | --- | --- | --- |
 | `BACKEND_PRODUCTION_DEPLOY_WEBHOOK` | Protected GitHub `production` environment | Required before manual deploy |

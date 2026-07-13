@@ -21,6 +21,9 @@ Build 26 is the public-release candidate after the production backend is deploye
 
 ## Current blockers
 
+- The protected GitHub `production` environment exists but currently has no secrets or variables.
+- Render currently offers Ohio, Oregon, Virginia, Frankfurt and Singapore in this workspace, with no Canadian region.
+- The production hosting tier, monthly spend and Canadian data-residency posture require explicit approval before paid resources are created.
 - Production service is not yet certified.
 - Production database and migrations are not yet certified.
 - `BACKEND_PRODUCTION_DEPLOY_WEBHOOK` is not yet confirmed.
@@ -29,3 +32,5 @@ Build 26 is the public-release candidate after the production backend is deploye
 - Build 26 has not been generated or uploaded.
 
 Build 25 remains unchanged and continues to use `https://opai-backend-staging.onrender.com`.
+
+At the July 13, 2026 setup screen, Render showed a minimum paid combination of a `$7/month` Starter web service and a `$10.50/month` Basic database configuration. The Basic database tier is described for hobby reliability, while Render's Pro database tier is positioned for production. Prices and plan capabilities must be rechecked at purchase time.
