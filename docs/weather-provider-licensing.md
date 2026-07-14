@@ -1,14 +1,20 @@
 # Weather Provider Licensing
 
-Build 22 uses Open-Meteo for beta weather previews.
+Build 26 replaces the reachable Open-Meteo production path with native Apple WeatherKit on iOS.
+The certified Build 25 binary is unchanged.
 
-## Notes
+## Build 26 provider rules
 
-- Open-Meteo provides weather APIs without an API key for supported use cases.
-- The app does not bundle proprietary weather datasets.
-- The app does not resell weather data.
-- Production launch should re-check Open-Meteo terms, attribution needs, rate limits, and any commercial-use requirements before public release.
+- Weather requests run through Apple's native WeatherKit framework on the iPhone.
+- OPAi does not operate a weather endpoint and does not route coordinates through Azure.
+- The app does not include WeatherKit private keys or call the WeatherKit REST API.
+- The app displays the Apple Weather mark returned by WeatherKit and links to Apple's weather data
+  source attribution page in the detail view and Settings > Data Sources.
+- The bundled Canadian city catalogue contains only city names, provinces, coordinates, and time
+  zones needed for user-selected weather.
 
-## App Store Copy Guidance
+## App Store copy guidance
 
-Weather should be described as a convenience preview only. Do not market it as emergency, dispatch, road-safety, tactical, or operational weather intelligence.
+Weather is a convenience preview only. It is not an emergency, dispatch, tactical, road-safety, or
+operational weather source. Apple Weather attribution must remain visible wherever detailed weather
+data is presented.

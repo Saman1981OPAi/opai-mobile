@@ -1,57 +1,99 @@
 import * as Location from "expo-location";
-import { loadCachedWeather, saveCachedWeather } from "@/services/weather/weatherCache";
-import { getOpenMeteoWeather, searchOpenMeteoCity } from "@/services/weather/openMeteoWeatherProvider";
-import type { WeatherCity, WeatherSnapshot } from "@/services/weather/weatherTypes";
+import {
+  getCurrentWeather,
+  getWeatherAttribution,
+  isNativeWeatherKitAvailable
+} from "../../../modules/opai-weatherkit";
+import {
+  canadianWeatherCities,
+  defaultWeatherCity,
+  searchCanadianWeatherCities
+} from "@/services/weather/canadianWeatherCities";
+import {
+  clearWeatherState,
+  loadCachedWeather,
+  loadSelectedWeatherCity,
+  saveCachedWeather,
+  saveSelectedWeatherCity
+} from "@/services/weather/weatherCache";
+import type { WeatherAttribution, WeatherCity, WeatherSnapshot } from "@/services/weather/weatherTypes";
 
-const defaultCity: WeatherCity = {
-  latitude: 43.6532,
-  longitude: -79.3832,
-  name: "Toronto",
-  province: "Ontario"
-};
-
-export const manualWeatherCities: WeatherCity[] = [
-  defaultCity,
-  { latitude: 45.4215, longitude: -75.6972, name: "Ottawa", province: "Ontario" },
-  { latitude: 43.2557, longitude: -79.8711, name: "Hamilton", province: "Ontario" },
-  { latitude: 44.3894, longitude: -79.6903, name: "Barrie", province: "Ontario" },
-  { latitude: 49.2827, longitude: -123.1207, name: "Vancouver", province: "British Columbia" },
-  { latitude: 51.0447, longitude: -114.0719, name: "Calgary", province: "Alberta" },
-  { latitude: 45.5019, longitude: -73.5674, name: "Montreal", province: "Quebec" }
-];
+export const manualWeatherCities = canadianWeatherCities;
+export const appleWeatherDataSourcesUrl = "https://developer.apple.com/weatherkit/data-source-attribution/";
 
 function unavailableWeather(city = "Canada"): WeatherSnapshot {
   return {
     city,
     condition: "Weather unavailable",
+    conditionCode: "unavailable",
     feelsLikeC: 0,
     fetchedAt: new Date().toISOString(),
     highC: 0,
     isApproximate: true,
+    isStale: false,
     lowC: 0,
+    observedAt: new Date().toISOString(),
     source: "Unavailable",
+    symbolName: "cloud.slash",
     temperatureC: 0
   };
 }
+
+function cityLabel(city: WeatherCity) {
+  return `${city.city}, ${city.province}`;
+}
+
+async function fetchNativeWeather(city: WeatherCity, isApproximate: boolean) {
+  const current = await getCurrentWeather({
+    latitude: city.latitude,
+    locale: "en-CA",
+    longitude: city.longitude,
+    temperatureUnit: "celsius"
+  });
+  const snapshot: WeatherSnapshot = {
+    city: cityLabel(city),
+    condition: current.conditionLabel,
+    conditionCode: current.conditionCode,
+    feelsLikeC: Math.round(current.feelsLikeC),
+    fetchedAt: new Date().toISOString(),
+    highC: Math.round(current.highC),
+    isApproximate,
+    isStale: false,
+    lowC: Math.round(current.lowC),
+    observedAt: current.observedAt,
+    source: "Apple Weather",
+    symbolName: current.symbolName,
+    temperatureC: Math.round(current.temperatureC)
+  };
+  await saveCachedWeather(snapshot);
+  return snapshot;
+}
+
+const fallbackAttribution: WeatherAttribution = {
+  combinedMarkDarkURL: "",
+  combinedMarkLightURL: "",
+  legalPageURL: appleWeatherDataSourcesUrl,
+  serviceName: "Apple Weather"
+};
 
 export const weatherService = {
   async loadInitialWeather() {
     const cached = await loadCachedWeather();
     if (cached) return cached;
 
+    const selectedCity = (await loadSelectedWeatherCity()) ?? defaultWeatherCity;
+    if (!isNativeWeatherKitAvailable()) return unavailableWeather(cityLabel(selectedCity));
+
     try {
-      const snapshot = await getOpenMeteoWeather(defaultCity);
-      await saveCachedWeather(snapshot);
-      return snapshot;
+      return await fetchNativeWeather(selectedCity, false);
     } catch {
-      return unavailableWeather(defaultCity.name);
+      return unavailableWeather(cityLabel(selectedCity));
     }
   },
 
-  async refreshDefaultWeather() {
-    const snapshot = await getOpenMeteoWeather(defaultCity);
-    await saveCachedWeather(snapshot);
-    return snapshot;
+  async refreshSelectedWeather() {
+    const selectedCity = (await loadSelectedWeatherCity()) ?? defaultWeatherCity;
+    return fetchNativeWeather(selectedCity, false);
   },
 
   async requestForegroundLocationWeather() {
@@ -63,23 +105,35 @@ export const weatherService = {
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.Balanced
     });
-    const city: WeatherCity = {
+    const locationTarget: WeatherCity = {
+      city: "Current Area",
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      name: "Current Area"
+      province: "Canada",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     };
-    const snapshot = await getOpenMeteoWeather(city);
-    await saveCachedWeather(snapshot);
-    return snapshot;
+    return fetchNativeWeather(locationTarget, true);
   },
 
   async selectManualCity(city: WeatherCity) {
-    const snapshot = await getOpenMeteoWeather(city);
-    await saveCachedWeather(snapshot);
-    return snapshot;
+    await saveSelectedWeatherCity(city);
+    return fetchNativeWeather(city, false);
   },
 
   async searchCanadianCities(query: string) {
-    return searchOpenMeteoCity(query);
+    return searchCanadianWeatherCities(query);
+  },
+
+  async getAttribution(): Promise<WeatherAttribution> {
+    if (!isNativeWeatherKitAvailable()) return fallbackAttribution;
+    try {
+      return await getWeatherAttribution();
+    } catch {
+      return fallbackAttribution;
+    }
+  },
+
+  async clearLocalWeatherData() {
+    await clearWeatherState();
   }
 };

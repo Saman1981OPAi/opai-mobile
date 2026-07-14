@@ -4,7 +4,12 @@
 
 App Store Connect privacy answers must reflect the actual uploaded build, not future planned features.
 
-## Likely Current Declarations
+## Build 26 review notes
+
+This is a review draft, not a substitute for answering App Store Connect from the final uploaded
+binary. Build 25 remains the certified staging binary. Build 26 has not been generated.
+
+## Data categories requiring final review
 
 Contact Info:
 
@@ -26,8 +31,12 @@ Usage Data:
 
 Location:
 
-- Coarse Location may apply for Build 22 if the user chooses local Home Dashboard weather and grants foreground location permission.
-- Location is used only for weather convenience, is not tracked in the background, and is not uploaded to an OPAi backend in this prototype.
+- Coarse or Precise Location must be reviewed against Apple's definitions if the user chooses Local
+  weather and grants foreground permission.
+- Coordinates are passed directly to native Apple WeatherKit on the iPhone for that user action.
+- OPAi does not save coordinates, build location history, track in the background, include location
+  in AI prompts, or upload location to the OPAi backend.
+- Manual city selection works without location permission and stores only the selected bundled city.
 
 Diagnostics:
 
@@ -48,7 +57,12 @@ Diagnostics:
 - Financial information.
 - Sensitive information beyond optional local prototype text entered by a tester.
 
-## Current Build Notes
+## Build 26 change notes
 
-Build 22 adds optional foreground location weather and Open-Meteo weather requests. The beta does not add advertising SDKs, analytics SDKs, production backend calls, OpenAI calls, police-service integrations, real authentication, real file upload, payment code, tracking, or cloud storage.
+- Replaces reachable Open-Meteo production requests with native Apple WeatherKit.
+- Adds no Azure weather service, WeatherKit REST call, WeatherKit private key, analytics, tracking,
+  payment, advertising, or police-service integration.
+- Keeps a local weather response cache and selected city; Clear Local Data removes both.
+- The existing Build 25 AI and Translation backend flows are outside this weather change and must
+  remain accurately declared for the eventual production backend and final binary.
 
