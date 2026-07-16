@@ -1,6 +1,7 @@
 import { Alert, Linking } from "react-native";
 
 export const externalLinks = {
+  appleWeatherDataSources: "https://developer.apple.com/weatherkit/data-source-attribution/",
   contact: "https://opaiapp.com/contact",
   facebook: "https://www.facebook.com/profile.php?id=61591569999710",
   instagram: "https://www.instagram.com/opaiapp/",

@@ -536,7 +536,25 @@ Build 22 adds:
 
 Device Testing in Build 22 is curated-local only. It requires exact model selection, opens the initial guide automatically with no typed prompt, works offline, shows source metadata, refuses unsupported models, gates Breath Instrument content behind qualified-technician confirmation, and keeps Use of Force non-prescriptive. It does not call OpenAI, connect to a backend, request new permissions, collect serial numbers, certify equipment, or create official equipment records.
 
-Build 22 has not been generated or uploaded. Public submission remains NO-GO until Build 22 is generated, processed in App Store Connect, installed through TestFlight, and physically certified on a real iPhone.
+Historical note: Build 22 was later superseded. Build 25 is the current certified TestFlight binary,
+and public submission remains on hold pending the production backend and a reviewed Build 26.
+
+## Build 26 Native Apple WeatherKit
+
+The Build 26 source candidate replaces the prior reachable Open-Meteo weather path with an iOS-only
+local Expo module backed by Apple WeatherKit. It adds:
+
+- Foreground location only after an in-app explanation and explicit user action.
+- A searchable bundled catalogue of 18 Canadian cities with no paid geocoding service.
+- A 30-minute local cache that continues to show the last successful response with a stale label.
+- Apple Weather attribution in weather details and Settings > Data Sources.
+- Clear Local Data coverage for the selected city and weather cache.
+- No Azure weather endpoint, WeatherKit REST request, private key, background location, or location
+  transmission to the OPAi backend.
+
+Build 26 has not been generated. WeatherKit must first be enabled for `com.opaiapp.police`, EAS
+credentials must be refreshed, native iOS compilation must pass, and the production Azure cost and
+deployment gates must receive human approval.
 
 ## Product Principles
 

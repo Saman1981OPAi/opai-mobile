@@ -1,14 +1,16 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
+    "types": ["node"],
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["App.tsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["App.tsx", "src/**/*.ts", "src/**/*.tsx", "modules/**/*.ts", "modules/**/*.tsx"]
 }

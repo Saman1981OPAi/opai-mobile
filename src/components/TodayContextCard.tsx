@@ -1,26 +1,32 @@
 import { useEffect, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Alert, Pressable, StyleSheet, Text, View, type AlertButton } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { WeatherCityPickerModal } from "@/components/weather/WeatherCityPickerModal";
+import { WeatherDetailModal } from "@/components/weather/WeatherDetailModal";
 import { getTodayContext, startMinuteTicker, type TodayContext } from "@/services/timeService";
-import { manualWeatherCities, weatherService } from "@/services/weather/weatherService";
-import type { WeatherSnapshot } from "@/services/weather/weatherTypes";
+import { weatherService } from "@/services/weather/weatherService";
+import type { WeatherAttribution, WeatherCity, WeatherSnapshot } from "@/services/weather/weatherTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
 
 export function TodayContextCard() {
   const [today, setToday] = useState<TodayContext>(() => getTodayContext());
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
+  const [attribution, setAttribution] = useState<WeatherAttribution | null>(null);
+  const [cityPickerOpen, setCityPickerOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const timer = startMinuteTicker(setToday);
     weatherService.loadInitialWeather().then(setWeather).catch(() => setWeather(null));
+    weatherService.getAttribution().then(setAttribution).catch(() => setAttribution(null));
     return () => clearInterval(timer);
   }, []);
 
   const refreshWeather = async () => {
     setLoading(true);
     try {
-      setWeather(await weatherService.refreshDefaultWeather());
+      setWeather(await weatherService.refreshSelectedWeather());
     } catch {
       Alert.alert("Weather Unavailable", "Weather could not be refreshed. The app will keep working without it.");
     } finally {
@@ -28,7 +34,7 @@ export function TodayContextCard() {
     }
   };
 
-  const useLocationWeather = async () => {
+  const requestLocationWeather = async () => {
     setLoading(true);
     try {
       setWeather(await weatherService.requestForegroundLocationWeather());
@@ -42,23 +48,27 @@ export function TodayContextCard() {
     }
   };
 
-  const chooseCity = () => {
-    const buttons: AlertButton[] = manualWeatherCities.map((city) => ({
-      text: city.name,
-      onPress: async () => {
-        setLoading(true);
-        try {
-          setWeather(await weatherService.selectManualCity(city));
-        } catch {
-          Alert.alert("Weather Unavailable", "That city could not be loaded right now.");
-        } finally {
-          setLoading(false);
-        }
-      }
-    }));
-    buttons.push({ text: "Cancel", style: "cancel" });
+  const explainLocationWeather = () => {
+    Alert.alert(
+      "Use Approximate Location?",
+      "OPAi will ask iOS for your foreground location once to request Apple Weather on this iPhone. OPAi does not save coordinates, track in the background, create location history, send location to AI, or transmit location to the OPAi backend.",
+      [
+        { style: "cancel", text: "Not Now" },
+        { onPress: () => void requestLocationWeather(), text: "Continue" }
+      ]
+    );
+  };
 
-    Alert.alert("Weather City", "Choose a Canadian city for local weather.", buttons);
+  const selectCity = async (city: WeatherCity) => {
+    setCityPickerOpen(false);
+    setLoading(true);
+    try {
+      setWeather(await weatherService.selectManualCity(city));
+    } catch {
+      Alert.alert("Weather Unavailable", "That city could not be loaded right now. Saved weather may still be shown.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,23 +86,35 @@ export function TodayContextCard() {
         </View>
       </View>
 
-      <View style={styles.weatherRow}>
+      <Pressable
+        accessibilityHint="Opens weather details and Apple attribution"
+        accessibilityLabel={`${weather?.city ?? "Weather"}. ${weather?.condition ?? "Unavailable"}`}
+        accessibilityRole="button"
+        onPress={() => setDetailsOpen(true)}
+        style={({ pressed }) => [styles.weatherRow, pressed ? styles.pressed : null]}
+      >
         <Ionicons name="location-outline" size={17} color={colors.accentBlue} />
         <View style={styles.copy}>
           <Text numberOfLines={1} style={styles.weatherTitle}>
             {weather ? weather.city : "Loading weather"}
           </Text>
           <Text numberOfLines={1} style={styles.weatherMeta}>
-            {weather && weather.source !== "Unavailable" ? weather.condition : "Weather preview"}
+            {weather && weather.source !== "Unavailable"
+              ? `${weather.condition}${weather.isStale ? " - saved" : ""}`
+              : "Weather optional"}
           </Text>
         </View>
-      </View>
+        <Ionicons name="information-circle-outline" size={18} color={colors.textMuted} />
+      </Pressable>
 
       <View style={styles.actions}>
         <SmallAction disabled={loading} icon="refresh" label="Refresh" onPress={refreshWeather} />
-        <SmallAction disabled={loading} icon="location-outline" label="Local" onPress={useLocationWeather} />
-        <SmallAction disabled={loading} icon="map-outline" label="City" onPress={chooseCity} />
+        <SmallAction disabled={loading} icon="location-outline" label="Local" onPress={explainLocationWeather} />
+        <SmallAction disabled={loading} icon="map-outline" label="City" onPress={() => setCityPickerOpen(true)} />
       </View>
+
+      <WeatherCityPickerModal onClose={() => setCityPickerOpen(false)} onSelect={(city) => void selectCity(city)} visible={cityPickerOpen} />
+      <WeatherDetailModal attribution={attribution} onClose={() => setDetailsOpen(false)} visible={detailsOpen} weather={weather} />
     </View>
   );
 }

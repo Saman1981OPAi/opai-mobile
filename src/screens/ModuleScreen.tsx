@@ -129,6 +129,7 @@ type SettingsViewId =
   | "profile"
   | "consent"
   | "data"
+  | "dataSources"
   | "notifications"
   | "preferences"
   | "privacy"
@@ -280,6 +281,7 @@ const settingsMenuSections: Array<{
       { icon: "file-document-check-outline", id: "terms", subtitle: "Local terms draft", title: "Terms of Use" },
       { icon: "file-check-outline", id: "consent", subtitle: "Accepted locally", title: "Consent Status" },
       { icon: "database-outline", id: "data", subtitle: "Local prototype storage", title: "Data & Storage" },
+      { icon: "weather-partly-cloudy", id: "dataSources", subtitle: "Apple Weather and local sources", title: "Data Sources" },
       { icon: "fingerprint", id: "profile", subtitle: "Placeholder only", title: "Biometric Placeholder" }
     ],
     title: "Privacy & Security"
@@ -3990,6 +3992,24 @@ function SettingsScreen({
         </SettingsPanel>
       ) : null}
 
+      {activeSettingsView === "dataSources" ? (
+        <SettingsPanel icon="weather-partly-cloudy" title="Data Sources">
+          <SettingsFact label="Weather provider" value="Apple WeatherKit on supported iPhone builds" />
+          <SettingsFact label="Location handling" value="Optional foreground request; coordinates are not saved or sent to OPAi" />
+          <SettingsFact label="Manual cities" value="Bundled Canadian city catalogue stored in the app" />
+          <SettingsFact label="Backend weather services" value="None" />
+          <View style={styles.actionRow}>
+            <SecondaryButton
+              label="Apple Weather Data Sources"
+              onPress={() => void openExternalUrl(externalLinks.appleWeatherDataSources)}
+            >
+              <MaterialCommunityIcons name="open-in-new" size={20} color={colors.primaryBlue} />
+            </SecondaryButton>
+          </View>
+          <DisclaimerBanner message="Apple Weather data is informational only and is not an emergency, dispatch, tactical, road-safety, or operational weather source. Time and date continue to work when weather is declined or unavailable." />
+        </SettingsPanel>
+      ) : null}
+
       {activeSettingsView === "preferences" ? (
         <SettingsPanel icon="tune-variant" title="App Preferences">
           <SettingsFact label="Language preference" value={localData.preferences.preferredLanguage} />
@@ -4198,7 +4218,7 @@ function AIPrototypeBanner() {
     <View style={styles.prototypeBanner}>
       <MaterialCommunityIcons name="shield-lock-outline" size={20} color={colors.ptsdGreen} />
       <Text style={styles.prototypeBannerText}>
-        Secure staging AI. Prompts are processed by OPAi's backend and are not stored by the AI provider.
+        Secure staging AI. Prompts are processed by OPAi&apos;s backend and are not stored by the AI provider.
       </Text>
     </View>
   );

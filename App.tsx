@@ -8,6 +8,7 @@ import { modules } from "@/data/modules";
 import { AuthFlow } from "@/screens/AuthFlow";
 import { authApi } from "@/services/api/authApi";
 import { secureSession } from "@/services/api/secureSession";
+import { weatherService } from "@/services/weather/weatherService";
 import type { OfficerProfileResponse } from "@/services/api/apiTypes";
 import { persistenceService } from "@/storage/persistenceService";
 import { createDefaultLocalAppData } from "@/storage/seedDataService";
@@ -135,6 +136,7 @@ export default function App() {
   const handleClearLocalData = async () => {
     await secureSession.clear();
     await persistenceService.clearAll();
+    await weatherService.clearLocalWeatherData();
     const seeded = createDefaultLocalAppData({
       biometricPreference: "disabled",
       consent: emptyConsentState,
