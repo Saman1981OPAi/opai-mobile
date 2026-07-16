@@ -164,9 +164,9 @@ export default function App() {
         <StatusBar style="light" />
         {!localData ? (
           <View style={{ alignItems: "center", flex: 1, gap: spacing.md, justifyContent: "center" }}>
-            <ActivityIndicator accessibilityLabel="Loading local prototype data" accessibilityRole="progressbar" color={colors.primaryBlue} />
+            <ActivityIndicator accessibilityLabel="Loading OPAi Police" accessibilityRole="progressbar" color={colors.primaryBlue} />
             <Text maxFontSizeMultiplier={1.3} style={{ color: colors.textMuted, fontSize: typography.small, fontWeight: "800" }}>
-              Loading local prototype data
+              Loading OPAi Police
             </Text>
           </View>
         ) : authStatus === "signedIn" ? (
@@ -185,7 +185,6 @@ export default function App() {
             authStatus={authStatus}
             onAuthenticated={handleAuthenticated}
             onAuthStatusChange={setAuthStatus}
-            onForgotPassword={(email) => authApi.forgotPassword(email)}
             onRegister={async (email, password, displayName) => mapOfficerProfile(await authApi.register(email, password, displayName))}
             onSignIn={async (email, password) => mapOfficerProfile(await authApi.signIn(email, password))}
           />

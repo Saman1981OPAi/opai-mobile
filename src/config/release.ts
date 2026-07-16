@@ -1,10 +1,13 @@
 export const releaseInfo = {
-  appVersion: "0.1.0-beta",
-  buildNumber: "25",
+  appVersion: "1.0",
+  buildNumber: "26",
   nativeVersion: "0.1.0",
   platformPriority: "iOS-first",
-  releaseChannel: "Internal TestFlight Beta Candidate",
-  status: "Testing / Pre-Launch / Local Prototype",
+  releaseChannel: "App Store",
+  status: "OPAi Police",
   supportUrl: "https://opaiapp.com/support",
   website: "https://opaiapp.com"
 } as const;
+
+export const DEVICE_TESTING_VISIBLE = false;
+export const SUBSCRIPTIONS_VISIBLE = false;

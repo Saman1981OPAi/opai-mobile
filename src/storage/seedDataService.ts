@@ -79,7 +79,7 @@ export function createDefaultScheduledReminders(): ScheduledReminder[] {
   const createdAt = nowIso();
   return [
     {
-      body: "Prototype court reminder. Verify official court information through authorized systems.",
+      body: "Verify court information through authorized systems.",
       createdAt,
       enabled: true,
       id: "scheduled-court-demo",
@@ -91,7 +91,7 @@ export function createDefaultScheduledReminders(): ScheduledReminder[] {
       updatedAt: createdAt
     },
     {
-      body: "Prototype training reminder. Confirm official training details through authorized systems.",
+      body: "Confirm training details through authorized systems.",
       createdAt,
       enabled: true,
       id: "scheduled-training-demo",
@@ -114,7 +114,7 @@ export function createDefaultCalendarWorkflowEvents(): CalendarWorkflowEvent[] {
       date: dateOffset(0),
       id: "calendar-workflow-court-prep",
       location: "Provincial Court - Courtroom 3",
-      notes: "Prototype event. Confirm official schedule through authorized systems.",
+      notes: "Confirm the official schedule through authorized systems.",
       reminderEnabled: true,
       reminderLeadTime: "1Hour",
       status: "upcoming",
@@ -128,7 +128,7 @@ export function createDefaultCalendarWorkflowEvents(): CalendarWorkflowEvent[] {
       date: dateOffset(1),
       id: "calendar-workflow-training",
       location: "Training Unit",
-      notes: "Local placeholder only.",
+      notes: "Fictional training entry stored on this device.",
       reminderEnabled: true,
       reminderLeadTime: "1Day",
       status: "upcoming",
@@ -142,7 +142,7 @@ export function createDefaultCalendarWorkflowEvents(): CalendarWorkflowEvent[] {
       date: dateOffset(2),
       id: "calendar-workflow-follow-up",
       location: "Local task list",
-      notes: "Follow-up reminder placeholder.",
+      notes: "Fictional follow-up reminder.",
       reminderEnabled: true,
       reminderLeadTime: "1Hour",
       status: "upcoming",
@@ -163,11 +163,11 @@ export function createDefaultCourtWorkflowEvents(): CourtWorkflowEvent[] {
       courtroom: "Courtroom 3",
       createdAt,
       date: dateOffset(0),
-      fileReference: "Demo-25-01873",
+      fileReference: "FICTIONAL-001",
       id: "court-workflow-appearance",
       location: "Local courthouse",
       matterName: "Court appearance",
-      notes: "Prototype court reminder. Verify official court information through authorized systems.",
+      notes: "Verify official court information through authorized systems.",
       reminderEnabled: true,
       reminderLeadTime: "1Hour",
       status: "upcoming",
@@ -179,11 +179,11 @@ export function createDefaultCourtWorkflowEvents(): CourtWorkflowEvent[] {
       courtroom: "Virtual link",
       createdAt,
       date: dateOffset(4),
-      fileReference: "Demo-25-02241",
+      fileReference: "FICTIONAL-002",
       id: "court-workflow-disclosure",
       location: "Remote appearance",
       matterName: "Disclosure review",
-      notes: "Local placeholder only.",
+      notes: "Fictional court preparation entry.",
       reminderEnabled: true,
       reminderLeadTime: "1Day",
       status: "upcoming",
@@ -204,7 +204,7 @@ export function createDefaultTrainingWorkflowEvents(): TrainingWorkflowEvent[] {
       id: "training-workflow-scenario",
       instructorOrUnit: "Training Unit",
       location: "Training Centre",
-      notes: "Prototype training item. Confirm official training details through authorized systems.",
+      notes: "Confirm official training details through authorized systems.",
       reminderEnabled: true,
       reminderLeadTime: "1Day",
       status: "upcoming",
@@ -219,7 +219,7 @@ export function createDefaultTrainingWorkflowEvents(): TrainingWorkflowEvent[] {
       id: "training-workflow-uof",
       instructorOrUnit: "Use of Force Instructor",
       location: "Training Centre",
-      notes: "Local placeholder only.",
+      notes: "Fictional training entry.",
       reminderEnabled: true,
       reminderLeadTime: "1Week",
       status: "upcoming",
@@ -240,7 +240,7 @@ export function createDefaultRequalificationWorkflowReminders(): Requalification
       dueDate: dateOffset(21),
       expiryDate: dateOffset(45),
       id: "requalification-workflow-firearms",
-      notes: "Due soon example for local testing.",
+      notes: "Fictional due-soon reminder.",
       reminderEnabled: true,
       reminderLeadTime: "1Week",
       status: "dueSoon",
@@ -368,11 +368,11 @@ function createIncidentDrafts(): LocalIncidentDraft[] {
       {
         addedAt: createdAt,
         attachmentType: index === 0 ? "Photo" : index === 1 ? "Document" : "Audio",
-        description: "Metadata-only placeholder. No real file is stored.",
+        description: "Fictional reference metadata. No file is stored.",
         fileName: `${example.title.toLowerCase().replace(/\s+/g, "-")}-reference.txt`,
         id: `incident-metadata-${index + 1}`,
         metadataOnly: true,
-        notes: "Local prototype metadata only."
+        notes: "Fictional metadata stored on this device."
       }
     ],
     attachments: [
@@ -389,17 +389,17 @@ function createIncidentDrafts(): LocalIncidentDraft[] {
     followUpRequired: index === 1,
     id: `draft-${index + 1}`,
     incidentType: example.title,
-    incidentNotes: createDefaultIncidentNotes("Prototype-only draft. Do not enter real police records or sensitive personal information."),
-    involvedPersons: ["Placeholder person"],
-    location: "Local demo location",
-    notes: "Prototype-only draft. Do not enter real police records or sensitive personal information.",
+    incidentNotes: createDefaultIncidentNotes("Fictional report draft for interface review."),
+    involvedPersons: ["Alex Morgan"],
+    location: "Fictional location",
+    notes: "Fictional report draft for interface review.",
     occurrenceCategory: index === 0 ? "Public Safety" : index === 1 ? "Property" : "General",
     personsInvolved: [
       {
         email: "",
         id: `person-draft-${index + 1}`,
-        name: "Placeholder person",
-        notes: "No real personal information.",
+        name: "Alex Morgan",
+        notes: "Fictional person used for interface review.",
         phone: "",
         role: "Other"
       }
@@ -408,14 +408,14 @@ function createIncidentDrafts(): LocalIncidentDraft[] {
     status: index === 1 ? "followUpRequired" : "draft",
     time: index === 0 ? "09:15" : index === 1 ? "12:40" : "17:05",
     updatedAt: createdAt,
-    witnesses: ["Placeholder witness"],
+    witnesses: ["Taylor Lee"],
     witnessDetails: [
       {
         contact: "",
         followUpRequired: index === 1,
         id: `witness-draft-${index + 1}`,
-        name: "Placeholder witness",
-        statementSummary: "Placeholder witness summary only."
+        name: "Taylor Lee",
+        statementSummary: "Fictional witness summary for interface review."
       }
     ]
   }));
@@ -611,31 +611,9 @@ function createHistory(): {
   aiHistory: AIConversation[];
   translationHistory: TranslationRecord[];
 } {
-  const createdAt = nowIso();
   return {
-    aiHistory: [
-      {
-        category: "incident_summary",
-        createdAt,
-        id: "ai-history-1",
-        mockResponse: "[Mock AI Response] Future AI output must be verified. This local prototype does not generate real AI content.",
-        prompt: "Summarize local demo notes",
-        updatedAt: createdAt
-      }
-    ],
-    translationHistory: [
-      {
-        createdAt,
-        id: "translation-history-1",
-        mode: "text",
-        notes: "Mock translation preview only.",
-        relatedIncidentId: "",
-        sourceLanguage: "English",
-        sourceText: "English to French sample",
-        targetLanguage: "French",
-        translatedText: "[Mock Translation] This feature is currently in testing. Future versions may provide real-time translation support."
-      }
-    ]
+    aiHistory: [],
+    translationHistory: []
   };
 }
 
@@ -694,8 +672,8 @@ export function normalizeAIHistory(history: LegacyAIHistoryItem[] | undefined): 
       mockResponse:
         item.mockResponse ??
         item.response ??
-        "[Mock AI Response] This local prototype does not generate real AI content. Verify future AI output before relying on it.",
-      prompt: item.prompt ?? item.title ?? "Local mock AI prompt",
+        "AI response unavailable. Verify information before use.",
+      prompt: item.prompt ?? item.title ?? "OPAi Assistant prompt",
       updatedAt: item.updatedAt ?? item.createdAt ?? createdAt
     };
 
@@ -730,38 +708,38 @@ export function normalizeTranslationHistory(history: LegacyTranslationHistoryIte
     createdAt: item.createdAt ?? createdAt,
     id: item.id ?? `translation-history-${index + 1}`,
     mode: item.mode === "ai" || item.mode === "translation" || item.mode === undefined ? "text" : item.mode,
-    notes: item.notes ?? item.title ?? "Local mock translation.",
+    notes: item.notes ?? item.title ?? "Translation history.",
     relatedIncidentId: item.relatedIncidentId ?? "",
     sourceLanguage: item.sourceLanguage ?? "English",
-    sourceText: item.sourceText ?? item.prompt ?? "Mock translation source",
+    sourceText: item.sourceText ?? item.prompt ?? "Translation source",
     targetLanguage: item.targetLanguage ?? "French",
     translatedText:
       item.translatedText ??
       item.response ??
-      "[Mock Translation] This feature is currently in testing. Future versions may provide real-time translation support."
+      "Translation unavailable. Verify source and target text."
   }));
 }
 
-function createDefaultIncidentNotes(seed = "Prototype-only draft. Do not enter real police records or sensitive personal information."): IncidentNotes {
+function createDefaultIncidentNotes(seed = "Fictional report draft for interface review."): IncidentNotes {
   return {
-    disclosureNotes: "Disclosure placeholder only.",
+    disclosureNotes: "No disclosure notes added.",
     followUpNotes: "No follow-up notes added.",
     narrativeDraft: seed,
-    observations: "Observation placeholder.",
+    observations: "No observations added.",
     officerNotes: seed
   };
 }
 
 export function normalizeIncidentDraft(draft: LocalIncidentDraft): LocalIncidentDraft {
   const now = nowIso();
-  const fallbackNotes = draft.notes || "Prototype-only draft. Do not enter real police records or sensitive personal information.";
+  const fallbackNotes = draft.notes || "No report notes added.";
 
   return {
     ...draft,
     attachmentMetadata: draft.attachmentMetadata ?? draft.attachments.map((attachment) => ({
       addedAt: attachment.addedAt,
       attachmentType: attachment.fileType === "audio" ? "Audio" : attachment.fileType === "document" ? "Document" : attachment.fileType === "video" ? "Video" : "Other",
-      description: "Metadata-only placeholder.",
+      description: "Reference metadata only.",
       fileName: attachment.fileName,
       id: attachment.id,
       metadataOnly: true,
@@ -774,7 +752,7 @@ export function normalizeIncidentDraft(draft: LocalIncidentDraft): LocalIncident
       email: "",
       id: `person-${draft.id}-${index + 1}`,
       name,
-      notes: "Placeholder person only.",
+      notes: "No person notes added.",
       phone: "",
       role: "Other"
     })),
@@ -785,7 +763,7 @@ export function normalizeIncidentDraft(draft: LocalIncidentDraft): LocalIncident
       followUpRequired: false,
       id: `witness-${draft.id}-${index + 1}`,
       name,
-      statementSummary: "Placeholder witness summary only."
+      statementSummary: "No witness summary added."
     }))
   };
 }

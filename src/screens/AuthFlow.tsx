@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
-import { consentItems, emptyConsentState, mockUserProfile } from "@/data/authMock";
+import { consentItems, emptyConsentState } from "@/data/authMock";
 import { colors, layout, radius, shadows, spacing, typography } from "@/theme/tokens";
 import type { AuthStatus, ConsentKey, ConsentState, MockUserProfile } from "@/types/auth";
 
@@ -19,9 +19,6 @@ type AuthScreen =
   | "welcome"
   | "signIn"
   | "createAccount"
-  | "forgotPassword"
-  | "verification"
-  | "biometric"
   | "consent"
   | "success";
 
@@ -29,23 +26,21 @@ type AuthFlowProps = {
   authStatus: AuthStatus;
   onAuthenticated: (profile: MockUserProfile) => void;
   onAuthStatusChange: (status: AuthStatus) => void;
-  onForgotPassword: (email: string) => Promise<{ message: string }>;
   onRegister: (email: string, password: string, displayName: string) => Promise<MockUserProfile>;
   onSignIn: (email: string, password: string) => Promise<MockUserProfile>;
 };
 
-export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onForgotPassword, onRegister, onSignIn }: AuthFlowProps) {
+export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onRegister, onSignIn }: AuthFlowProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= layout.tabletBreakpoint;
   const [screen, setScreen] = useState<AuthScreen>("welcome");
-  const [email, setEmail] = useState(mockUserProfile.email);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("Officer");
-  const [code, setCode] = useState("");
   const [pendingProfile, setPendingProfile] = useState<MockUserProfile | null>(null);
   const [consent, setConsent] = useState<ConsentState>(emptyConsentState);
   const [authError, setAuthError] = useState("");
-  const [loadingAction, setLoadingAction] = useState<"account" | "reset" | "signin" | "verify" | null>(null);
+  const [loadingAction, setLoadingAction] = useState<"account" | "signin" | null>(null);
 
   const allConsentAccepted = useMemo(
     () => Object.values(consent).every(Boolean),
@@ -108,20 +103,15 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onFo
     }
   };
 
-  const goToConsent = () => {
-    if (code.trim().length < 4 && screen === "verification") {
-      setAuthError("Enter the mock verification code. Any 4 or more digits work in this local prototype.");
+  const completeConsent = () => {
+    if (!allConsentAccepted) {
+      setAuthError("Accept every required consent item before entering OPAi Police.");
       return;
     }
 
-    setAuthError("");
-    onAuthStatusChange("onboardingRequired");
-    setScreen("consent");
-  };
-
-  const completeConsent = () => {
-    if (!allConsentAccepted) {
-      setAuthError("Accept every required consent item before entering the prototype.");
+    if (!pendingProfile) {
+      setAuthError("Your secure session is no longer available. Sign in again.");
+      setScreen("signIn");
       return;
     }
 
@@ -130,9 +120,14 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onFo
   };
 
   const enterApp = () => {
+    if (!pendingProfile) {
+      setAuthError("Sign in again to continue.");
+      setScreen("signIn");
+      return;
+    }
     onAuthenticated({
-      ...(pendingProfile ?? mockUserProfile),
-      biometricEnabled: authStatus === "biometricPrompt",
+      ...pendingProfile,
+      biometricEnabled: false,
       email,
       privacyConsentAccepted: consent.privacy,
       termsAccepted: consent.terms
@@ -150,10 +145,6 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onFo
 
         {screen === "welcome" ? (
           <WelcomeScreen
-            onBiometric={() => {
-              onAuthStatusChange("biometricPrompt");
-              setScreen("biometric");
-            }}
             onCreateAccount={() => setScreen("createAccount")}
             onSignIn={() => setScreen("signIn")}
           />
@@ -163,13 +154,8 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onFo
           <SignInScreen
             email={email}
             onBack={() => setScreen("welcome")}
-            onBiometric={() => {
-              onAuthStatusChange("biometricPrompt");
-              setScreen("biometric");
-            }}
             onEmailChange={setEmail}
             onPasswordChange={setPassword}
-            onForgotPassword={() => setScreen("forgotPassword")}
             onSignIn={beginVerification}
             password={password}
             error={authError}
@@ -192,47 +178,6 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onFo
           />
         ) : null}
 
-        {screen === "forgotPassword" ? (
-          <ForgotPasswordScreen
-            email={email}
-            error={authError}
-            loading={loadingAction === "reset"}
-            onBack={() => setScreen("signIn")}
-            onEmailChange={setEmail}
-            onSubmit={() => {
-              if (!isValidEmail(email)) {
-                setAuthError("Enter a valid email address before requesting the local reset placeholder.");
-                return;
-              }
-              setAuthError("");
-              setLoadingAction("reset");
-              onForgotPassword(email.trim())
-                .then(() => onAuthStatusChange("passwordResetRequested"))
-                .catch((error: unknown) => setAuthError(error instanceof Error ? error.message : "Reset request failed."))
-                .finally(() => setLoadingAction(null));
-            }}
-            resetRequested={authStatus === "passwordResetRequested"}
-          />
-        ) : null}
-
-        {screen === "verification" ? (
-          <VerificationScreen
-            code={code}
-            error={authError}
-            loading={loadingAction === "verify"}
-            onBack={() => setScreen("signIn")}
-            onCodeChange={setCode}
-            onVerify={goToConsent}
-          />
-        ) : null}
-
-        {screen === "biometric" ? (
-          <BiometricScreen
-            onBack={() => setScreen("welcome")}
-            onContinue={() => setScreen("signIn")}
-          />
-        ) : null}
-
         {screen === "consent" ? (
           <ConsentScreen
             allConsentAccepted={allConsentAccepted}
@@ -248,7 +193,6 @@ export function AuthFlow({ authStatus, onAuthenticated, onAuthStatusChange, onFo
           <SuccessScreen onEnterApp={enterApp} />
         ) : null}
 
-        <StatusBadge status={authStatus} />
       </View>
     </ScrollView>
   );
@@ -262,28 +206,23 @@ function BrandIntro({ compact }: { compact: boolean }) {
       </View>
       <View style={styles.brandCopy}>
         <Text style={styles.brandTitle}>OPAi Police</Text>
-        <Text style={styles.brandSub}>Secure staging access</Text>
-      </View>
-      <View style={styles.testingPill}>
-        <Text style={styles.testingPillText}>Testing</Text>
+        <Text style={styles.brandSub}>Secure account access</Text>
       </View>
     </View>
   );
 }
 
 function WelcomeScreen({
-  onBiometric,
   onCreateAccount,
   onSignIn
 }: {
-  onBiometric: () => void;
   onCreateAccount: () => void;
   onSignIn: () => void;
 }) {
   return (
     <View style={styles.stack}>
       <Text style={styles.heroTitle}>Secure access, built carefully.</Text>
-      <Text style={styles.heroSub}>Sign in to the secure OPAi staging service.</Text>
+      <Text style={styles.heroSub}>Sign in to your OPAi Police account.</Text>
       <View style={styles.buttonStack}>
         <PrimaryButton label="Sign In" onPress={onSignIn}>
           <Ionicons name="log-in-outline" size={22} color={colors.textPrimary} />
@@ -291,11 +230,8 @@ function WelcomeScreen({
         <SecondaryButton label="Create Account" onPress={onCreateAccount}>
           <Ionicons name="person-add-outline" size={20} color={colors.primaryBlue} />
         </SecondaryButton>
-        <SecondaryButton label="Biometrics Coming Soon" onPress={onBiometric}>
-          <MaterialCommunityIcons name="face-recognition" size={20} color={colors.primaryBlue} />
-        </SecondaryButton>
       </View>
-      <DisclaimerBanner message="Testing environment. Do not enter operational police records, evidence, or sensitive personal information." />
+      <DisclaimerBanner message="Use only information you are authorized to process. OPAi Police does not replace official police systems or service policy." />
     </View>
   );
 }
@@ -305,9 +241,7 @@ function SignInScreen({
   error,
   loading,
   onBack,
-  onBiometric,
   onEmailChange,
-  onForgotPassword,
   onPasswordChange,
   onSignIn,
   password
@@ -316,16 +250,14 @@ function SignInScreen({
   error: string;
   loading: boolean;
   onBack: () => void;
-  onBiometric: () => void;
   onEmailChange: (value: string) => void;
-  onForgotPassword: () => void;
   onPasswordChange: (value: string) => void;
   onSignIn: () => void;
   password: string;
 }) {
   return (
     <View style={styles.stack}>
-      <ScreenHeading icon="lock-outline" title="Sign In" subtitle="Secure staging account" />
+      <ScreenHeading icon="lock-outline" title="Sign In" subtitle="Secure OPAi Police account" />
       <Field
         autoCapitalize="none"
         icon="email-outline"
@@ -339,10 +271,6 @@ function SignInScreen({
       <PrimaryButton label="Continue" loading={loading} onPress={onSignIn}>
         <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
       </PrimaryButton>
-      <View style={styles.inlineActions}>
-        <TextButton label="Forgot Password" onPress={onForgotPassword} />
-        <TextButton label="Use Biometrics" onPress={onBiometric} />
-      </View>
       <TextButton label="Back" onPress={onBack} />
     </View>
   );
@@ -373,7 +301,7 @@ function CreateAccountScreen({
 }) {
   return (
     <View style={styles.stack}>
-      <ScreenHeading icon="account-plus-outline" title="Create Account" subtitle="Secure staging account" />
+      <ScreenHeading icon="account-plus-outline" title="Create Account" subtitle="Secure OPAi Police account" />
       <Field icon="account-outline" label="Display Name" onChangeText={onDisplayNameChange} value={displayName} />
       <Field
         autoCapitalize="none"
@@ -389,116 +317,6 @@ function CreateAccountScreen({
         <Ionicons name="checkmark-circle-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
       <TextButton label="Back" onPress={onBack} />
-    </View>
-  );
-}
-
-function ForgotPasswordScreen({
-  email,
-  error,
-  loading,
-  onBack,
-  onEmailChange,
-  onSubmit,
-  resetRequested
-}: {
-  email: string;
-  error: string;
-  loading: boolean;
-  onBack: () => void;
-  onEmailChange: (value: string) => void;
-  onSubmit: () => void;
-  resetRequested: boolean;
-}) {
-  if (resetRequested) {
-    return (
-      <View style={styles.stack}>
-        <ScreenHeading
-          icon="email-check-outline"
-          title="Reset Requested"
-          subtitle="If the account exists, reset instructions were requested."
-        />
-        <DisclaimerBanner message="For privacy, OPAi does not confirm whether an email address is registered." />
-        <PrimaryButton label="Back to Sign In" onPress={onBack}>
-          <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
-        </PrimaryButton>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.stack}>
-      <ScreenHeading icon="lock-reset" title="Password Reset" subtitle="Request secure account recovery." />
-      <Field
-        autoCapitalize="none"
-        icon="email-outline"
-        keyboardType="email-address"
-        label="Email"
-        onChangeText={onEmailChange}
-        value={email}
-      />
-      {error ? <ErrorText message={error} /> : null}
-      <PrimaryButton label="Request Reset" loading={loading} onPress={onSubmit}>
-        <Ionicons name="mail-unread-outline" size={22} color={colors.textPrimary} />
-      </PrimaryButton>
-      <DisclaimerBanner message="Reset delivery depends on the staging email configuration. Never share a reset code with anyone." />
-      <TextButton label="Back" onPress={onBack} />
-    </View>
-  );
-}
-
-function VerificationScreen({
-  code,
-  error,
-  loading,
-  onBack,
-  onCodeChange,
-  onVerify
-}: {
-  code: string;
-  error: string;
-  loading: boolean;
-  onBack: () => void;
-  onCodeChange: (value: string) => void;
-  onVerify: () => void;
-}) {
-  return (
-    <View style={styles.stack}>
-      <ScreenHeading icon="shield-key-outline" title="Verify" subtitle="Enter the mock code to continue." />
-      <Field
-        icon="numeric"
-        keyboardType="number-pad"
-        label="Code"
-        onChangeText={onCodeChange}
-        placeholder="000000"
-        value={code}
-      />
-      {error ? <ErrorText message={error} /> : null}
-      <PrimaryButton label="Verify Code" loading={loading} onPress={onVerify}>
-        <Ionicons name="shield-checkmark-outline" size={22} color={colors.textPrimary} />
-      </PrimaryButton>
-      <TextButton label="Back" onPress={onBack} />
-    </View>
-  );
-}
-
-function BiometricScreen({ onBack, onContinue }: { onBack: () => void; onContinue: () => void }) {
-  return (
-    <View style={styles.stack}>
-      <View style={styles.biometricOrb}>
-        <MaterialCommunityIcons name="face-recognition" size={54} color={colors.primaryBlue} />
-      </View>
-      <ScreenHeading
-        icon="fingerprint"
-        title="Biometric Unlock"
-        subtitle="Face ID, Touch ID, and device biometrics are not active in this build."
-      />
-      <PrimaryButton label="Use Email Sign In" onPress={onContinue}>
-        <Ionicons name="arrow-forward" size={22} color={colors.textPrimary} />
-      </PrimaryButton>
-      <SecondaryButton label="Use Email Instead" onPress={onBack}>
-        <Ionicons name="mail-outline" size={20} color={colors.primaryBlue} />
-      </SecondaryButton>
     </View>
   );
 }
@@ -520,7 +338,7 @@ function ConsentScreen({
 }) {
   return (
     <View style={styles.stack}>
-      <ScreenHeading icon="file-check-outline" title="Review Consent" subtitle="Required before entering the prototype." />
+      <ScreenHeading icon="file-check-outline" title="Review Consent" subtitle="Required before entering OPAi Police." />
       <View style={styles.consentStack}>
         {consentItems.map((item) => (
           <Pressable
@@ -551,7 +369,7 @@ function ConsentScreen({
       </PrimaryButton>
       {error ? <ErrorText message={error} /> : null}
       {!allConsentAccepted ? (
-        <Text style={styles.helperText}>All consent items are required for mock app access.</Text>
+        <Text style={styles.helperText}>All consent items are required for app access.</Text>
       ) : null}
       <TextButton label="Back" onPress={onBack} />
     </View>
@@ -564,7 +382,7 @@ function SuccessScreen({ onEnterApp }: { onEnterApp: () => void }) {
       <View style={styles.successIcon}>
         <Ionicons name="checkmark" size={42} color={colors.background} />
       </View>
-      <ScreenHeading icon="shield-check-outline" title="Account Ready" subtitle="Mock onboarding is complete." />
+      <ScreenHeading icon="shield-check-outline" title="Account Ready" subtitle="Your secure sign-in is complete." />
       <PrimaryButton label="Enter OPAi" onPress={onEnterApp}>
         <MaterialCommunityIcons name="shield-check-outline" size={22} color={colors.textPrimary} />
       </PrimaryButton>
@@ -642,15 +460,6 @@ function TextButton({ label, onPress }: { label: string; onPress: () => void }) 
     >
       <Text style={styles.textButton}>{label}</Text>
     </Pressable>
-  );
-}
-
-function StatusBadge({ status }: { status: AuthStatus }) {
-  return (
-    <View style={styles.statusBadge}>
-      <Ionicons name="radio-button-on" size={14} color={colors.ptsdGreen} />
-      <Text style={styles.statusText}>Mock auth state: {status}</Text>
-    </View>
   );
 }
 

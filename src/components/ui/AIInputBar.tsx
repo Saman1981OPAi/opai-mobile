@@ -10,7 +10,7 @@ type AIInputBarProps = {
 export function AIInputBar({ onPress, placeholder = "Ask OPAi..." }: AIInputBarProps) {
   return (
     <Pressable
-      accessibilityHint="Opens the local mock OPAi Assistant prompt area"
+      accessibilityHint="Opens the OPAi Assistant prompt area"
       accessibilityLabel={placeholder}
       accessibilityRole="button"
       onPress={onPress}

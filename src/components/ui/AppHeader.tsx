@@ -6,10 +6,9 @@ import { colors, radius, spacing } from "@/theme/tokens";
 type AppHeaderProps = {
   eyebrow?: string;
   title?: string;
-  showTesting?: boolean;
 };
 
-export function AppHeader({ eyebrow = "Canadian Police", title, showTesting = true }: AppHeaderProps) {
+export function AppHeader({ eyebrow = "Canadian Police", title }: AppHeaderProps) {
   return (
     <View style={styles.wrap}>
       <View style={styles.brandSide}>
@@ -21,11 +20,6 @@ export function AppHeader({ eyebrow = "Canadian Police", title, showTesting = tr
           <MaterialCommunityIcons name="leaf-maple" size={14} color={colors.canadianRed} />
           <Text numberOfLines={1} adjustsFontSizeToFit style={styles.badgeText}>{eyebrow}</Text>
         </View>
-        {showTesting ? (
-          <View style={[styles.badge, styles.testingBadge]}>
-            <Text numberOfLines={1} style={styles.testingText}>Beta</Text>
-          </View>
-        ) : null}
       </View>
     </View>
   );
@@ -61,15 +55,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing.sm,
     minWidth: 0
-  },
-  testingBadge: {
-    backgroundColor: "rgba(127,255,212,0.10)",
-    borderColor: "rgba(127,255,212,0.35)"
-  },
-  testingText: {
-    color: colors.ptsdGreen,
-    fontSize: 11,
-    fontWeight: "900"
   },
   title: {
     color: colors.textPrimary,
