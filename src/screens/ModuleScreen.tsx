@@ -17,6 +17,7 @@ import { externalLinks, openExternalUrl } from "@/config/externalLinks";
 import { secondaryModules } from "@/data/uiMockups";
 import type { MciIcon } from "@/data/uiMockups";
 import { Build25TranslationScreen } from "@/features/build25/Build25TranslationScreen";
+import { AudioStatementListScreen } from "@/features/audioStatement/AudioStatementListScreen";
 import { aiService } from "@/services/aiService";
 import { aiApi } from "@/services/api/aiApi";
 import type { AIRequestMode, AIUsageResponse } from "@/services/api/apiTypes";
@@ -175,6 +176,7 @@ const legalDocuments: LegalDocument[] = [
   {
     body: [
       "Local preferences, consent dates, and optional history are stored on the user's device.",
+      "Audio Statements are saved locally by default. Microphone access begins only after the user chooses Record, and a temporary audio copy is sent to the OPAi backend only after the user chooses Transcribe.",
       "Authentication and requested AI or translation content use the secure OPAi backend.",
       "OPAi may transmit user-requested text, audio, selected images, and selected documents to OpenAI for processing. OPAi does not add police-system sync, advertising, tracking, or third-party analytics.",
       authorizedDataDisclaimer,
@@ -316,6 +318,7 @@ const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data
   { getCount: (data) => data.incidentDrafts.length, icon: "file-document-edit-outline", title: "Report drafts" },
   { getCount: (data) => data.translationHistory.length, icon: "translate", title: "Translation history" },
   { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI history" },
+  { getCount: (data) => data.audioStatements.length, icon: "microphone-outline", title: "Audio Statements" },
   { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
   { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File metadata placeholders" }
 ];
@@ -464,6 +467,23 @@ export function ModuleScreen({
     );
   }
 
+  if (module.id === "audioStatement") {
+    return (
+      <ScreenFrame activeModule="audioStatement" isTablet={isTablet} onSelectModule={onSelectModule}>
+        <AppHeader title="Audio Statement" />
+        <AudioStatementListScreen
+          onChange={(audioStatements) => onUpdateLocalData((current) => ({
+            ...current,
+            audioStatements,
+            updatedAt: timestamp()
+          }))}
+          statements={localData.audioStatements}
+        />
+        <CoreDisclaimer />
+      </ScreenFrame>
+    );
+  }
+
   if (module.id === "ai") {
     return (
       <AIAssistantScreen
@@ -600,7 +620,7 @@ function ScreenFrame({
   );
 }
 
-const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "translation", "calendar", "ai"];
+const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "audioStatement", "translation", "calendar", "ai"];
 
 function HomeDashboardScreen({
   isTablet,

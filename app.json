@@ -24,7 +24,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "OPAi Police uses the microphone only when you choose voice translation. Audio is sent securely for translation and is not stored by OPAi."
+          "microphonePermission": "OPAi Police uses the microphone only when you choose Audio Statement or voice translation. Recordings are saved locally. Nothing is uploaded unless you choose Transcribe or Translate."
         }
       ],
       [

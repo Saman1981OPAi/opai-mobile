@@ -2,6 +2,7 @@ export type ModuleId =
   | "dashboard"
   | "shift"
   | "incident"
+  | "audioStatement"
   | "deviceTesting"
   | "translation"
   | "calendar"

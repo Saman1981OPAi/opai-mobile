@@ -781,6 +781,7 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     aiHistory: history.aiHistory,
     aiPreferences: createDefaultAIPreferences(),
     auth: authOverride ?? createAuthSession(),
+    audioStatements: [],
     calendarEvents: createCalendarEvents(),
     calendarWorkflowEvents: createDefaultCalendarWorkflowEvents(),
     courtReminders: reminders.courtReminders,
