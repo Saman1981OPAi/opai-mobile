@@ -14,7 +14,7 @@ export const externalLinks = {
 
 export async function openExternalUrl(url: string) {
   if (!url.startsWith("https://")) {
-    Alert.alert("Link Blocked", "Only secure HTTPS links can be opened from this prototype.");
+    Alert.alert("Link Blocked", "Only secure HTTPS links can be opened from OPAi Police.");
     return;
   }
 

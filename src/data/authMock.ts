@@ -45,8 +45,8 @@ export const consentItems: Array<{ key: ConsentKey; title: string; description: 
   },
   {
     key: "prototypeDisclaimer",
-    title: "Prototype / Testing Disclaimer",
-    description: "Do not enter real police records, evidence, statements, official documents, or sensitive information."
+    title: "Professional Use Disclaimer",
+    description: "Do not enter confidential police records, protected evidence, or information that is not authorized for processing."
   }
 ];
 

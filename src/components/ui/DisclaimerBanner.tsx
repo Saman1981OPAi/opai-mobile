@@ -7,7 +7,7 @@ type DisclaimerBannerProps = {
 };
 
 export function DisclaimerBanner({
-  message = "Testing preview. Reminders and AI outputs are support tools, not official direction."
+  message = "Reminders and AI outputs are support tools, not official direction. Verify important information."
 }: DisclaimerBannerProps) {
   return (
     <View accessibilityRole="text" style={styles.wrap}>

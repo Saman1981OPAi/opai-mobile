@@ -23,15 +23,7 @@ export const modules: AppModule[] = [
     shortLabel: "Report",
     icon: "IN",
     priority: "primary",
-    summary: "Create local report drafts with notes, people, reminders, and AI review placeholders."
-  },
-  {
-    id: "deviceTesting",
-    label: "Device Testing",
-    shortLabel: "Device Tests",
-    icon: "DT",
-    priority: "primary",
-    summary: "Open verified local guide workflows for police equipment testing and references."
+    summary: "Create local report drafts with notes, people, reminders, and optional AI review."
   },
   {
     id: "translation",
@@ -47,7 +39,7 @@ export const modules: AppModule[] = [
     shortLabel: "AI",
     icon: "AI",
     priority: "primary",
-    summary: "Nori-inspired active AI panel for police-focused drafting, review, search, and summaries."
+    summary: "Secure AI assistance for drafting, organization, review, and summaries."
   },
   {
     id: "calendar",
@@ -72,22 +64,6 @@ export const modules: AppModule[] = [
     icon: "TN",
     priority: "secondary",
     summary: "Track firearms, Use of Force, CEW, CPR, First Aid, and annual requalification."
-  },
-  {
-    id: "notes",
-    label: "Notes & Files",
-    shortLabel: "Files",
-    icon: "NF",
-    priority: "secondary",
-    summary: "Organize notes, photos, audio, documents, and evidence references."
-  },
-  {
-    id: "notifications",
-    label: "Notifications",
-    shortLabel: "Alerts",
-    icon: "!",
-    priority: "secondary",
-    summary: "Standard reminders, persistent reminders, and optional call-style critical alerts."
   },
   {
     id: "settings",

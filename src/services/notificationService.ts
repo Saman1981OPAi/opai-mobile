@@ -126,7 +126,7 @@ export const notificationService = {
 
   async scheduleTestNotification() {
     return notificationScheduler.scheduleLocalNotification({
-      body: "This is a local prototype notification. No remote push service was used.",
+      body: "This reminder was scheduled locally on this device.",
       data: {
         type: "systemReminder"
       },

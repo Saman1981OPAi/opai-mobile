@@ -16,7 +16,6 @@ import { releaseInfo } from "@/config/release";
 import { externalLinks, openExternalUrl } from "@/config/externalLinks";
 import { secondaryModules } from "@/data/uiMockups";
 import type { MciIcon } from "@/data/uiMockups";
-import { DeviceTestingScreen } from "@/features/deviceTesting/DeviceTestingScreen";
 import { Build25TranslationScreen } from "@/features/build25/Build25TranslationScreen";
 import { aiService } from "@/services/aiService";
 import { aiApi } from "@/services/api/aiApi";
@@ -159,8 +158,8 @@ const professionalUseDisclaimer =
   "OPAi Police is not a replacement for official police systems, supervision, service policy, legal advice, medical advice, training, court requirements, or professional judgment.";
 const aiDisclaimer =
   "AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user.";
-const prototypeDisclaimer =
-  "OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real evidence, real statements, or official documents into this prototype.";
+const authorizedDataDisclaimer =
+  "Use only information you are authorized to process. Do not submit confidential police records, protected evidence, or sensitive information without authorization.";
 const ptsdDisclaimer =
   "PTSD awareness content is educational and supportive only. It is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support. If you are in immediate danger or crisis, contact local emergency services or a qualified crisis support service.";
 const translationDisclaimer =
@@ -170,44 +169,40 @@ const courtTrainingDisclaimer =
 const incidentDisclaimer =
   "Report Writing sends officer-supplied facts to the secure OPAi AI service only when requested. Drafts require officer verification and do not replace RMS, notebook requirements, supervision, policy, or legal obligations.";
 const filesDisclaimer =
-  "Notes & Files remain local metadata placeholders. Files explicitly selected inside Translation may be transmitted for that requested translation only.";
+  "Files explicitly selected inside Translation are transmitted only for the requested translation and require verification.";
 
 const legalDocuments: LegalDocument[] = [
   {
     body: [
-      "OPAi is currently in testing/pre-launch.",
       "Local preferences, consent dates, and optional history are stored on the user's device.",
-      "Authentication and requested AI/translation content use the secure OPAi staging backend during internal testing.",
+      "Authentication and requested AI or translation content use the secure OPAi backend.",
       "OPAi may transmit user-requested text, audio, selected images, and selected documents to OpenAI for processing. OPAi does not add police-system sync, advertising, tracking, or third-party analytics.",
-      "Users should not enter real police records, evidence, confidential information, sensitive personal information, or official documents.",
-      "Future production versions may use secure backend services, encrypted storage, authentication, audit logging, AI services, and optional integrations.",
-      "Production URL to be verified before final App Store submission."
+      authorizedDataDisclaimer,
+      "The current Privacy Policy is available at https://opaiapp.com/privacy."
     ],
     icon: "shield-lock-outline",
     id: "privacy",
     productionUrl: "https://opaiapp.com/privacy",
-    subtitle: "Local draft for testing",
+    subtitle: "Privacy and data handling",
     title: "Privacy Policy"
   },
   {
     body: [
       generalAppDisclaimer,
-      "OPAi Police is not official police software and is not affiliated with a police service or government agency unless explicitly stated in future authorized agreements.",
+      "OPAi Police is not official police software and is not affiliated with a police service or government agency unless an authorized agreement explicitly states otherwise.",
       professionalUseDisclaimer,
-      "This prototype should not be used for real police operations.",
-      "No real records, evidence, statements, official documents, or sensitive information should be entered during testing.",
       "AI and translation features are AI-generated, may be inaccurate, and require verification.",
       "Users are responsible for verifying all information.",
-      "Production URL to be verified before final App Store submission."
+      "The current Terms of Service are available at https://opaiapp.com/terms."
     ],
     icon: "file-document-check-outline",
     id: "terms",
     productionUrl: "https://opaiapp.com/terms",
-    subtitle: "Local draft for testing",
+    subtitle: "Terms and professional use",
     title: "Terms of Use"
   },
   {
-    body: [generalAppDisclaimer, aiDisclaimer, "Prompts are sent through the authenticated OPAi backend. Provider storage is disabled, but users must not submit operational or confidential information during internal testing."],
+    body: [generalAppDisclaimer, aiDisclaimer, "Prompts are sent through the authenticated OPAi backend. Provider storage is disabled. Submit only information authorized for processing."],
     icon: "brain",
     id: "ai",
     subtitle: "AI safety boundary",
@@ -235,11 +230,11 @@ const legalDocuments: LegalDocument[] = [
     title: "PTSD Awareness Disclaimer"
   },
   {
-    body: [prototypeDisclaimer, "Prototype data may be stored locally on this device until reset, cleared, or removed by the operating system."],
+    body: [authorizedDataDisclaimer, "Local app data remains on this device until reset, cleared, or removed by the operating system."],
     icon: "test-tube",
     id: "prototype",
-    subtitle: "Testing / pre-launch",
-    title: "Prototype / Testing Disclaimer"
+    subtitle: "Authorized information only",
+    title: "Data Use Disclaimer"
   },
   {
     body: [courtTrainingDisclaimer],
@@ -280,7 +275,7 @@ const settingsMenuSections: Array<{
       { icon: "shield-lock-outline", id: "privacy", subtitle: "Local privacy draft", title: "Privacy Policy" },
       { icon: "file-document-check-outline", id: "terms", subtitle: "Local terms draft", title: "Terms of Use" },
       { icon: "file-check-outline", id: "consent", subtitle: "Accepted locally", title: "Consent Status" },
-      { icon: "database-outline", id: "data", subtitle: "Local prototype storage", title: "Data & Storage" },
+      { icon: "database-outline", id: "data", subtitle: "Local device storage", title: "Data & Storage" },
       { icon: "weather-partly-cloudy", id: "dataSources", subtitle: "Apple Weather and local sources", title: "Data Sources" },
       { icon: "fingerprint", id: "profile", subtitle: "Placeholder only", title: "Biometric Placeholder" }
     ],
@@ -320,7 +315,7 @@ const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data
   { getCount: (data) => data.followUpWorkflowReminders.length, icon: "clipboard-check-outline", title: "Follow-ups" },
   { getCount: (data) => data.incidentDrafts.length, icon: "file-document-edit-outline", title: "Report drafts" },
   { getCount: (data) => data.translationHistory.length, icon: "translate", title: "Translation history" },
-  { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI mock history" },
+  { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI history" },
   { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
   { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File metadata placeholders" }
 ];
@@ -469,15 +464,6 @@ export function ModuleScreen({
     );
   }
 
-  if (module.id === "deviceTesting") {
-    return (
-      <ScreenFrame activeModule="deviceTesting" isTablet={isTablet} onSelectModule={onSelectModule}>
-        <DeviceTestingScreen isTablet={isTablet} />
-        <CoreDisclaimer />
-      </ScreenFrame>
-    );
-  }
-
   if (module.id === "ai") {
     return (
       <AIAssistantScreen
@@ -614,7 +600,7 @@ function ScreenFrame({
   );
 }
 
-const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "deviceTesting", "translation", "calendar", "ai"];
+const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "translation", "calendar", "ai"];
 
 function HomeDashboardScreen({
   isTablet,
@@ -690,7 +676,7 @@ function HomeHeroCard() {
     { icon: "file-document-outline" as MciIcon, label: "Report" },
     { icon: "weather-partly-cloudy" as MciIcon, label: "Weather" },
     { icon: "bell-outline" as MciIcon, label: "Reminders" },
-    { icon: "gauge" as MciIcon, label: "Devices" }
+    { icon: "microphone-outline" as MciIcon, label: "Audio" }
   ];
 
   return (
@@ -954,7 +940,7 @@ function NewIncidentScreen({
   };
 
   const deleteIncidentDraft = (item: LocalIncidentDraft) => {
-    Alert.alert("Delete Draft", "Remove this local prototype incident draft?", [
+    Alert.alert("Delete Draft", "Remove this local report draft?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: () => {
@@ -1003,7 +989,7 @@ function NewIncidentScreen({
       createdAt: now,
       dueDate: followUpDate,
       id: createIncidentId("incident-follow-up"),
-      notes: `Incident follow-up: ${savedDraft.incidentType}. ${savedDraft.incidentNotes.followUpNotes || "Local prototype reminder only."}`,
+      notes: `Report follow-up: ${savedDraft.incidentType}. ${savedDraft.incidentNotes.followUpNotes || "Local reminder."}`,
       priority: savedDraft.priority === "Urgent" || savedDraft.priority === "High" ? "high" : savedDraft.priority === "Medium" ? "medium" : "low",
       relatedIncidentId: savedDraft.id,
       reminderEnabled: true,
@@ -1028,7 +1014,7 @@ function NewIncidentScreen({
     setDraft(savedDraft);
     setEditingId(savedDraft.id);
     await onScheduleReminder(workflowService.createFollowUpReminder(followUp));
-    Alert.alert("Follow-Up Created", "A local follow-up reminder was created from this prototype incident draft.");
+    Alert.alert("Follow-Up Created", "A local follow-up reminder was created from this report draft.");
   };
 
   const createIncidentCalendarItem = async () => {
@@ -1038,7 +1024,7 @@ function NewIncidentScreen({
       date: calendarDate,
       id: createIncidentId("incident-calendar"),
       location: draft.location,
-      notes: `Incident-related calendar placeholder for ${draft.incidentType}. No external calendar sync.`,
+      notes: `Report-related calendar reminder for ${draft.incidentType}. No external calendar sync.`,
       reminderEnabled: true,
       reminderLeadTime: "1Day",
       status: "upcoming",
@@ -1193,7 +1179,7 @@ function NewIncidentScreen({
                   <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
                 </SecondaryButton>
               </View>
-              <WorkflowField label="Name placeholder" value={person.name} onChangeText={(name) => setDraft((item) => ({
+              <WorkflowField label="Name" value={person.name} onChangeText={(name) => setDraft((item) => ({
                 ...item,
                 personsInvolved: item.personsInvolved.map((entry) => entry.id === person.id ? { ...entry, name } : entry)
               }))} />
@@ -1213,7 +1199,7 @@ function NewIncidentScreen({
               }))} />
             </View>
           ))}
-          <DisclaimerBanner message="Do not enter real personal information in this testing version." />
+          <DisclaimerBanner message={authorizedDataDisclaimer} />
         </WorkflowFormPanel>
       ) : null}
 
@@ -1235,11 +1221,11 @@ function NewIncidentScreen({
                   <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
                 </SecondaryButton>
               </View>
-              <WorkflowField label="Name placeholder" value={witness.name} onChangeText={(name) => setDraft((item) => ({
+              <WorkflowField label="Name" value={witness.name} onChangeText={(name) => setDraft((item) => ({
                 ...item,
                 witnessDetails: item.witnessDetails.map((entry) => entry.id === witness.id ? { ...entry, name } : entry)
               }))} />
-              <WorkflowField label="Contact placeholder" value={witness.contact} onChangeText={(contact) => setDraft((item) => ({
+              <WorkflowField label="Contact" value={witness.contact} onChangeText={(contact) => setDraft((item) => ({
                 ...item,
                 witnessDetails: item.witnessDetails.map((entry) => entry.id === witness.id ? { ...entry, contact } : entry)
               }))} />
@@ -1258,7 +1244,7 @@ function NewIncidentScreen({
           <WorkflowField label="Narrative draft" multiline value={draft.incidentNotes.narrativeDraft} onChangeText={(narrativeDraft) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, narrativeDraft } }))} />
           <WorkflowField label="Observations" multiline value={draft.incidentNotes.observations} onChangeText={(observations) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, observations } }))} />
           <WorkflowField label="Follow-up notes" multiline value={draft.incidentNotes.followUpNotes} onChangeText={(followUpNotes) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, followUpNotes } }))} />
-          <WorkflowField label="Disclosure notes placeholder" multiline value={draft.incidentNotes.disclosureNotes} onChangeText={(disclosureNotes) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, disclosureNotes } }))} />
+          <WorkflowField label="Disclosure notes" multiline value={draft.incidentNotes.disclosureNotes} onChangeText={(disclosureNotes) => setDraft((item) => ({ ...item, incidentNotes: { ...item.incidentNotes, disclosureNotes } }))} />
         </WorkflowFormPanel>
       ) : null}
 
@@ -1280,7 +1266,7 @@ function NewIncidentScreen({
                   <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
                 </SecondaryButton>
               </View>
-              <WorkflowField label="File name placeholder" value={attachment.fileName} onChangeText={(fileName) => setDraft((item) => ({
+              <WorkflowField label="Reference file name" value={attachment.fileName} onChangeText={(fileName) => setDraft((item) => ({
                 ...item,
                 attachmentMetadata: item.attachmentMetadata.map((entry) => entry.id === attachment.id ? { ...entry, fileName } : entry)
               }))} />
@@ -1357,9 +1343,9 @@ function NewIncidentScreen({
 
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool." />
-      <DisclaimerBanner message="Report Writing drafts are local prototype records only and do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations." />
-      <DisclaimerBanner message="Do not enter real police records, confidential information, sensitive personal information, or real evidence into this testing version." />
-      <DisclaimerBanner message="Future AI-assisted report features may produce incomplete or inaccurate content and must be verified by the user." />
+      <DisclaimerBanner message="Report Writing drafts do not replace official police RMS, notebook requirements, reporting systems, supervision, policy, or legal obligations." />
+      <DisclaimerBanner message={authorizedDataDisclaimer} />
+      <DisclaimerBanner message="AI-assisted report content may be incomplete or inaccurate and must be verified by the user." />
       <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
@@ -1380,8 +1366,10 @@ function AIAssistantScreen({
   onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
   selectedItem: string;
 }) {
-  const categories = aiService.getAICategories();
-  const actions = aiService.getSuggestedActions();
+  const categories = aiService.getAICategories().filter((category) => !category.placeholderOnly);
+  const actions = aiService.getSuggestedActions().filter((action) =>
+    categories.some((category) => category.id === action.category)
+  );
   const [selectedCategory, setSelectedCategory] = useState<AICategoryId>(localData.aiPreferences.lastSelectedCategory);
   const [historyFilter, setHistoryFilter] = useState<AICategoryId | "all">("all");
   const [prompt, setPrompt] = useState("");
@@ -1390,7 +1378,7 @@ function AIAssistantScreen({
   const [latestConversation, setLatestConversation] = useState<AIConversation | null>(localData.aiHistory[0] ?? null);
   const [selectedIncidentId, setSelectedIncidentId] = useState(localData.incidentDrafts[0]?.id ?? "");
   const selectedCategoryMeta = categories.find((category) => category.id === selectedCategory) ?? {
-    description: "General mock assistance for local prototype workflows.",
+    description: "General assistance for productivity and organization.",
     icon: "chat-processing-outline",
     id: "general" as const,
     label: "General Support",
@@ -1459,7 +1447,7 @@ function AIAssistantScreen({
   };
 
   const clearHistory = () => {
-    Alert.alert("Clear AI History", "Clear all local mock AI history from this device?", [
+    Alert.alert("Clear AI History", "Clear all locally saved AI history from this device?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: () => {
@@ -1542,9 +1530,6 @@ function AIAssistantScreen({
       <View style={styles.reviewPanel}>
         <Text style={styles.profileName}>{selectedCategoryMeta.label}</Text>
         <Text style={styles.workflowSubtitle}>{selectedCategoryMeta.description}</Text>
-        {selectedCategoryMeta.placeholderOnly ? (
-          <DisclaimerBanner message="This category is a placeholder only. It does not provide legal advice, policy interpretation, statute lookup, or official direction." />
-        ) : null}
         {selectedCategoryMeta.wellnessOnly ? <WellnessDisclaimer /> : null}
       </View>
 
@@ -1554,7 +1539,7 @@ function AIAssistantScreen({
         <View style={styles.filterRow}>
           {promptSuggestions.map((suggestion) => (
             <Pressable
-              accessibilityLabel={`Run mock prompt: ${suggestion.label}`}
+              accessibilityLabel={`Run prompt: ${suggestion.label}`}
               accessibilityRole="button"
               key={suggestion.id}
               onPress={() => void runAIPrompt(suggestion.prompt, suggestion.category)}
@@ -1597,7 +1582,7 @@ function AIAssistantScreen({
         </View>
         <View style={styles.formRow}>
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Report Link Placeholder</Text>
+            <Text style={styles.fieldLabel}>Optional Report Draft</Text>
             <View style={styles.filterRow}>
               {localData.incidentDrafts.slice(0, 4).map((draft) => (
                 <Pressable
@@ -1675,9 +1660,9 @@ function AIAssistantScreen({
         />
       )}
 
-      <DisclaimerBanner message="AI incident support is a prototype productivity aid only. It does not replace official police reports, notebook requirements, RMS, supervision, policy, legal advice, or professional judgment." />
+      <DisclaimerBanner message="AI assistance does not replace official police reports, notebook requirements, RMS, supervision, policy, legal advice, or professional judgment." />
 
-      <SectionHeader icon="history" title="Local Demo History" />
+      <SectionHeader icon="history" title="History" />
       <View style={styles.filterRow}>
         <Pressable
           accessibilityRole="button"
@@ -1708,7 +1693,7 @@ function AIAssistantScreen({
           </Pressable>
         ))}
       </View>
-      <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real statements, real evidence, or official documents into this prototype." />
+      <DisclaimerBanner message={authorizedDataDisclaimer} />
       <View style={styles.stack}>
         {filteredHistory.length > 0 ? (
           filteredHistory.map((item) => (
@@ -1747,13 +1732,6 @@ function AIAssistantScreen({
         <MaterialCommunityIcons name="delete-sweep-outline" size={20} color={colors.danger} />
       </SecondaryButton>
 
-      <AIInputBar
-        onPress={() => {
-          setPrompt("Voice command placeholder");
-          void runAIPrompt("Help me organize my current workflow.");
-        }}
-        placeholder="Voice or text command..."
-      />
       <PrototypeSelection label={selectedItem} />
       <LocalPrototypeWarning />
       <CoreDisclaimer />
@@ -2320,7 +2298,7 @@ function CalendarScreen({
   };
 
   const deleteCalendarEvent = (item: CalendarWorkflowEvent) => {
-    Alert.alert("Delete Calendar Item", "Remove this local prototype item?", [
+    Alert.alert("Delete Calendar Item", "Remove this local calendar item?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: async () => {
@@ -2338,7 +2316,7 @@ function CalendarScreen({
   };
 
   const deleteFollowUp = (item: FollowUpWorkflowReminder) => {
-    Alert.alert("Delete Follow-Up", "Remove this local prototype follow-up?", [
+    Alert.alert("Delete Follow-Up", "Remove this local follow-up?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: async () => {
@@ -2462,7 +2440,7 @@ function CalendarScreen({
         ))}
       </View>
       {events.length === 0 ? (
-        <EmptyState icon="calendar-blank-outline" title="No calendar items" message="Add local prototype items or change the filter." />
+        <EmptyState icon="calendar-blank-outline" title="No calendar items" message="Add an item or change the filter." />
       ) : null}
 
       <WorkflowFormPanel icon="clipboard-plus-outline" title={followUpEditingId ? "Edit Follow-Up" : "Add Follow-Up"}>
@@ -2525,7 +2503,7 @@ function CalendarScreen({
         <Ionicons name="lock-closed-outline" size={20} color={colors.primaryBlue} />
       </SecondaryButton>
       <PrototypeSelection label={selectedItem} />
-      <DisclaimerBanner message="Calendar sync requires explicit authorization and is not connected in Sprint 009. These items are local prototype data only." />
+      <DisclaimerBanner message="Calendar items are stored locally. External calendar synchronization requires separate explicit authorization." />
       <CoreDisclaimer />
     </ScreenFrame>
   );
@@ -2606,7 +2584,7 @@ function CourtScreen({
   };
 
   const deleteCourtEvent = (item: CourtWorkflowEvent) => {
-    Alert.alert("Delete Court Reminder", "Remove this local prototype court reminder?", [
+    Alert.alert("Delete Court Reminder", "Remove this local court reminder?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: async () => {
@@ -2844,7 +2822,7 @@ function TrainingScreen({
   };
 
   const deleteTraining = (item: TrainingWorkflowEvent) => {
-    Alert.alert("Delete Training", "Remove this local prototype training item?", [
+    Alert.alert("Delete Training", "Remove this local training item?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: async () => {
@@ -2862,7 +2840,7 @@ function TrainingScreen({
   };
 
   const deleteRequalification = (item: RequalificationWorkflowReminder) => {
-    Alert.alert("Delete Qualification", "Remove this local prototype qualification reminder?", [
+    Alert.alert("Delete Qualification", "Remove this local qualification reminder?", [
       { style: "cancel", text: "Cancel" },
       {
         onPress: async () => {
@@ -3722,7 +3700,7 @@ function SettingsScreen({
             ? "Demo court reminder. Verify official court details through authorized systems."
             : kind === "training"
               ? "Demo training reminder. Confirm official training details through authorized systems."
-              : "This is a local prototype notification. No remote push service was used.",
+              : "This reminder was scheduled locally on this device.",
         createdAt: now,
         enabled: true,
         id: `scheduled-${kind}-${Date.now()}`,
@@ -3743,7 +3721,7 @@ function SettingsScreen({
         ].slice(0, 20),
         updatedAt: now
       }));
-      Alert.alert("Local Notification Scheduled", "A local prototype notification was scheduled for about 10 seconds from now.");
+      Alert.alert("Local Notification Scheduled", "A local notification was scheduled for about 10 seconds from now.");
     } catch {
       Alert.alert("Local Notification", "Could not schedule the local notification. Check device notification permission.");
     }
@@ -3765,7 +3743,7 @@ function SettingsScreen({
         scheduledReminders: scheduled,
         updatedAt: new Date().toISOString()
       }));
-      Alert.alert("Local Reminders Scheduled", `${scheduled.length} prototype reminders were scheduled locally. Previous prototype notifications were replaced.`);
+      Alert.alert("Local Reminders Scheduled", `${scheduled.length} reminders were scheduled locally. Previous local notifications were replaced.`);
     } catch {
       Alert.alert("Local Reminders", "Could not schedule local reminders. Check device notification permission.");
     }
@@ -3779,7 +3757,7 @@ function SettingsScreen({
         scheduledReminders: [],
         updatedAt: new Date().toISOString()
       }));
-      Alert.alert("Local Notifications", "All local prototype notifications were cancelled.");
+      Alert.alert("Local Notifications", "All local notifications were cancelled.");
     } catch {
       Alert.alert("Local Notifications", "Could not cancel local notifications on this device.");
     }
@@ -3788,7 +3766,7 @@ function SettingsScreen({
   const confirmCancelAllNotifications = () => {
     Alert.alert(
       "Cancel Local Notifications",
-      "This will cancel all scheduled local prototype notifications on this device.",
+      "This will cancel all scheduled local notifications on this device.",
       [
         { style: "cancel", text: "Keep" },
         { onPress: cancelAllNotifications, style: "destructive", text: "Cancel All" }
@@ -3798,8 +3776,8 @@ function SettingsScreen({
 
   const confirmResetDemoData = () => {
     Alert.alert(
-      "Reset Demo Data",
-      "This will restore default prototype reminders, drafts, notes, and history while keeping the current mock sign-in.",
+      "Reset Sample Data",
+      "This will restore fictional reminders, drafts, notes, and history while keeping the current sign-in.",
       [
         { style: "cancel", text: "Cancel" },
         { onPress: onResetDemoData, text: "Reset" }
@@ -3810,7 +3788,7 @@ function SettingsScreen({
   const confirmClearLocalData = () => {
     Alert.alert(
       "Clear Local Data",
-      "This will remove local prototype data, sign out, and return to the Welcome screen.",
+      "This will remove device-local app data, sign out, and return to Welcome.",
       [
         { style: "cancel", text: "Cancel" },
         { onPress: onClearLocalData, style: "destructive", text: "Clear" }
@@ -3820,8 +3798,8 @@ function SettingsScreen({
 
   const confirmSignOut = () => {
     Alert.alert(
-      "Mock Sign Out",
-      "This signs out the local mock user. No production account is affected.",
+      "Sign Out",
+      "This signs out the current OPAi Police account on this device.",
       [
         { style: "cancel", text: "Stay Signed In" },
         { onPress: onSignOut, text: "Sign Out" }
@@ -3838,7 +3816,7 @@ function SettingsScreen({
       <View style={styles.hero}>
         <View style={styles.heroCopy}>
           <Text style={styles.heroTitle}>Settings & compliance.</Text>
-          <Text style={styles.heroSub}>Local privacy, legal, consent, support, and prototype controls.</Text>
+          <Text style={styles.heroSub}>Privacy, legal, consent, support, and local data controls.</Text>
         </View>
         <MaterialCommunityIcons name="cog-outline" size={48} color={colors.primaryBlue} />
       </View>
@@ -3850,7 +3828,7 @@ function SettingsScreen({
             {profile ? `${profile.firstName} ${profile.lastName}` : "Mock User"}
           </Text>
           <Text style={styles.profileMeta}>
-            {profile?.role ?? "Canadian Police Officer"} - Testing / Pre-Launch - iOS-first
+            {profile?.role ?? "Canadian Police Officer"} - OPAi Police
           </Text>
         </View>
         <View style={styles.mockBadge}>
@@ -3864,7 +3842,7 @@ function SettingsScreen({
       {activeSettingsView === "overview" || selectedItem === "Home" ? (
         <SettingsPanel icon="shield-check-outline" title="Mock Account Status">
           <SettingsFact label="Current status" value={localData.auth.status} />
-          <SettingsFact label="Testing stage" value={releaseInfo.status} />
+          <SettingsFact label="Product" value={releaseInfo.status} />
           <SettingsFact label="App version" value={releaseInfo.appVersion} />
           <SettingsFact label="Build" value={releaseInfo.buildNumber} />
           <SettingsFact label="Release channel" value={releaseInfo.releaseChannel} />
@@ -3876,13 +3854,12 @@ function SettingsScreen({
 
       {activeSettingsView === "profile" ? (
         <SettingsPanel icon="account-circle-outline" title="Account">
-          <SettingsFact label="Name" value={profile ? `${profile.firstName} ${profile.lastName}` : "Mock User"} />
-          <SettingsFact label="Email" value={profile?.email ?? "officer@example.ca"} />
+          <SettingsFact label="Name" value={profile ? `${profile.firstName} ${profile.lastName}` : "Signed out"} />
+          <SettingsFact label="Email" value={profile?.email ?? "Not available"} />
           <SettingsFact label="Role" value={profile?.role ?? "Canadian Police Officer"} />
           <SettingsFact label="Language" value={profile?.preferredLanguage ?? "English"} />
-          <SettingsFact label="Mock account status" value={localData.auth.status} />
-          <SettingsFact label="Biometric placeholder" value={localData.preferences.biometricEnabled ? "Enabled locally" : "Disabled locally"} />
-          <DisclaimerBanner message="This profile is local mock data only. No production account, identity verification, police-service account, or backend authentication is connected." />
+          <SettingsFact label="Account status" value={localData.auth.status} />
+          <DisclaimerBanner message="OPAi Police accounts do not establish police-service identity or authorization." />
         </SettingsPanel>
       ) : null}
 
@@ -3908,7 +3885,7 @@ function SettingsScreen({
             <SecondaryButton label="Review Terms" onPress={() => onSelectItem("terms")} />
             <SecondaryButton label="Review Privacy" onPress={() => onSelectItem("privacy")} />
             <SecondaryButton
-              label="Re-Accept Locally"
+              label="Review & Accept"
               onPress={() => {
                 const acceptedAt = new Date().toISOString();
                 onUpdateLocalData((current) => ({
@@ -3951,7 +3928,7 @@ function SettingsScreen({
               }}
             />
           </View>
-          <DisclaimerBanner message="Consent status is local prototype consent only. OPAi does not connect to backend consent records in this testing version." />
+          <DisclaimerBanner message="Consent choices are stored on this device. Review the current Privacy Policy and Terms before continuing to use OPAi Police." />
         </SettingsPanel>
       ) : null}
 
@@ -3959,7 +3936,7 @@ function SettingsScreen({
 
       {activeSettingsView === "data" ? (
         <SettingsPanel icon="database-outline" title="Data & Storage">
-          <SettingsFact label="Storage mode" value="Device-local prototype storage" />
+          <SettingsFact label="Storage mode" value="Device-local storage" />
           <SettingsFact label="Last updated" value={new Date(localData.updatedAt).toLocaleString()} />
           <SettingsFact label="Storage version" value={`v${localData.version}`} />
           <View style={styles.stack}>
@@ -3971,7 +3948,7 @@ function SettingsScreen({
                   id: row.title,
                   meta: "local",
                   status: String(row.getCount(localData)),
-                  subtitle: "Stored locally for prototype review",
+                  subtitle: "Stored locally on this device",
                   title: row.title
                 }}
                 key={row.title}
@@ -3981,14 +3958,14 @@ function SettingsScreen({
             ))}
           </View>
           <View style={styles.actionRow}>
-            <SecondaryButton label="Reset Demo Data" onPress={confirmResetDemoData}>
+            <SecondaryButton label="Reset Sample Data" onPress={confirmResetDemoData}>
               <MaterialCommunityIcons name="backup-restore" size={20} color={colors.primaryBlue} />
             </SecondaryButton>
             <SecondaryButton label="Clear Local Data" onPress={confirmClearLocalData}>
               <MaterialCommunityIcons name="delete-outline" size={20} color={colors.danger} />
             </SecondaryButton>
           </View>
-          <DisclaimerBanner message="Clear Local Data removes local prototype data, signs out the mock user, and returns to the Welcome screen. Reset Demo Data restores sample data and keeps the current mock sign-in." />
+          <DisclaimerBanner message="Clear Local Data removes device-local data, signs out the account, and returns to Welcome. Reset Sample Data restores fictional examples while keeping the current sign-in." />
         </SettingsPanel>
       ) : null}
 
@@ -4017,10 +3994,9 @@ function SettingsScreen({
           <SettingsFact label="PTSD awareness accent" value="#7FFFD4" />
           <View style={styles.actionRow}>
             <SecondaryButton label={`Notifications ${localData.preferences.notificationsEnabled ? "On" : "Off"}`} onPress={() => togglePreference("notificationsEnabled")} />
-            <SecondaryButton label={`Biometrics ${localData.preferences.biometricEnabled ? "On" : "Off"}`} onPress={() => togglePreference("biometricEnabled")} />
             <SecondaryButton label={`PTSD Reminders ${localData.preferences.ptsdRemindersEnabled ? "On" : "Off"}`} onPress={() => togglePreference("ptsdRemindersEnabled")} />
           </View>
-          <DisclaimerBanner message="Preferences are local placeholders only. Production settings will require secure backend account and consent handling." />
+          <DisclaimerBanner message="App preferences are stored locally on this device." />
         </SettingsPanel>
       ) : null}
 
@@ -4028,7 +4004,7 @@ function SettingsScreen({
         <SettingsPanel icon="bell-ring-outline" title="Notifications">
           <SettingsFact label="Permission status" value={notificationPreference.permissionStatus} />
           <SettingsFact label="Scheduled locally" value={String(localData.scheduledReminders.length)} />
-          <DisclaimerBanner message="Notification reminders in this testing version are scheduled locally on this device. OPAi does not send remote push notifications in this prototype." />
+          <DisclaimerBanner message="Reminder notifications are scheduled locally on this device and use privacy-friendly lock-screen text." />
           <View style={styles.actionRow}>
             <SecondaryButton label="Enable Notifications" onPress={handleRequestNotificationPermission} />
             <SecondaryButton label="Maybe Later" onPress={handleMaybeLater} />
@@ -4050,9 +4026,9 @@ function SettingsScreen({
             </View>
           ))}
           <View style={styles.actionRow}>
-            <SecondaryButton label="Test in 10 sec" onPress={() => scheduleDemo("test")} />
-            <SecondaryButton label="Demo Court" onPress={() => scheduleDemo("court")} />
-            <SecondaryButton label="Demo Training" onPress={() => scheduleDemo("training")} />
+            <SecondaryButton label="Preview in 10 sec" onPress={() => scheduleDemo("test")} />
+            <SecondaryButton label="Preview Court" onPress={() => scheduleDemo("court")} />
+            <SecondaryButton label="Preview Training" onPress={() => scheduleDemo("training")} />
             <SecondaryButton label="Schedule Local Reminders" onPress={scheduleStoredReminders} />
             <SecondaryButton label="Cancel All Local Notifications" onPress={confirmCancelAllNotifications} />
           </View>
@@ -4077,17 +4053,15 @@ function SettingsScreen({
           <SettingsFact label="Build" value={releaseInfo.buildNumber} />
           <SettingsFact label="Release channel" value={releaseInfo.releaseChannel} />
           <CommunityLinksCard />
-          <DisclaimerBanner message="No live email sending or support ticket submission is connected in this prototype." />
-          <DisclaimerBanner message="Community links open outside the app. OPAi does not add tracking scripts or analytics in this prototype." />
+          <DisclaimerBanner message="Support and community links open outside the app. OPAi does not add tracking parameters to these links." />
         </SettingsPanel>
       ) : null}
 
       {activeSettingsView === "about" ? (
         <SettingsPanel icon="information-outline" title="About OPAi">
           <Text style={styles.profileMeta}>
-            OPAi Police is an AI assistant built for Canadian policing. This iOS-first testing version supports productivity,
-            organization, shift readiness, report drafting, translation, court/training reminders, notes, file metadata
-            placeholders, and PTSD awareness.
+            OPAi Police is an AI assistance and productivity app for Canadian law enforcement officers. It supports
+            shift readiness, report writing, translation, court and training reminders, and wellness-resource access.
           </Text>
           <SettingsFact label="Status" value={releaseInfo.status} />
           <SettingsFact label="Version" value={releaseInfo.appVersion} />
@@ -4099,7 +4073,7 @@ function SettingsScreen({
         </SettingsPanel>
       ) : null}
 
-      <SecondaryButton label="Mock Sign Out" onPress={confirmSignOut}>
+      <SecondaryButton label="Sign Out" onPress={confirmSignOut}>
         <Ionicons name="log-out-outline" size={20} color={colors.primaryBlue} />
       </SecondaryButton>
       <PrototypeSelection label={selectedItem} />
@@ -4112,7 +4086,7 @@ function consentLabel(key: string) {
   const labels: Record<string, string> = {
     aiDisclaimer: "AI Disclaimer",
     privacy: "Privacy Policy",
-    prototypeDisclaimer: "Prototype / Testing Disclaimer",
+    prototypeDisclaimer: "Data Use Disclaimer",
     ptsdDisclaimer: "PTSD Awareness Disclaimer",
     terms: "Terms of Use",
     translationDisclaimer: "Translation Disclaimer"
@@ -4200,16 +4174,16 @@ function LegalDocumentPanel({ document }: { document: LegalDocument }) {
         ))}
       </View>
       {document.productionUrl ? (
-        <SettingsFact label="Future production URL" value={document.productionUrl} />
+        <SettingsFact label="Policy URL" value={document.productionUrl} />
       ) : null}
-      <DisclaimerBanner message="This is local static legal text for the testing/pre-launch prototype. Final production legal text and URLs must be verified before App Store submission." />
+      <DisclaimerBanner message="The linked website policy is the authoritative current version. Review it before using OPAi Police." />
     </SettingsPanel>
   );
 }
 
 function LocalPrototypeWarning() {
   return (
-    <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Data in this prototype may be stored locally on this device for demonstration purposes. Do not enter real police records, real evidence, confidential information, or sensitive personal information. Future production versions will use secure backend storage, encryption, access controls, and privacy-by-design protections." />
+    <DisclaimerBanner message="Some app data is stored locally on this device. Use only information you are authorized to process and follow service policy for official records and evidence." />
   );
 }
 
@@ -4218,7 +4192,7 @@ function AIPrototypeBanner() {
     <View style={styles.prototypeBanner}>
       <MaterialCommunityIcons name="shield-lock-outline" size={20} color={colors.ptsdGreen} />
       <Text style={styles.prototypeBannerText}>
-        Secure staging AI. Prompts are processed by OPAi&apos;s backend and are not stored by the AI provider.
+        Secure AI processing. Prompts are processed through OPAi&apos;s backend and are not stored by the AI provider.
       </Text>
     </View>
   );
@@ -4227,11 +4201,11 @@ function AIPrototypeBanner() {
 function AISafetyNotice() {
   return (
     <View style={styles.disclaimerStack}>
-      <DisclaimerBanner message="This prototype does not provide legal advice, medical advice, operational direction, or emergency support. Follow service policy, law, training, and supervisor direction." />
+      <DisclaimerBanner message="OPAi Police does not provide legal advice, medical advice, operational direction, or emergency support. Follow service policy, law, training, and supervisor direction." />
       <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool. AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user." />
       <DisclaimerBanner message="OPAi Police does not replace official police systems, service policy, supervision, training, legal advice, court requirements, or professional judgment." />
       <DisclaimerBanner message="PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support." />
-      <DisclaimerBanner message="Do not submit operational police records, evidence, confidential information, or sensitive personal information during testing." />
+      <DisclaimerBanner message={authorizedDataDisclaimer} />
     </View>
   );
 }
@@ -4281,7 +4255,7 @@ function PrototypeSelection({ label }: { label: string }) {
   return (
     <View style={styles.selectionBanner}>
       <Ionicons name="radio-button-on" size={16} color={colors.ptsdGreen} />
-      <Text numberOfLines={1} style={styles.selectionText}>Prototype selection: {label}</Text>
+      <Text numberOfLines={1} style={styles.selectionText}>Selected: {label}</Text>
     </View>
   );
 }

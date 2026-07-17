@@ -14,13 +14,11 @@ export type Feature = {
 export const homeFeatures: Feature[] = [
   { id: "shift", icon: "shield-check-outline", title: "Start Shift", subtitle: "Ready" },
   { id: "incident", icon: "file-plus-outline", title: "Report", subtitle: "Draft" },
-  { id: "deviceTesting", icon: "gauge", title: "Devices", subtitle: "Guides" },
   { id: "translation", icon: "translate", title: "Translate", subtitle: "Voice" },
   { id: "calendar", icon: "calendar-month-outline", title: "Calendar", subtitle: "Events" },
   { id: "ai", icon: "message-text-outline", title: "OPAi", subtitle: "Ask" },
   { id: "court", icon: "scale-balance", title: "Court", subtitle: "Dates" },
   { id: "training", icon: "school-outline", title: "Training", subtitle: "Renewals" },
-  { id: "notes", icon: "folder-outline", title: "Files", subtitle: "Notes" },
   { id: "settings", icon: "cog-outline", title: "Settings", subtitle: "Prefs" }
 ];
 
@@ -90,7 +88,6 @@ export const calendarEvents = [
 export const secondaryModules: Feature[] = [
   { id: "court", icon: "scale-balance", title: "Court", subtitle: "Reminders" },
   { id: "training", icon: "school-outline", title: "Training", subtitle: "Qualifications" },
-  { id: "notes", icon: "folder-outline", title: "Notes", subtitle: "Files" },
   { id: "settings", icon: "cog-outline", title: "Settings", subtitle: "Preferences" }
 ];
 
@@ -109,30 +106,30 @@ export const trainingReminders = [
 export const followUpReminders = [
   { icon: "clipboard-check-outline" as MciIcon, title: "Witness Note", subtitle: "Report #25-01873" },
   { icon: "camera-outline" as MciIcon, title: "Evidence Photos", subtitle: "Attach before draft" },
-  { icon: "calendar-clock" as MciIcon, title: "Supervisor Review", subtitle: "Placeholder task" }
+  { icon: "calendar-clock" as MciIcon, title: "Supervisor Review", subtitle: "Follow-up" }
 ];
 
 export const incidentExamples = [
   { icon: "car-emergency" as MciIcon, title: "Traffic Stop", subtitle: "Local example" },
-  { icon: "home-alert-outline" as MciIcon, title: "Disturbance", subtitle: "Placeholder flow" },
+  { icon: "home-alert-outline" as MciIcon, title: "Disturbance", subtitle: "Report workflow" },
   { icon: "walk" as MciIcon, title: "Foot Patrol", subtitle: "Report template" }
 ];
 
 export const translationExamples = [
   { icon: "translate" as MciIcon, title: "English to French", subtitle: "Sample phrase" },
   { icon: "microphone-outline" as MciIcon, title: "Voice Prompt", subtitle: "Tap to preview" },
-  { icon: "camera-outline" as MciIcon, title: "Sign OCR", subtitle: "Camera placeholder" }
+  { icon: "camera-outline" as MciIcon, title: "Sign OCR", subtitle: "Camera translation" }
 ];
 
 export const notesFiles = [
   { icon: "note-text-outline" as MciIcon, title: "Shift Notes", subtitle: "3 local samples" },
-  { icon: "image-outline" as MciIcon, title: "Photos", subtitle: "Evidence placeholders" },
-  { icon: "folder-lock-outline" as MciIcon, title: "Case Folder", subtitle: "Offline mock" }
+  { icon: "image-outline" as MciIcon, title: "Photos", subtitle: "Photo references" },
+  { icon: "folder-lock-outline" as MciIcon, title: "Case Folder", subtitle: "Local records" }
 ];
 
 export const settingsItems = [
-  { icon: "bell-outline" as MciIcon, title: "Notifications", subtitle: "Prototype only" },
-  { icon: "shield-lock-outline" as MciIcon, title: "Privacy", subtitle: "Consent controls later" },
+  { icon: "bell-outline" as MciIcon, title: "Notifications", subtitle: "Reminder preferences" },
+  { icon: "shield-lock-outline" as MciIcon, title: "Privacy", subtitle: "Consent controls" },
   { icon: "palette-outline" as MciIcon, title: "Appearance", subtitle: "Dark theme" },
-  { icon: "information-outline" as MciIcon, title: "About Testing", subtitle: "Pre-launch build" }
+  { icon: "information-outline" as MciIcon, title: "About OPAi", subtitle: "Product information" }
 ];
