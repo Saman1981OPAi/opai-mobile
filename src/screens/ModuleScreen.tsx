@@ -271,19 +271,18 @@ const settingsMenuSections: Array<{
 }> = [
   {
     items: [
-      { icon: "account-circle-outline", id: "profile", subtitle: "Mock user and account status", title: "Profile" },
-      { icon: "logout", id: "overview", subtitle: "Use the sign-out button below", title: "Mock Account Status" }
+      { icon: "account-circle-outline", id: "profile", subtitle: "Profile and account details", title: "Profile" },
+      { icon: "shield-account-outline", id: "overview", subtitle: "Session and app information", title: "Account Status" }
     ],
     title: "Account"
   },
   {
     items: [
-      { icon: "shield-lock-outline", id: "privacy", subtitle: "Local privacy draft", title: "Privacy Policy" },
-      { icon: "file-document-check-outline", id: "terms", subtitle: "Local terms draft", title: "Terms of Use" },
+      { icon: "shield-lock-outline", id: "privacy", subtitle: "Current privacy information", title: "Privacy Policy" },
+      { icon: "file-document-check-outline", id: "terms", subtitle: "Current terms and conditions", title: "Terms of Use" },
       { icon: "file-check-outline", id: "consent", subtitle: "Accepted locally", title: "Consent Status" },
       { icon: "database-outline", id: "data", subtitle: "Local device storage", title: "Data & Storage" },
-      { icon: "weather-partly-cloudy", id: "dataSources", subtitle: "Apple Weather and local sources", title: "Data Sources" },
-      { icon: "fingerprint", id: "profile", subtitle: "Placeholder only", title: "Biometric Placeholder" }
+      { icon: "weather-partly-cloudy", id: "dataSources", subtitle: "Apple Weather and local sources", title: "Data Sources" }
     ],
     title: "Privacy & Security"
   },
@@ -310,7 +309,7 @@ const settingsMenuSections: Array<{
 ];
 
 const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data: LocalAppData) => number | string }> = [
-  { getCount: (data) => (data.auth.profile ? 1 : 0), icon: "account-outline", title: "Mock user profile" },
+  { getCount: (data) => (data.auth.profile ? 1 : 0), icon: "account-outline", title: "User profile" },
   { getCount: (data) => Object.values(data.auth.consent).filter(Boolean).length, icon: "file-check-outline", title: "Consent status" },
   { getCount: () => "local", icon: "tune-variant", title: "Preferences" },
   { getCount: (data) => data.shiftReminders.length, icon: "shield-check-outline", title: "Start My Shift reminders" },
@@ -327,7 +326,7 @@ const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data
   { getCount: (data) => data.canvassSessions.length, icon: "home-search-outline", title: "Canvass sessions" },
   { getCount: (data) => data.canvassEntries.length, icon: "home-outline", title: "Canvass entries" },
   { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
-  { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File metadata placeholders" }
+  { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File references" }
 ];
 
 const notificationPreferenceRows: Array<{
@@ -631,9 +630,9 @@ export function ModuleScreen({
     <ScreenFrame activeModule={module.id} isTablet={isTablet} onSelectModule={onSelectModule}>
       <AppHeader title={module.shortLabel} />
       <EmptyState
-        icon="progress-wrench"
-        title={`${module.shortLabel} preview`}
-        message="This module is planned for a later sprint. Sprint 003 keeps it as a local placeholder."
+        icon="alert-circle-outline"
+        title="Module unavailable"
+        message="Return to Home and choose an available OPAi Police feature."
       />
       <DisclaimerBanner />
     </ScreenFrame>
@@ -1108,7 +1107,7 @@ function NewIncidentScreen({
       updatedAt: now
     }));
     await onScheduleReminder(workflowService.createCalendarReminder(event));
-    Alert.alert("Calendar Placeholder Added", "A local calendar reminder was added. No external calendar sync was used.");
+    Alert.alert("Calendar Reminder Added", "A local calendar reminder was added. No external calendar sync was used.");
   };
 
   const showAiPlaceholder = async () => {
@@ -3890,14 +3889,14 @@ function SettingsScreen({
         <MaterialCommunityIcons name="account-circle-outline" size={42} color={colors.primaryBlue} />
         <View style={styles.profileCopy}>
           <Text style={styles.profileName}>
-            {profile ? `${profile.firstName} ${profile.lastName}` : "Mock User"}
+            {profile ? `${profile.firstName} ${profile.lastName}` : "Signed-in user"}
           </Text>
           <Text style={styles.profileMeta}>
             {profile?.role ?? "Canadian Police Officer"} - OPAi Police
           </Text>
         </View>
         <View style={styles.mockBadge}>
-          <Text style={styles.mockBadgeText}>Local</Text>
+          <Text style={styles.mockBadgeText}>Account</Text>
         </View>
       </View>
       <LocalPrototypeWarning />
@@ -3905,15 +3904,13 @@ function SettingsScreen({
       <SettingsMenu selectedItem={selectedItem} onSelectItem={onSelectItem} />
 
       {activeSettingsView === "overview" || selectedItem === "Home" ? (
-        <SettingsPanel icon="shield-check-outline" title="Mock Account Status">
-          <SettingsFact label="Current status" value={localData.auth.status} />
+        <SettingsPanel icon="shield-check-outline" title="Account Status">
+          <SettingsFact label="Current status" value={profile ? "Signed in" : "Signed out"} />
           <SettingsFact label="Product" value={releaseInfo.status} />
           <SettingsFact label="App version" value={releaseInfo.appVersion} />
           <SettingsFact label="Build" value={releaseInfo.buildNumber} />
           <SettingsFact label="Release channel" value={releaseInfo.releaseChannel} />
-          <SettingsFact label="Launch priority" value="iOS active; Android paused pending D-U-N-S Number" />
-          <SettingsFact label="Production systems" value="Not connected" />
-          <DisclaimerBanner message="This Settings area is local and static for App Store review readiness. It does not connect to account, support, legal, backend, OpenAI, database, payment, or police-service systems." />
+          <DisclaimerBanner message="Account details and preferences are shown for the current signed-in OPAi Police session. OPAi Police does not establish police-service identity or authorization." />
         </SettingsPanel>
       ) : null}
 

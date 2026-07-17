@@ -1,7 +1,7 @@
 export const releaseInfo = {
   appVersion: "1.0",
   buildNumber: "26",
-  nativeVersion: "0.1.0",
+  nativeVersion: "1.0.0",
   platformPriority: "iOS-first",
   releaseChannel: "App Store",
   status: "OPAi Police",

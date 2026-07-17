@@ -1,6 +1,6 @@
 {
   "name": "opai-mobile",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Cross-platform OPAi Police mobile application for iOS and Android.",
   "main": "node_modules/expo/AppEntry.js",

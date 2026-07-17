@@ -1,49 +1,69 @@
-# Final App Privacy Answers
+# Build 26 App Privacy Answer Draft
 
-App Store Connect answers must describe the uploaded binary and Apple's current definitions, not
-future plans. Re-check the dependency manifest and binary before submitting.
+Updated: 2026-07-16
 
-## Recommended Current Answer
+This is a conservative internal mapping for the intended Build 26 binary. App Store Connect
+answers must be verified against the final merged code, production backend behavior, OpenAI data
+handling, Apple definitions, and the uploaded binary immediately before submission.
 
-**Data Not Collected** is the recommended answer for the current local-only prototype if final
-binary inspection confirms that no SDK transmits data to OPAi or a third party.
+## Overall answers
 
-The mock profile, incidents, notes, translations, assistant prompts, preferences, identifiers, and
-file metadata placeholders are stored on the user's device with AsyncStorage. They are not sent to
-OPAi, OpenAI, a backend, analytics, advertising, cloud storage, or another user. Under Apple's
-definition, data processed only on-device is generally not collected by the developer.
+- Data collection: **Yes**. Authenticated account data and user-requested AI/translation content
+  are transmitted off device for app functionality.
+- Tracking: **No**.
+- Advertising: **No**.
+- Data-broker sharing: **No**.
+- Payments or purchase history: **Not collected by Build 26 while subscriptions remain hidden**.
 
-## Data Present Locally but Not Transmitted
+Do not select `Data Not Collected` for Build 26.
 
-| Data type | Local use | Current transmission |
-| --- | --- | --- |
-| Name and email | Mock profile | None |
-| Local mock user ID | Mock auth state | None |
-| Incident, note, translation, and assistant text | Prototype workflows | None |
-| File metadata placeholders | Prototype organization | None; no real file access |
-| Product interaction state | Navigation and preferences | None |
-| Notification preferences | Local scheduling | None |
+## Conservative data-type mapping
 
-## Not Collected by Current App Code
+| Apple data type | Build 26 use | Linked to user | Tracking | Retention boundary |
+| --- | --- | --- | --- | --- |
+| Name | Account profile | Yes | No | Production account lifecycle |
+| Email Address | Authentication and account support | Yes | No | Production account lifecycle |
+| User ID | Authentication, quotas, and request authorization | Yes | No | Production account lifecycle |
+| Other User Content | AI prompts, report text, and text translation selected by the user | Yes | No | No content logging; provider storage disabled; confirm production logs |
+| Audio Data | User-selected voice translation and Audio Statement transcription | Yes | No | Temporary backend processing copy; local original remains on device |
+| Photos or Videos | User-selected image translation | Yes | No | Temporary request processing; confirm production cleanup |
+| Other User Content / Documents | User-selected document translation | Yes | No | Temporary request processing; confirm production cleanup |
 
-- Advertising or tracking data
-- Contacts or location
-- Health data
-- Payment or financial information
-- Photos, videos, or audio
-- Browsing history
-- Analytics or advertising identifiers
-- Camera, microphone, photo library, or document contents
-- Police-service, government, or production account data
+All listed collection is for App Functionality. The final answers must match Apple's exact current
+category names and whether temporary processing qualifies for an applicable exception.
 
-## Final Binary Review
+## Data kept on device by default
 
-- Confirm Expo, Apple, and other included tooling do not introduce reportable diagnostics.
-- Declare Crash Data or Performance Data only if the uploaded binary actually transmits it.
-- If a support workflow later transmits user details, declare Customer Support and relevant Contact
-  Info at that time.
-- Do not declare locally processed data as collected solely because a local form exists; apply
-  Apple's current definitions to actual transmission and retention.
+- Report drafts and operational reference data.
+- Audio Statement recordings and locally saved transcripts.
+- Paid Duty schedules and optional reminder identifiers.
+- Canvass sessions and entries.
+- Calendar, court, training, qualification, and follow-up records.
+- Consent dates, notification preferences, and optional AI/translation history.
+- Manual weather city and cached WeatherKit response.
 
-Build `21` has not been generated or uploaded, so the final App Privacy answer remains a manual
-submission gate.
+Local-only storage does not make the data developer-collected by itself. User-requested AI,
+transcription, and translation actions create the off-device processing described above.
+
+## Location and WeatherKit
+
+OPAi requests foreground location only after the user chooses local weather. Coordinates are used
+on device for native Apple WeatherKit, are not stored as location history, and are not sent to the
+OPAi backend. Manual Canadian-city weather does not require location permission. Confirm Apple's
+current treatment of WeatherKit before finalizing the Location answer; do not declare that OPAi
+collects location unless final binary or backend behavior changes.
+
+## Explicitly absent
+
+- Background location, movement tracking, geofencing, or address geocoding.
+- Contacts, browsing history, advertising identifiers, or third-party analytics.
+- Health diagnosis, health records, crisis-resource selection tracking, or call history.
+- Police-service credentials, RMS synchronization, or government-system integration.
+- Subscription or payment collection while commerce remains hidden.
+
+## Mandatory final gate
+
+Before submission, verify production retention, temporary-file cleanup, content-free logging,
+third-party SDK behavior, diagnostics, account deletion/support handling, and the App Privacy
+answers displayed in App Store Connect. Record the completed review in the final Build 26 metadata
+audit. No privacy answer is approved solely by this draft.
