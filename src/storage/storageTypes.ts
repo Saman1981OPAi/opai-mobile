@@ -1,5 +1,6 @@
 import type { MciIcon } from "@/data/uiMockups";
 import type { AuthStatus, ConsentAcceptedAt, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
+import type { AudioStatement } from "@/features/audioStatement/audioStatementTypes";
 import type { AIConversation, AIPreferences } from "@/types/ai";
 import type {
   IncidentAttachmentMetadata,
@@ -105,6 +106,7 @@ export type LocalAppData = {
   seededAt: string;
   updatedAt: string;
   auth: LocalAuthSession;
+  audioStatements: AudioStatement[];
   preferences: LocalPreferences;
   shiftReminders: LocalReminderCard[];
   incidentDrafts: LocalIncidentDraft[];

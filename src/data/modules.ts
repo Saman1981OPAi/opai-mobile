@@ -26,6 +26,14 @@ export const modules: AppModule[] = [
     summary: "Create local report drafts with notes, people, reminders, and optional AI review."
   },
   {
+    id: "audioStatement",
+    label: "Audio Statement",
+    shortLabel: "Audio",
+    icon: "AU",
+    priority: "primary",
+    summary: "Record locally, review playback, and optionally request AI transcription."
+  },
+  {
     id: "translation",
     label: "Translation",
     shortLabel: "Translate",
