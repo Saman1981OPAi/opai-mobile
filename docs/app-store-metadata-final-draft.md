@@ -1,54 +1,67 @@
-# App Store Metadata Final Draft
+# Build 26 App Store Metadata Draft
 
-## App Name
+Updated: 2026-07-16
+
+This draft describes the intended Build 26 binary. It must be checked against the merged release
+candidate and final screenshots before it is entered in App Store Connect.
+
+## App name
 
 OPAi Police
 
 ## Subtitle
 
-AI Assistant for Canadian Policing
+Policing Productivity & AI
 
-## Promotional Text
+## Promotional text
 
-OPAi Police is currently in testing. Built for Canadian policing, it helps organize shift readiness, incident drafts, translation mockups, calendar reminders, court/training workflows, notes, and PTSD awareness messaging.
+Organize shift readiness, report drafts, audio statements, translation, schedules, paid duties,
+canvass notes, and verified support resources in one secure productivity app.
 
-## Short Description / App Summary
+## Description
 
-OPAi Police is an AI-inspired productivity assistant built for Canadian policing. It supports local/offline workflows for shift readiness, incident drafting, translation mockups, court and training reminders, notes, files metadata, and PTSD awareness.
+OPAi Police is a productivity and AI assistance app designed for Canadian law enforcement
+officers. It combines local operational tools with authenticated AI features while keeping clear
+professional-use and verification boundaries.
 
-## Full Description Draft
+Features include:
 
-OPAi Police is designed for Canadian policing productivity and is currently in testing/pre-launch.
+- Start My Shift reminders without a mandatory checklist.
+- Report Writing for structured drafts and optional AI review.
+- Audio Statement recording, local playback, optional AI transcription, and transcript translation.
+- Text, voice, conversation, image, and document translation.
+- Paid Duty schedules with optional privacy-conscious local reminders.
+- Canvass sessions and local personal-reference entries.
+- Calendar, court, training, requalification, and follow-up organization.
+- Native Apple Weather on iPhone and iPad with foreground location or manual Canadian-city selection.
+- Verified Canadian mental-health, crisis, peer-support, and community-resource links.
 
-This beta build is a local/offline prototype intended to evaluate the app's workflow structure, navigation, reminders, and safety language before production integrations are added.
+OPAi Police is not official police-service software and is not affiliated with or endorsed by a
+police service or government agency unless an authorized agreement expressly states otherwise.
+It does not replace official systems, records-management requirements, service policy,
+supervision, training, legal advice, medical advice, court requirements, or professional judgment.
 
-Current testing features include:
-
-- Start My Shift reminders.
-- Report Writing local drafts.
-- OPAi Assistant mock workflow.
-- Translation mock workflow.
-- Calendar, court, training, and requalification reminders.
-- Follow-up reminders.
-- Notes and file metadata placeholders.
-- Local notifications.
-- PTSD awareness messaging.
-
-The current beta does not connect to a production backend, OpenAI, police systems, cloud storage, payment services, production databases, or real authentication.
-
-OPAi Police is not official police software and is not affiliated with any police service or government agency unless future authorization is obtained. It does not replace official systems, RMS, notebook requirements, supervision, policy, legal advice, medical advice, training, court requirements, or professional judgment.
-
-Do not enter real police records, real evidence, confidential information, sensitive personal information, real statements, or official documents in the testing version.
+AI-generated content, transcription, and translation may be incomplete or inaccurate and must be
+verified. Users must submit only information they are authorized to process.
 
 ## Keywords
 
-police,AI,policing,law enforcement,productivity,reminders,incident,translation,court,training,PTSD,Canada
+police,AI,policing,law enforcement,productivity,report,translation,court,training,PTSD,Canada
 
-## Category Recommendation
+## Category
 
-Primary category: Productivity
+Primary: Productivity
 
-Alternative category: Business
+## Availability claims
 
-Recommendation: use Productivity for the first release.
+Do not state that OPAi Police is available in the App Store until Apple approves the public
+version. Do not advertise Device Testing, subscriptions, unlimited AI, certified transcription,
+certified translation, government endorsement, or any feature absent from the submitted binary.
 
+## Screenshot gate
+
+- Use the actual final Build 26 interface and fictional information only.
+- Include required iPhone sizes.
+- Include iPad screenshots because `ios.supportsTablet` remains enabled.
+- Show working product screens, not only sign-in or splash screens.
+- Do not show Device Testing, subscription controls, old mock screens, or stale Build 25 UI.

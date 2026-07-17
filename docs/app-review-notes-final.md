@@ -1,37 +1,61 @@
-# App Review Notes Final
+# Build 26 App Review Notes Draft
 
-## Copy for App Review
+Updated: 2026-07-16
 
-OPAi Police is currently an iOS-first internal beta and local/offline prototype. The app uses mock
-authentication, local persistence, local notifications, mock AI Assistant responses, mock
-translation workflows, local report-writing drafts, local calendar/court/training reminders, local
-notes, file metadata placeholders, an optional Home Dashboard weather preview, and a local Device
-Testing reference module.
+Do not copy these notes into App Store Connect until every gate in
+`docs/build-26-final-release-gate.md` has passed.
 
-The app does not connect to a production backend, OpenAI, police systems, cloud storage, payment
-services, real authentication, tracking, analytics, or a production database. Device Testing uses
-bundled curated local guide content only. It does not call live AI, certify equipment, create
-official equipment records, upload device data, or request new device permissions.
+## Purpose and boundaries
 
-Please use demo/mock data only. Do not enter real police records, confidential information,
-sensitive personal information, real evidence, real statements, or official documents.
+OPAi Police is a productivity and AI assistance app designed for Canadian law enforcement
+officers. It is not official police-service software and is not affiliated with or endorsed by a
+police service or government agency unless an authorized agreement expressly states otherwise.
+It does not replace official police systems, service policy, supervision, training, legal advice,
+medical advice, court requirements, or professional judgment.
 
-OPAi Police is not official police software and is not affiliated with any police service or
-government agency unless expressly authorized in the future.
+The production API is `https://api.opaiapp.com`. Do not use these notes until that endpoint and its
+`/health` and `/ready` checks have been independently certified.
 
-## Reviewer Test Instructions
+## Reviewer account
 
-1. Launch the app.
-2. Use mock sign-in or mock create account.
-3. Accept the local consent screens.
-4. Explore Home, Start My Shift, Report Writing, Device Testing, Translation, OPAi Assistant,
-   Calendar, Court, Training, Notes & Files, and Settings.
-5. Test Reset Demo Data and Clear Local Data in Settings.
-6. Test local notification permission and a demo notification if the device allows it.
-7. On Home, test weather Refresh, City, and optional Local weather. Local requests foreground
-   location only and the app continues working if permission is denied.
-8. On Home, open Device Testing. Select a category and exact model to view a verified local guide.
-   Unsupported models should display a refusal/manual notice. Breath Instrument requires qualified
-   technician confirmation. Use of Force must remain non-prescriptive.
+The dedicated reviewer email and password must be entered only in App Store Connect App Review
+Information. They are not stored in this repository. Before submission, confirm that the account:
 
-No reviewer credentials are required because the authentication flow is a local mock.
+- exists and is active in the production database;
+- requires no MFA, email verification, password change, or police-service credential;
+- signs in from a clean iPhone and iPad installation;
+- restores its session after terminate and relaunch; and
+- can access every visible feature with fictional information.
+
+## Review path
+
+1. Sign in with the credentials supplied in App Store Connect.
+2. Accept the Terms, Privacy, AI processing, translation, professional-use, and wellness notices.
+3. From Home, open Start Shift, Report, Audio, Paid Duty, Canvass, Translate, Calendar, and OPAi.
+4. Open Court, Training, Mental Health Resources, and Settings from the secondary navigation.
+5. For Audio Statement, record a short fictional phrase, stop, play it locally, then select
+   Transcribe. Review or edit the transcript before selecting Translate.
+6. In Translation, use fictional text or a non-sensitive sample audio/image/document selected by
+   the reviewer. Every output is labelled as AI-generated and requiring verification.
+7. Paid Duty and Canvass store information locally. Paid Duty reminders are optional. Canvass does
+   not request location or send entries to AI.
+8. Mental Health Resources is a verified directory only. Do not place test calls to crisis lines.
+9. Home weather uses native Apple WeatherKit. The reviewer may choose a manual Canadian city or
+   grant foreground-only location. Denying location does not block the app.
+10. Settings provides Privacy, Terms, support, consent status, local-data controls, and sign-out.
+
+## Feature and commerce notes
+
+- Device Testing is hidden and is not part of the submitted product.
+- Subscriptions, paywall controls, Pro claims, and purchase actions are hidden.
+- Audio, selected images, and selected documents are uploaded only after an explicit action.
+- AI, transcription, and translation requests pass through the authenticated OPAi backend.
+- OPAi does not add tracking, advertising, background location, or police-service integration.
+
+## Contact
+
+Support URL: `https://opaiapp.com/support`
+
+Privacy URL: `https://opaiapp.com/privacy`
+
+Terms URL: `https://opaiapp.com/terms`
