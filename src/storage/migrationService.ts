@@ -37,6 +37,8 @@ export const migrationService = {
     const migrated = {
       ...data,
       audioStatements: data.audioStatements ?? [],
+      canvassEntries: data.canvassEntries ?? [],
+      canvassSessions: data.canvassSessions ?? [],
       auth: {
         ...data.auth,
         consent: normalizeConsent(data.auth.consent),
@@ -51,6 +53,7 @@ export const migrationService = {
       incidentDrafts: normalizeIncidentDrafts(data.incidentDrafts),
       noteFolders: normalizeNoteFolders(data.noteFolders ?? createDefaultNoteFolders()),
       notificationPreference: data.notificationPreference ?? createDefaultNotificationPreference(),
+      paidDuties: data.paidDuties ?? [],
       preferences: {
         ...data.preferences,
         consentStatus: normalizeConsent(data.preferences.consentStatus)
@@ -69,8 +72,9 @@ export const migrationService = {
       Array.isArray(data.structuredNotes);
 
     const hasAudioStatementFields = Array.isArray(data.audioStatements);
+    const hasPaidDutyCanvassFields = Array.isArray(data.paidDuties) && Array.isArray(data.canvassSessions) && Array.isArray(data.canvassEntries);
 
-    if (migrated.version === CURRENT_STORAGE_VERSION && hasSprint013Fields && hasAudioStatementFields) {
+    if (migrated.version === CURRENT_STORAGE_VERSION && hasSprint013Fields && hasAudioStatementFields && hasPaidDutyCanvassFields) {
       return data;
     }
 

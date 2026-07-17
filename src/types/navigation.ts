@@ -3,6 +3,8 @@ export type ModuleId =
   | "shift"
   | "incident"
   | "audioStatement"
+  | "paidDuty"
+  | "canvass"
   | "deviceTesting"
   | "translation"
   | "calendar"

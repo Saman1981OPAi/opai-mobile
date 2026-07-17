@@ -8,6 +8,7 @@ import { modules } from "@/data/modules";
 import { AuthFlow } from "@/screens/AuthFlow";
 import { audioStatementRepository } from "@/features/audioStatement/audioStatementRepository";
 import { authApi } from "@/services/api/authApi";
+import { notificationService } from "@/services/notificationService";
 import { secureSession } from "@/services/api/secureSession";
 import { weatherService } from "@/services/weather/weatherService";
 import type { OfficerProfileResponse } from "@/services/api/apiTypes";
@@ -127,6 +128,7 @@ export default function App() {
 
   const handleResetDemoData = async () => {
     await audioStatementRepository.deleteAll(localData?.audioStatements ?? []);
+    await notificationService.cancelAll().catch(() => undefined);
     const seeded = await persistenceService.resetDemoData(localData?.auth);
     setLocalData(seeded);
     if (seeded.auth.status === "signedIn" && seeded.auth.profile) {
@@ -137,6 +139,7 @@ export default function App() {
 
   const handleClearLocalData = async () => {
     await audioStatementRepository.deleteAll(localData?.audioStatements ?? []);
+    await notificationService.cancelAll().catch(() => undefined);
     await secureSession.clear();
     await persistenceService.clearAll();
     await weatherService.clearLocalWeatherData();
