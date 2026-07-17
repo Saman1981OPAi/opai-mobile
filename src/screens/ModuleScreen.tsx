@@ -18,6 +18,8 @@ import { secondaryModules } from "@/data/uiMockups";
 import type { MciIcon } from "@/data/uiMockups";
 import { Build25TranslationScreen } from "@/features/build25/Build25TranslationScreen";
 import { AudioStatementListScreen } from "@/features/audioStatement/AudioStatementListScreen";
+import { CanvassListScreen } from "@/features/canvass/CanvassListScreen";
+import { PaidDutyListScreen } from "@/features/paidDuty/PaidDutyListScreen";
 import { aiService } from "@/services/aiService";
 import { aiApi } from "@/services/api/aiApi";
 import type { AIRequestMode, AIUsageResponse } from "@/services/api/apiTypes";
@@ -177,6 +179,7 @@ const legalDocuments: LegalDocument[] = [
     body: [
       "Local preferences, consent dates, and optional history are stored on the user's device.",
       "Audio Statements are saved locally by default. Microphone access begins only after the user chooses Record, and a temporary audio copy is sent to the OPAi backend only after the user chooses Transcribe.",
+      "Paid Duty schedules and Canvass reference notes are stored locally and are not sent to OPAi AI or the backend.",
       "Authentication and requested AI or translation content use the secure OPAi backend.",
       "OPAi may transmit user-requested text, audio, selected images, and selected documents to OpenAI for processing. OPAi does not add police-system sync, advertising, tracking, or third-party analytics.",
       authorizedDataDisclaimer,
@@ -319,6 +322,9 @@ const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data
   { getCount: (data) => data.translationHistory.length, icon: "translate", title: "Translation history" },
   { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI history" },
   { getCount: (data) => data.audioStatements.length, icon: "microphone-outline", title: "Audio Statements" },
+  { getCount: (data) => data.paidDuties.length, icon: "briefcase-clock-outline", title: "Paid Duties" },
+  { getCount: (data) => data.canvassSessions.length, icon: "home-search-outline", title: "Canvass sessions" },
+  { getCount: (data) => data.canvassEntries.length, icon: "home-outline", title: "Canvass entries" },
   { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
   { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File metadata placeholders" }
 ];
@@ -484,6 +490,34 @@ export function ModuleScreen({
     );
   }
 
+  if (module.id === "paidDuty") {
+    return (
+      <ScreenFrame activeModule="paidDuty" isTablet={isTablet} onSelectModule={onSelectModule}>
+        <AppHeader title="Paid Duty" />
+        <PaidDutyListScreen
+          duties={localData.paidDuties}
+          onChange={(paidDuties) => onUpdateLocalData((current) => ({ ...current, paidDuties, updatedAt: timestamp() }))}
+        />
+        <CoreDisclaimer />
+      </ScreenFrame>
+    );
+  }
+
+  if (module.id === "canvass") {
+    return (
+      <ScreenFrame activeModule="canvass" isTablet={isTablet} onSelectModule={onSelectModule}>
+        <AppHeader title="Canvass" />
+        <CanvassListScreen
+          entries={localData.canvassEntries}
+          onChangeEntries={(canvassEntries) => onUpdateLocalData((current) => ({ ...current, canvassEntries, updatedAt: timestamp() }))}
+          onChangeSessions={(canvassSessions) => onUpdateLocalData((current) => ({ ...current, canvassSessions, updatedAt: timestamp() }))}
+          sessions={localData.canvassSessions}
+        />
+        <CoreDisclaimer />
+      </ScreenFrame>
+    );
+  }
+
   if (module.id === "ai") {
     return (
       <AIAssistantScreen
@@ -620,7 +654,7 @@ function ScreenFrame({
   );
 }
 
-const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "audioStatement", "translation", "calendar", "ai"];
+const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "audioStatement", "paidDuty", "canvass", "translation", "calendar", "ai"];
 
 function HomeDashboardScreen({
   isTablet,

@@ -34,6 +34,22 @@ export const modules: AppModule[] = [
     summary: "Record locally, review playback, and optionally request AI transcription."
   },
   {
+    id: "paidDuty",
+    label: "Paid Duty",
+    shortLabel: "Paid Duty",
+    icon: "PD",
+    priority: "primary",
+    summary: "Keep local paid duty schedules and optional privacy-safe reminders."
+  },
+  {
+    id: "canvass",
+    label: "Canvass",
+    shortLabel: "Canvass",
+    icon: "CV",
+    priority: "primary",
+    summary: "Organize local canvass sessions and personal reference entries."
+  },
+  {
     id: "translation",
     label: "Translation",
     shortLabel: "Translate",
