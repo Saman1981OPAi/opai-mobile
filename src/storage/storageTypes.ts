@@ -1,6 +1,8 @@
 import type { MciIcon } from "@/data/uiMockups";
 import type { AuthStatus, ConsentAcceptedAt, ConsentState, MockUserProfile, NotificationPreferences } from "@/types/auth";
 import type { AudioStatement } from "@/features/audioStatement/audioStatementTypes";
+import type { CanvassEntry, CanvassSession } from "@/features/canvass/canvassTypes";
+import type { PaidDuty } from "@/features/paidDuty/paidDutyTypes";
 import type { AIConversation, AIPreferences } from "@/types/ai";
 import type {
   IncidentAttachmentMetadata,
@@ -107,6 +109,9 @@ export type LocalAppData = {
   updatedAt: string;
   auth: LocalAuthSession;
   audioStatements: AudioStatement[];
+  canvassEntries: CanvassEntry[];
+  canvassSessions: CanvassSession[];
+  paidDuties: PaidDuty[];
   preferences: LocalPreferences;
   shiftReminders: LocalReminderCard[];
   incidentDrafts: LocalIncidentDraft[];

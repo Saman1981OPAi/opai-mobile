@@ -782,6 +782,8 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     aiPreferences: createDefaultAIPreferences(),
     auth: authOverride ?? createAuthSession(),
     audioStatements: [],
+    canvassEntries: [],
+    canvassSessions: [],
     calendarEvents: createCalendarEvents(),
     calendarWorkflowEvents: createDefaultCalendarWorkflowEvents(),
     courtReminders: reminders.courtReminders,
@@ -794,6 +796,7 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     noteFolders: createDefaultNoteFolders(),
     fileMetadataPlaceholders: createDefaultFileMetadataPlaceholders(),
     notificationPreference: createDefaultNotificationPreference(),
+    paidDuties: [],
     preferences: {
       biometricEnabled: Boolean(authOverride?.profile?.biometricEnabled),
       consentStatus: authOverride?.consent ?? emptyConsentState,
