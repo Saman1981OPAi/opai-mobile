@@ -91,6 +91,7 @@ export const calendarEvents = [
 export const secondaryModules: Feature[] = [
   { id: "court", icon: "scale-balance", title: "Court", subtitle: "Reminders" },
   { id: "training", icon: "school-outline", title: "Training", subtitle: "Qualifications" },
+  { id: "mentalHealth", icon: "heart-pulse", title: "Mental Health", subtitle: "Resources" },
   { id: "settings", icon: "cog-outline", title: "Settings", subtitle: "Preferences" }
 ];
 

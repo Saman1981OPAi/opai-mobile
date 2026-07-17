@@ -9,7 +9,6 @@ import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EventCard } from "@/components/ui/EventCard";
-import { PTSDRibbonCard } from "@/components/ui/PTSDRibbonCard";
 import { ReminderCard } from "@/components/ui/ReminderCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { releaseInfo } from "@/config/release";
@@ -20,6 +19,8 @@ import { Build25TranslationScreen } from "@/features/build25/Build25TranslationS
 import { AudioStatementListScreen } from "@/features/audioStatement/AudioStatementListScreen";
 import { CanvassListScreen } from "@/features/canvass/CanvassListScreen";
 import { PaidDutyListScreen } from "@/features/paidDuty/PaidDutyListScreen";
+import { MentalHealthHomeCard } from "@/features/mentalHealth/MentalHealthHomeCard";
+import { MentalHealthResourcesScreen } from "@/features/mentalHealth/MentalHealthResourcesScreen";
 import { aiService } from "@/services/aiService";
 import { aiApi } from "@/services/api/aiApi";
 import type { AIRequestMode, AIUsageResponse } from "@/services/api/apiTypes";
@@ -518,6 +519,16 @@ export function ModuleScreen({
     );
   }
 
+  if (module.id === "mentalHealth") {
+    return (
+      <ScreenFrame activeModule="mentalHealth" isTablet={isTablet} onSelectModule={onSelectModule}>
+        <AppHeader title="Mental Health Resources" />
+        <MentalHealthResourcesScreen />
+        <CoreDisclaimer />
+      </ScreenFrame>
+    );
+  }
+
   if (module.id === "ai") {
     return (
       <AIAssistantScreen
@@ -717,7 +728,7 @@ function HomeDashboardScreen({
         ))}
       </View>
 
-      <PTSDRibbonCard />
+      <MentalHealthHomeCard onViewResources={() => onSelectModule("mentalHealth")} />
       <AIInputBar onPress={() => onSelectModule("ai")} placeholder="Ask OPAi..." />
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />

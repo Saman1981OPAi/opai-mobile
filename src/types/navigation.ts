@@ -5,6 +5,7 @@ export type ModuleId =
   | "audioStatement"
   | "paidDuty"
   | "canvass"
+  | "mentalHealth"
   | "deviceTesting"
   | "translation"
   | "calendar"
