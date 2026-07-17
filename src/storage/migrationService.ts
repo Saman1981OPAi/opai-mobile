@@ -36,6 +36,7 @@ export const migrationService = {
   migrate(data: LocalAppData): LocalAppData {
     const migrated = {
       ...data,
+      audioStatements: data.audioStatements ?? [],
       auth: {
         ...data.auth,
         consent: normalizeConsent(data.auth.consent),
@@ -67,7 +68,9 @@ export const migrationService = {
       Array.isArray(data.noteFolders) &&
       Array.isArray(data.structuredNotes);
 
-    if (migrated.version === CURRENT_STORAGE_VERSION && hasSprint013Fields) {
+    const hasAudioStatementFields = Array.isArray(data.audioStatements);
+
+    if (migrated.version === CURRENT_STORAGE_VERSION && hasSprint013Fields && hasAudioStatementFields) {
       return data;
     }
 
