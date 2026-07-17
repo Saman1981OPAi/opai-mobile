@@ -79,7 +79,7 @@ export const modules: AppModule[] = [
     shortLabel: "Calendar",
     icon: "CA",
     priority: "secondary",
-    summary: "Court, meeting, shift, follow-up, and training schedules in one AI-assisted view."
+    summary: "Court, meeting, shift, follow-up, and training schedules in one organized view."
   },
   {
     id: "court",
@@ -103,6 +103,6 @@ export const modules: AppModule[] = [
     shortLabel: "Settings",
     icon: "ST",
     priority: "secondary",
-    summary: "Security, permissions, privacy, biometrics, account, and notification preferences."
+    summary: "Security, permissions, privacy, account, and notification preferences."
   }
 ];
