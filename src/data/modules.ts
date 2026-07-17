@@ -50,6 +50,14 @@ export const modules: AppModule[] = [
     summary: "Organize local canvass sessions and personal reference entries."
   },
   {
+    id: "mentalHealth",
+    label: "Mental Health Resources",
+    shortLabel: "Resources",
+    icon: "MH",
+    priority: "secondary",
+    summary: "Open verified Canadian crisis, peer-support, and community resource contacts."
+  },
+  {
     id: "translation",
     label: "Translation",
     shortLabel: "Translate",

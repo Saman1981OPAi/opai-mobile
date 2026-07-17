@@ -15,7 +15,7 @@
     "build:android": "eas build --platform android --profile production",
     "submit:ios": "eas submit --platform ios --profile production",
     "submit:android": "eas submit --platform android --profile production",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --experimental-strip-types src/services/weather/*.test.ts src/features/audioStatement/*.test.ts src/features/paidDuty/*.test.ts src/features/canvass/*.test.ts",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --experimental-strip-types src/services/weather/*.test.ts src/features/audioStatement/*.test.ts src/features/paidDuty/*.test.ts src/features/canvass/*.test.ts src/features/mentalHealth/*.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint"
   },
