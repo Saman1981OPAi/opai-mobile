@@ -39,6 +39,7 @@ import {
 } from "@/services/incidentWorkflowService";
 import { fileMetadataCategories, linkedTypeOptions, noteCategories, notesService } from "@/services/notesService";
 import { notificationService } from "@/services/notificationService";
+import { getReminderPreviewContent } from "@/services/notificationContent";
 import { notificationScheduler } from "@/services/notificationScheduler";
 import type { LocalAppData, LocalIncidentDraft } from "@/storage/storageTypes";
 import { workflowService } from "@/services/workflowService";
@@ -521,7 +522,7 @@ export function ModuleScreen({
     return (
       <ScreenFrame activeModule="translation" isTablet={isTablet} onSelectModule={onSelectModule}>
         <AppHeader title="Translation" />
-        <Build25TranslationScreen />
+        <Build25TranslationScreen history={localData.translationHistory} />
         <CoreDisclaimer />
       </ScreenFrame>
     );
@@ -1159,7 +1160,13 @@ function NewIncidentScreen({
         })}
       </View>
       {incidentDrafts.length === 0 ? (
-        <EmptyState icon="file-document-outline" title="No drafts" message="Create or reset local report drafts." />
+        <EmptyState
+          actionLabel="Create Report"
+          icon="file-document-outline"
+          message="Create a local report draft from officer-supplied facts."
+          onAction={resetDraft}
+          title="No reports saved"
+        />
       ) : null}
 
       <SectionHeader icon="progress-check" title={`Step ${stepIndex + 1} of ${incidentStepTitles.length}: ${incidentStepTitles[stepIndex]}`} />
@@ -1765,7 +1772,13 @@ function AIAssistantScreen({
             </View>
           ))
         ) : (
-          <EmptyState icon="history" message="AI conversations saved on this device will appear here." title="No AI history" />
+          <EmptyState
+            actionLabel="Start Conversation"
+            icon="history"
+            message="AI conversations saved on this device will appear here."
+            onAction={() => setSelectedCategory("general")}
+            title="No AI history"
+          />
         )}
       </View>
       <SecondaryButton label="Clear AI History" onPress={clearHistory}>
@@ -2159,7 +2172,13 @@ function CalendarScreen({
         ))}
       </View>
       {events.length === 0 ? (
-        <EmptyState icon="calendar-blank-outline" title="No calendar items" message="Add an item or change the filter." />
+        <EmptyState
+          actionLabel="Add Calendar Item"
+          icon="calendar-blank-outline"
+          message="Add a local calendar item or change the filter."
+          onAction={resetEventDraft}
+          title="No calendar items"
+        />
       ) : null}
 
       <WorkflowFormPanel icon="clipboard-plus-outline" title={followUpEditingId ? "Edit Follow-Up" : "Add Follow-Up"}>
@@ -2217,6 +2236,15 @@ function CalendarScreen({
           />
         ))}
       </View>
+      {followUps.length === 0 ? (
+        <EmptyState
+          actionLabel="Add Follow-Up"
+          icon="clipboard-check-outline"
+          message="Add a local follow-up reminder for an upcoming task."
+          onAction={resetFollowUpDraft}
+          title="No follow-ups"
+        />
+      ) : null}
 
       <SecondaryButton label="External Sync Later">
         <Ionicons name="lock-closed-outline" size={20} color={colors.primaryBlue} />
@@ -2405,7 +2433,13 @@ function CourtScreen({
         ))}
       </View>
       {events.length === 0 ? (
-        <EmptyState icon="scale-balance" title="No court reminders" message="Add a local court reminder to test the workflow." />
+        <EmptyState
+          actionLabel="Add Court Reminder"
+          icon="scale-balance"
+          message="Add a local reminder and verify all details through authorized systems."
+          onAction={resetDraft}
+          title="No court reminders"
+        />
       ) : null}
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="Court reminders are productivity aids only. Always verify court dates, file details, locations, adjournments, and obligations through authorized systems." />
@@ -2674,6 +2708,15 @@ function TrainingScreen({
           />
         ))}
       </View>
+      {trainingEvents.length === 0 ? (
+        <EmptyState
+          actionLabel="Add Training"
+          icon="school-outline"
+          message="Add a local training event and optional reminder."
+          onAction={resetTrainingDraft}
+          title="No training events"
+        />
+      ) : null}
 
       <WorkflowFormPanel icon="target" title={requalificationEditingId ? "Edit Qualification" : "Add Qualification"}>
         <WorkflowField label="Title" value={requalificationDraft.title} onChangeText={(title) => setRequalificationDraft((item) => ({ ...item, title }))} />
@@ -2730,6 +2773,15 @@ function TrainingScreen({
           />
         ))}
       </View>
+      {requalificationReminders.length === 0 ? (
+        <EmptyState
+          actionLabel="Add Qualification"
+          icon="target"
+          message="Add a local qualification or renewal deadline."
+          onAction={resetRequalificationDraft}
+          title="No qualification reminders"
+        />
+      ) : null}
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="Training and requalification reminders are supportive local reminders only. Verify all mandatory training, qualifications, and policy requirements through authorized systems and supervisors." />
       <CoreDisclaimer />
@@ -3235,8 +3287,8 @@ function NotesFilesScreen({
           <Text style={styles.profileName}>Local Storage Limits</Text>
         </View>
         <Text style={styles.profileMeta}>
-          Notes, folders, file references, and links are stored locally on this device. Reset Sample Data restores default samples.
-          Clear Local Data removes them from this device.
+          Notes, folders, file references, and links are stored locally on this device. Reset App Data restores clean local defaults.
+          Clear Local Data removes local content and signs out.
         </Text>
       </View>
 
@@ -3415,13 +3467,9 @@ function SettingsScreen({
             : await notificationService.scheduleTestNotification();
 
       const now = new Date().toISOString();
+      const content = getReminderPreviewContent(kind === "test" ? "system" : kind);
       const reminder: ScheduledReminder = {
-        body:
-          kind === "court"
-            ? "Test court reminder. Verify official court details through authorized systems."
-            : kind === "training"
-              ? "Test training reminder. Confirm official training details through authorized systems."
-              : "This reminder was scheduled locally on this device.",
+        body: content.body,
         createdAt: now,
         enabled: true,
         id: `scheduled-${kind}-${Date.now()}`,
@@ -3429,7 +3477,7 @@ function SettingsScreen({
         relatedEntityId: `${kind}-demo`,
         relatedEntityType: kind === "court" ? "court" : kind === "training" ? "training" : "system",
         scheduledAt: new Date(Date.now() + 10 * 1000).toISOString(),
-        title: kind === "court" ? "Test Court Reminder" : kind === "training" ? "Test Training Reminder" : "OPAi Test Reminder",
+        title: content.title,
         type: kind === "court" ? "courtReminder" : kind === "training" ? "trainingReminder" : "systemReminder",
         updatedAt: now
       };
@@ -3497,8 +3545,8 @@ function SettingsScreen({
 
   const confirmResetDemoData = () => {
     Alert.alert(
-      "Reset Sample Data",
-      "This will restore fictional reminders, drafts, notes, and history while keeping the current sign-in.",
+      "Reset App Data",
+      "This will remove locally stored operational records and restore clean app defaults while keeping the current sign-in.",
       [
         { style: "cancel", text: "Cancel" },
         { onPress: onResetDemoData, text: "Reset" }
@@ -3677,14 +3725,14 @@ function SettingsScreen({
             ))}
           </View>
           <View style={styles.actionRow}>
-            <SecondaryButton label="Reset Sample Data" onPress={confirmResetDemoData}>
+            <SecondaryButton label="Reset App Data" onPress={confirmResetDemoData}>
               <MaterialCommunityIcons name="backup-restore" size={20} color={colors.primaryBlue} />
             </SecondaryButton>
             <SecondaryButton label="Clear Local Data" onPress={confirmClearLocalData}>
               <MaterialCommunityIcons name="delete-outline" size={20} color={colors.danger} />
             </SecondaryButton>
           </View>
-          <DisclaimerBanner message="Clear Local Data removes device-local data, signs out the account, and returns to Welcome. Reset Sample Data restores fictional examples while keeping the current sign-in." />
+          <DisclaimerBanner message="Clear Local Data removes device-local content, signs out the account, and returns to Welcome. Reset App Data restores clean local defaults while keeping the current sign-in." />
         </SettingsPanel>
       ) : null}
 

@@ -27,7 +27,11 @@ Scope: production mobile source on `main` after the mental-health resource corre
 
 The search also found `mock`, `demo`, `placeholder`, and `prototype` in active local-storage migrations, type names, fixture identifiers, notification test utilities, and data-reset controls. These terms are not proof of an unfinished public screen. They must be reviewed in context before removal because changing persisted field names or migration values can break existing TestFlight data.
 
-Reachable Notes & Files, notification-preview, seed-data, and fallback copy was revised to use production-safe language such as "sample", "test", and "file reference". Persisted fields and internal identifiers including `mockResponse`, `prototypeDisclaimer`, `fileMetadataPlaceholders`, and `*-demo` remain unchanged for storage compatibility and are not shown as release-status labels.
+Reachable Notes & Files, notification-preview, seed-data, and fallback copy now uses production-safe language. Production and TestFlight clean installations create no synthetic operational records. Internal staging retains fixtures through `EXPO_PUBLIC_APP_ENV=staging`; development defaults to clean data unless fixtures are deliberately enabled through that staging environment.
+
+Persisted fields and internal identifiers including `mockResponse`, `prototypeDisclaimer`, `fileMetadataPlaceholders`, and `*-demo` remain unchanged for storage compatibility and are not shown as release-status labels. Internal notification method names such as `scheduleDemoCourtReminder` and `scheduleDemoTrainingReminder` also remain as cleanup debt because their titles and bodies are now provided by a production-safe shared content helper. Renaming those internal methods is deferred to avoid unnecessary call-site churn.
+
+Migration normalization preserves existing populated arrays. When a legacy record is missing a newer operational collection, the migration creates an empty collection rather than introducing fixtures. Required preference structures, note-folder categories, consent state, and Start My Shift configuration remain available on a clean installation.
 
 `incidentWorkflowService.buildAiReadyPreview` remains unreachable and contains obsolete testing-version copy. It is retained for a later service-layer cleanup because the active Report Writing route uses the authenticated Build 25 API path and has no call site to this helper.
 
@@ -36,7 +40,11 @@ The legacy Translation implementation was the only large duplicate screen found 
 ## Release Assertions
 
 - The Translation route continues to render `Build25TranslationScreen`.
+- The obsolete `translationService.ts` remains deleted.
 - Device Testing remains unavailable from production navigation.
+- Production notification titles and bodies contain no test or demonstration language.
+- Production operational collections start empty; internal staging fixtures remain available.
+- Reports, Notes, Audio Statements, Paid Duties, Canvass, Calendar, Court, Training, Follow-Ups, AI history, and Translation history expose functional empty states.
 - No historical audit or sprint documentation was deleted.
 - No backend, OpenAI, payment, analytics, tracking, or native-permission behavior was changed.
 - This cleanup does not authorize Build 26 generation or App Store submission.

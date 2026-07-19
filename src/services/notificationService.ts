@@ -1,5 +1,6 @@
 import { notificationPermissionService } from "@/services/notificationPermissionService";
 import { notificationScheduler } from "@/services/notificationScheduler";
+import { getReminderPreviewContent } from "@/services/notificationContent";
 import type { LocalAppData, LocalCalendarEvent, LocalReminderCard } from "@/storage/storageTypes";
 import type { NotificationCategory, NotificationLeadTime, NotificationPreference, ScheduledReminder } from "@/types/notifications";
 
@@ -125,37 +126,40 @@ export const notificationService = {
   },
 
   async scheduleTestNotification() {
+    const content = getReminderPreviewContent("system");
     return notificationScheduler.scheduleLocalNotification({
-      body: "This reminder was scheduled locally on this device.",
+      body: content.body,
       data: {
         type: "systemReminder"
       },
       secondsFromNow: 10,
-      title: "OPAi Test Reminder"
+      title: content.title
     });
   },
 
   async scheduleDemoCourtReminder() {
+    const content = getReminderPreviewContent("court");
     return notificationScheduler.scheduleLocalNotification({
-      body: "Test court reminder. Verify official court details through authorized systems.",
+      body: content.body,
       data: {
         relatedEntityType: "court",
         type: "courtReminder"
       },
       secondsFromNow: 10,
-      title: "Test Court Reminder"
+      title: content.title
     });
   },
 
   async scheduleDemoTrainingReminder() {
+    const content = getReminderPreviewContent("training");
     return notificationScheduler.scheduleLocalNotification({
-      body: "Test training reminder. Confirm official training details through authorized systems.",
+      body: content.body,
       data: {
         relatedEntityType: "training",
         type: "trainingReminder"
       },
       secondsFromNow: 10,
-      title: "Test Training Reminder"
+      title: content.title
     });
   },
 

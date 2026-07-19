@@ -1,5 +1,6 @@
 import { emptyConsentState, mockUserProfile } from "@/data/authMock";
 import { calendarEvents, followUpReminders, incidentExamples, notesFiles, trainingReminders } from "@/data/uiMockups";
+import { selectSyntheticSeedData, shouldIncludeSyntheticSeedData } from "@/config/runtimeEnvironment";
 import { CURRENT_STORAGE_VERSION } from "@/storage/storageKeys";
 import type {
   LocalAppData,
@@ -549,9 +550,7 @@ export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceh
 }
 
 export function normalizeStructuredNotes(notes: LocalStructuredNote[] | undefined): LocalStructuredNote[] {
-  const fallback = createDefaultStructuredNotes();
-
-  return (notes ?? fallback).map((note, index) => {
+  return (notes ?? []).map((note, index) => {
     const timestamp = nowIso();
 
     return {
@@ -568,9 +567,7 @@ export function normalizeStructuredNotes(notes: LocalStructuredNote[] | undefine
 }
 
 export function normalizeNoteFolders(folders: LocalNoteFolder[] | undefined): LocalNoteFolder[] {
-  const fallback = createDefaultNoteFolders();
-
-  return (folders ?? fallback).map((folder, index) => {
+  return (folders ?? []).map((folder, index) => {
     const timestamp = nowIso();
 
     return {
@@ -588,9 +585,7 @@ export function normalizeNoteFolders(folders: LocalNoteFolder[] | undefined): Lo
 export function normalizeFileMetadataPlaceholders(
   metadata: LocalFileMetadataPlaceholder[] | undefined
 ): LocalFileMetadataPlaceholder[] {
-  const fallback = createDefaultFileMetadataPlaceholders();
-
-  return (metadata ?? fallback).map((item, index) => {
+  return (metadata ?? []).map((item, index) => {
     const timestamp = nowIso();
 
     return {
@@ -769,13 +764,19 @@ export function normalizeIncidentDraft(draft: LocalIncidentDraft): LocalIncident
 }
 
 export function normalizeIncidentDrafts(drafts: LocalIncidentDraft[] | undefined): LocalIncidentDraft[] {
-  return (drafts ?? createIncidentDrafts()).map(normalizeIncidentDraft);
+  return (drafts ?? []).map(normalizeIncidentDraft);
 }
 
-export function createDefaultLocalAppData(authOverride?: LocalAuthSession): LocalAppData {
+export function createDefaultLocalAppData(
+  authOverride?: LocalAuthSession,
+  appEnvironment = process.env.EXPO_PUBLIC_APP_ENV
+): LocalAppData {
   const seededAt = nowIso();
-  const reminders = createReminderCards();
   const history = createHistory();
+  const includeSyntheticSeedData = shouldIncludeSyntheticSeedData(appEnvironment);
+  const reminders = includeSyntheticSeedData
+    ? createReminderCards()
+    : { courtReminders: [], followUpReminders: [], trainingReminders: [] };
 
   return {
     aiHistory: history.aiHistory,
@@ -784,17 +785,17 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     audioStatements: [],
     canvassEntries: [],
     canvassSessions: [],
-    calendarEvents: createCalendarEvents(),
-    calendarWorkflowEvents: createDefaultCalendarWorkflowEvents(),
+    calendarEvents: selectSyntheticSeedData(createCalendarEvents, appEnvironment),
+    calendarWorkflowEvents: selectSyntheticSeedData(createDefaultCalendarWorkflowEvents, appEnvironment),
     courtReminders: reminders.courtReminders,
-    courtWorkflowEvents: createDefaultCourtWorkflowEvents(),
-    followUpWorkflowReminders: createDefaultFollowUpWorkflowReminders(),
+    courtWorkflowEvents: selectSyntheticSeedData(createDefaultCourtWorkflowEvents, appEnvironment),
+    followUpWorkflowReminders: selectSyntheticSeedData(createDefaultFollowUpWorkflowReminders, appEnvironment),
     followUpReminders: reminders.followUpReminders,
-    incidentDrafts: createIncidentDrafts(),
-    notesFiles: createNotesFiles(),
-    structuredNotes: createDefaultStructuredNotes(),
+    incidentDrafts: selectSyntheticSeedData(createIncidentDrafts, appEnvironment),
+    notesFiles: selectSyntheticSeedData(createNotesFiles, appEnvironment),
+    structuredNotes: selectSyntheticSeedData(createDefaultStructuredNotes, appEnvironment),
     noteFolders: createDefaultNoteFolders(),
-    fileMetadataPlaceholders: createDefaultFileMetadataPlaceholders(),
+    fileMetadataPlaceholders: selectSyntheticSeedData(createDefaultFileMetadataPlaceholders, appEnvironment),
     notificationPreference: createDefaultNotificationPreference(),
     paidDuties: [],
     preferences: {
@@ -807,12 +808,12 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     },
     seededAt,
     shiftReminders: createDefaultShiftReminders(),
-    requalificationWorkflowReminders: createDefaultRequalificationWorkflowReminders(),
+    requalificationWorkflowReminders: selectSyntheticSeedData(createDefaultRequalificationWorkflowReminders, appEnvironment),
     trainingReminders: reminders.trainingReminders,
-    trainingWorkflowEvents: createDefaultTrainingWorkflowEvents(),
+    trainingWorkflowEvents: selectSyntheticSeedData(createDefaultTrainingWorkflowEvents, appEnvironment),
     translationHistory: history.translationHistory,
     translationPreferences: createDefaultTranslationPreferences(),
-    scheduledReminders: createDefaultScheduledReminders(),
+    scheduledReminders: selectSyntheticSeedData(createDefaultScheduledReminders, appEnvironment),
     updatedAt: seededAt,
     version: CURRENT_STORAGE_VERSION
   };

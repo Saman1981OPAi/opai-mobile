@@ -7,10 +7,12 @@ import { useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { translationApi } from "@/services/api/translationApi";
 import type { TranslationResponse, UploadAsset } from "@/services/api/apiTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
+import type { TranslationRecord } from "@/types/translation";
 
 type Mode = "text" | "voice" | "image" | "document";
 const languages = [
@@ -19,7 +21,7 @@ const languages = [
   { label: "Urdu", code: "ur" }, { label: "Spanish", code: "es" }
 ] as const;
 
-export function Build25TranslationScreen() {
+export function Build25TranslationScreen({ history = [] }: { history?: TranslationRecord[] }) {
   const [mode, setMode] = useState<Mode>("text");
   const [sourceIndex, setSourceIndex] = useState(0);
   const [targetIndex, setTargetIndex] = useState(1);
@@ -96,6 +98,26 @@ export function Build25TranslationScreen() {
     {mode === "image" ? <View style={styles.panel}><SectionHeader icon="camera-outline" title="Image" /><View style={styles.row}><SecondaryButton label="Camera" onPress={() => void pickImage(true)}><MaterialCommunityIcons name="camera" size={18} color={colors.primaryBlue} /></SecondaryButton><SecondaryButton label="Photos" onPress={() => void pickImage(false)}><MaterialCommunityIcons name="image" size={18} color={colors.primaryBlue} /></SecondaryButton></View>{asset ? <AssetConfirm asset={asset} busy={busy} onCancel={() => void clearAsset()} onUpload={upload} /> : null}</View> : null}
     {mode === "document" ? <View style={styles.panel}><SectionHeader icon="file-document-outline" title="Document" /><SecondaryButton label="Choose PDF or TXT" onPress={() => void pickDocument()}><MaterialCommunityIcons name="file-plus-outline" size={18} color={colors.primaryBlue} /></SecondaryButton>{asset ? <AssetConfirm asset={asset} busy={busy} onCancel={() => void clearAsset()} onUpload={upload} /> : null}</View> : null}
     {result ? <View style={styles.result}><Text style={styles.resultTitle}>AI-generated translation</Text>{result.original_transcript ? <Text style={styles.original}>Transcript: {result.original_transcript}</Text> : null}{result.extracted_text ? <Text style={styles.original}>Extracted: {result.extracted_text}</Text> : null}<Text selectable style={[styles.output, { writingDirection: isRtl ? "rtl" : "ltr", textAlign: isRtl ? "right" : "left" }]}>{result.translated_text}</Text><Text style={styles.meta}>Detected: {result.detected_source_language}</Text>{result.uncertainty_notes.map(note => <Text key={note} style={styles.warn}>- {note}</Text>)}{result.unreadable_regions?.map(note => <Text key={note} style={styles.warn}>Unreadable: {note}</Text>)}{result.unsupported_elements?.map(note => <Text key={note} style={styles.warn}>Unsupported: {note}</Text>)}</View> : null}
+    <SectionHeader action={`${history.length}`} icon="history" title="History" />
+    {history.length === 0 ? (
+      <EmptyState
+        actionLabel="Translate Text"
+        icon="translate"
+        message="Translations saved on this device will appear here."
+        onAction={() => setMode("text")}
+        title="No translation history"
+      />
+    ) : (
+      <View style={styles.panel}>
+        {history.slice(0, 10).map((item) => (
+          <View key={item.id} style={styles.asset}>
+            <Text numberOfLines={1} style={styles.output}>{item.sourceText}</Text>
+            <Text numberOfLines={2} style={styles.sub}>{item.translatedText}</Text>
+            <Text style={styles.meta}>{item.sourceLanguage} to {item.targetLanguage}</Text>
+          </View>
+        ))}
+      </View>
+    )}
     <DisclaimerBanner message="AI translation may be incomplete or inaccurate. Verify important content and use an authorized interpreter or certified translator where required." />
   </View>;
 }

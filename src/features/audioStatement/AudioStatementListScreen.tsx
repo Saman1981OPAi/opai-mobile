@@ -71,7 +71,13 @@ export function AudioStatementListScreen({
 
       <SectionHeader action={`${statements.length}`} icon="playlist-music-outline" title="Recordings" />
       {statements.length === 0 ? (
-        <EmptyState icon="microphone-outline" title="No Audio Statements" message="Recordings you save will remain on this device until you delete them or clear local data." />
+        <EmptyState
+          actionLabel="Record Audio Statement"
+          icon="microphone-outline"
+          message="Recordings you save remain on this device until you delete them or clear local data."
+          onAction={() => setMode("record")}
+          title="No audio statements saved"
+        />
       ) : (
         <View style={styles.list}>
           {statements.map((statement) => (
