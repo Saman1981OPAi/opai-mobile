@@ -1,6 +1,6 @@
 # Build 25 TestFlight Certification
 
-**BUILD 25 TESTFLIGHT CERTIFICATION: PENDING**
+**BUILD 25 PHYSICAL IPHONE CERTIFICATION: PASSED**
 
 - Version: `0.1.0`
 - Build: `25`
@@ -9,14 +9,18 @@
 - Uploaded to App Store Connect: yes
 - Apple processing: complete
 - Installed through TestFlight: confirmed by the human tester
-- Authentication smoke test: sign-in confirmed by the human tester
-- Physical iPhone certification: not completed
+- Physical test device: `iPhone 15 Pro Max`
+- iOS version: `26.5.2`
+- Test date: `July 12, 2026`
+- Tester initials: `SE`
+- Physical iPhone certification: passed - user confirmed
+- Critical defects: none reported
 - Public App Review submission: performed manually by the human operator
-- App Review status verified on July 13, 2026: `Waiting for Review`
+- App Review status last verified on July 13, 2026: `Waiting for Review`
 - Backend compiled into Build 25: `https://opai-backend-staging.onrender.com`
 
-Certification remains pending until Build 25 passes the rest of the complete physical-iPhone checklist, including consent, Assistant, Report Writing, translation media permissions, Device Testing fallback, local persistence, notifications, RTL, Dynamic Type, VoiceOver, and legal/support links. A successful sign-in smoke test does not by itself complete full certification.
+The physical tester confirmed that installation, launch, relaunch, foreground/background handling, authentication, consent, Assistant, Report Writing, all Translation modes, Device Testing, weather/social links, network/error handling, and layout/accessibility passed. These are tester-confirmed physical results and were not independently automated.
 
-See `docs/build-25-physical-iphone-results.md` for the physical test record. Unknown device details and unperformed checks are marked pending rather than inferred.
+Build 25 remains unsuitable for public production release because it points to the certified staging backend. Public release remains on hold until the production backend is deployed and certified and Build 26 is generated with the production API URL.
 
 Any replacement binary must use Build 26 or higher.
