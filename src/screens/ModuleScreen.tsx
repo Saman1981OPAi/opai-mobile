@@ -2835,7 +2835,7 @@ function NotesFilesScreen({
 
   const saveMetadata = () => {
     onUpdateLocalData((current) => notesService.upsertFileMetadata(current, metadataDraft));
-    onSelectItem(metadataDraft.fileName || "File metadata placeholder");
+    onSelectItem(metadataDraft.fileName || "File reference");
     startNewMetadata();
   };
 
@@ -2861,6 +2861,8 @@ function NotesFilesScreen({
 
   const linkedTypeLabel = (type: LocalLinkedItemType | "All") =>
     type === "All" ? "All links" : type === "followUp" ? "Follow-up" : type === "ai" ? "AI" : type;
+  const fileMetadataCategoryLabel = (category: LocalFileMetadataCategory) =>
+    category.replace(" Placeholder", " Reference");
 
   const confirmLocalAction = (title: string, message: string, actionLabel: string, action: () => void) => {
     Alert.alert(title, message, [
@@ -2880,8 +2882,8 @@ function NotesFilesScreen({
         <MaterialCommunityIcons name="folder-outline" size={48} color={colors.primaryBlue} />
       </View>
 
-      <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real evidence, real statements, or official documents into this prototype." />
-      <DisclaimerBanner message="Files in this prototype are metadata placeholders only. OPAi does not upload, store, process, or sync real files in this testing version." />
+      <DisclaimerBanner message="Use only information you are authorized to process. Follow service policy for police records, evidence, statements, and official documents." />
+      <DisclaimerBanner message="File references store descriptive information on this device only. OPAi does not upload, store, process, or sync the referenced files." />
 
       <View style={styles.filterRow}>
         {tabs.map((tab) => (
@@ -3013,7 +3015,7 @@ function NotesFilesScreen({
               <EmptyState
                 actionLabel="New Note"
                 icon="note-text-outline"
-                message="Create a local prototype note or adjust filters. Do not enter real police records or sensitive information."
+                message="Create a local note or adjust filters. Use only information you are authorized to store on this device."
                 onAction={startNewNote}
                 title="No notes found"
               />
@@ -3029,7 +3031,7 @@ function NotesFilesScreen({
                     key={note.id}
                     meta={`${note.category} - ${notesService.getFolderName(localData, note.folderId)}`}
                     onDelete={() =>
-                      confirmLocalAction("Delete Note", "Remove this local prototype note from the device?", "Delete", () =>
+                      confirmLocalAction("Delete Note", "Remove this local note from the device?", "Delete", () =>
                         onUpdateLocalData((current) => notesService.deleteNote(current, note.id))
                       )
                     }
@@ -3072,7 +3074,7 @@ function NotesFilesScreen({
               <EmptyState
                 actionLabel="New Folder"
                 icon="folder-outline"
-                message="Create a local prototype folder or adjust filters. Folders stay on this device only."
+                message="Create a local folder or adjust filters. Folders stay on this device only."
                 onAction={startNewFolder}
                 title="No folders found"
               />
@@ -3088,7 +3090,7 @@ function NotesFilesScreen({
                     key={folder.id}
                     meta={`${noteCount} local notes`}
                     onDelete={() =>
-                      confirmLocalAction("Delete Folder", "Remove this local prototype folder and its local references?", "Delete", () =>
+                      confirmLocalAction("Delete Folder", "Remove this local folder and its local references?", "Delete", () =>
                         onUpdateLocalData((current) => notesService.deleteFolder(current, folder.id))
                       )
                     }
@@ -3097,7 +3099,7 @@ function NotesFilesScreen({
                     onPrimary={() =>
                       folder.archived
                         ? onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))
-                        : confirmLocalAction("Archive Folder", "Archive this local prototype folder?", "Archive", () =>
+                        : confirmLocalAction("Archive Folder", "Archive this local folder?", "Archive", () =>
                             onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))
                           )
                     }
@@ -3116,10 +3118,10 @@ function NotesFilesScreen({
 
       {activeTab === "File Metadata" ? (
         <>
-          <WorkflowFormPanel icon="file-plus-outline" title={metadataEditingId ? "Edit Metadata Placeholder" : "Add File Metadata"}>
+          <WorkflowFormPanel icon="file-plus-outline" title={metadataEditingId ? "Edit File Reference" : "Add File Reference"}>
             <View style={styles.formRow}>
               <WorkflowField
-                label="File name placeholder"
+                label="File name"
                 onChangeText={(fileName) => setMetadataField("fileName", fileName)}
                 value={metadataDraft.fileName}
               />
@@ -3130,7 +3132,7 @@ function NotesFilesScreen({
               />
             </View>
             <View style={styles.actionRow}>
-              <SecondaryButton label={`Category: ${metadataDraft.category}`} onPress={cycleMetadataCategory} />
+              <SecondaryButton label={`Category: ${fileMetadataCategoryLabel(metadataDraft.category)}`} onPress={cycleMetadataCategory} />
               <SecondaryButton
                 label={`Linked note: ${notesService.getFolderName(localData, localData.structuredNotes.find((note) => note.id === metadataDraft.linkedNoteId)?.folderId)}`}
                 onPress={() => {
@@ -3139,21 +3141,21 @@ function NotesFilesScreen({
                   setMetadataField("linkedNoteId", notes[(currentIndex + 1) % Math.max(notes.length, 1)]?.id);
                 }}
               />
-              <PrimaryButton label={metadataEditingId ? "Save Metadata" : "Add Metadata"} onPress={saveMetadata} />
-              <SecondaryButton label="New Metadata" onPress={startNewMetadata} />
+              <PrimaryButton label={metadataEditingId ? "Save Reference" : "Add Reference"} onPress={saveMetadata} />
+              <SecondaryButton label="New Reference" onPress={startNewMetadata} />
             </View>
-            <DisclaimerBanner message="Metadata placeholders do not open camera, microphone, photo library, document picker, file upload, file sync, or cloud storage." />
+            <DisclaimerBanner message="File references do not open the camera, microphone, photo library, document picker, file upload, file sync, or cloud storage." />
           </WorkflowFormPanel>
 
-          <SectionHeader icon="file-cabinet" title="File Metadata Placeholders" />
+          <SectionHeader icon="file-cabinet" title="File References" />
           <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
             {filteredMetadata.length === 0 ? (
               <EmptyState
-                actionLabel="New Metadata"
+                actionLabel="New Reference"
                 icon="file-document-outline"
-                message="Add a local metadata placeholder. This prototype does not upload, open, or process real files."
+                message="Add a local file reference. OPAi does not upload, open, or process the referenced file."
                 onAction={startNewMetadata}
-                title="No file metadata"
+                title="No file references"
               />
             ) : (
               filteredMetadata.map((item) => (
@@ -3162,9 +3164,9 @@ function NotesFilesScreen({
                   active={selectedItem === item.fileName}
                   icon="file-document-outline"
                   key={item.id}
-                  meta={`${item.category} - ${item.fileType}`}
+                  meta={`${fileMetadataCategoryLabel(item.category)} - ${item.fileType}`}
                   onDelete={() =>
-                    confirmLocalAction("Delete Metadata", "Remove this local file metadata placeholder?", "Delete", () =>
+                    confirmLocalAction("Delete File Reference", "Remove this local file reference?", "Delete", () =>
                       onUpdateLocalData((current) => notesService.deleteFileMetadata(current, item.id))
                     )
                   }
@@ -3230,11 +3232,11 @@ function NotesFilesScreen({
       <View style={styles.localDataPanel}>
         <View style={styles.localDataHeader}>
           <MaterialCommunityIcons name="shield-lock-outline" size={24} color={colors.ptsdGreen} />
-          <Text style={styles.profileName}>Local Prototype Limits</Text>
+          <Text style={styles.profileName}>Local Storage Limits</Text>
         </View>
         <Text style={styles.profileMeta}>
-          Notes, folders, metadata, and links are stored locally through the existing offline prototype storage. Reset Demo Data restores
-          default samples. Clear Local Data removes them from this device.
+          Notes, folders, file references, and links are stored locally on this device. Reset Sample Data restores default samples.
+          Clear Local Data removes them from this device.
         </Text>
       </View>
 
@@ -3416,9 +3418,9 @@ function SettingsScreen({
       const reminder: ScheduledReminder = {
         body:
           kind === "court"
-            ? "Demo court reminder. Verify official court details through authorized systems."
+            ? "Test court reminder. Verify official court details through authorized systems."
             : kind === "training"
-              ? "Demo training reminder. Confirm official training details through authorized systems."
+              ? "Test training reminder. Confirm official training details through authorized systems."
               : "This reminder was scheduled locally on this device.",
         createdAt: now,
         enabled: true,
@@ -3427,7 +3429,7 @@ function SettingsScreen({
         relatedEntityId: `${kind}-demo`,
         relatedEntityType: kind === "court" ? "court" : kind === "training" ? "training" : "system",
         scheduledAt: new Date(Date.now() + 10 * 1000).toISOString(),
-        title: kind === "court" ? "Demo Court Reminder" : kind === "training" ? "Demo Training Reminder" : "OPAi Test Reminder",
+        title: kind === "court" ? "Test Court Reminder" : kind === "training" ? "Test Training Reminder" : "OPAi Test Reminder",
         type: kind === "court" ? "courtReminder" : kind === "training" ? "trainingReminder" : "systemReminder",
         updatedAt: now
       };

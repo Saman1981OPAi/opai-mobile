@@ -27,6 +27,10 @@ Scope: production mobile source on `main` after the mental-health resource corre
 
 The search also found `mock`, `demo`, `placeholder`, and `prototype` in active local-storage migrations, type names, fixture identifiers, notification test utilities, and data-reset controls. These terms are not proof of an unfinished public screen. They must be reviewed in context before removal because changing persisted field names or migration values can break existing TestFlight data.
 
+Reachable Notes & Files, notification-preview, seed-data, and fallback copy was revised to use production-safe language such as "sample", "test", and "file reference". Persisted fields and internal identifiers including `mockResponse`, `prototypeDisclaimer`, `fileMetadataPlaceholders`, and `*-demo` remain unchanged for storage compatibility and are not shown as release-status labels.
+
+`incidentWorkflowService.buildAiReadyPreview` remains unreachable and contains obsolete testing-version copy. It is retained for a later service-layer cleanup because the active Report Writing route uses the authenticated Build 25 API path and has no call site to this helper.
+
 The legacy Translation implementation was the only large duplicate screen found in an imported production module whose entire UI had no route and whose copy was explicitly obsolete.
 
 ## Release Assertions

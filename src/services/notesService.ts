@@ -182,7 +182,7 @@ export const notesService = {
     const updatedAt = nowIso();
     const normalized = {
       ...note,
-      body: note.body.trim() || "Prototype note body.",
+      body: note.body.trim() || "Local note.",
       title: note.title.trim() || "Untitled local note",
       updatedAt
     };
@@ -281,8 +281,8 @@ export const notesService = {
     const updatedAt = nowIso();
     const normalized = {
       ...item,
-      description: item.description.trim() || "Metadata placeholder only. No file is uploaded or stored.",
-      fileName: item.fileName.trim() || "file-placeholder",
+      description: item.description.trim() || "File reference only. No file is uploaded or stored.",
+      fileName: item.fileName.trim() || "file-reference",
       metadataOnly: true as const,
       updatedAt
     };
@@ -312,10 +312,10 @@ export const notesService = {
     const folderId = localData.noteFolders.find((folder) => folder.name === "AI Assistant")?.id;
     const note = {
       ...this.createBlankNote(folderId),
-      body: source?.mockResponse ?? "Mock AI response note. Verify all information before use.",
+      body: source?.mockResponse ?? "AI response note. Verify all information before use.",
       category: "AI Assistant Note" as const,
       linkedAIConversationId: source?.id,
-      tags: ["ai", "mock", "verify"],
+      tags: ["ai", "verify"],
       title: source?.prompt ? `AI note: ${source.prompt.slice(0, 42)}` : "AI Assistant note"
     };
 
@@ -328,11 +328,11 @@ export const notesService = {
     const note = {
       ...this.createBlankNote(folderId),
       body: source
-        ? `${source.sourceLanguage} to ${source.targetLanguage}: ${source.sourceText}\n\nMock output: ${source.translatedText}`
-        : "Mock translation note. Not certified translation or official interpretation.",
+        ? `${source.sourceLanguage} to ${source.targetLanguage}: ${source.sourceText}\n\nTranslation output: ${source.translatedText}`
+        : "Translation note. Not certified translation or official interpretation.",
       category: "Translation Note" as const,
       linkedTranslationRecordId: source?.id,
-      tags: ["translation", "mock", "local"],
+      tags: ["translation", "verify", "local"],
       title: source?.sourceText ? `Translation note: ${source.sourceText.slice(0, 36)}` : "Translation note"
     };
 
@@ -347,7 +347,7 @@ export const notesService = {
       summaries.push({
         icon: "file-document-outline",
         id: note.linkedIncidentId,
-        subtitle: incident?.status ?? "Incident placeholder",
+        subtitle: incident?.status ?? "Not linked",
         title: incident ? `${incident.incidentType} - ${incident.location}` : note.linkedIncidentId,
         type: "incident"
       });
@@ -358,7 +358,7 @@ export const notesService = {
       summaries.push({
         icon: "brain",
         id: note.linkedAIConversationId,
-        subtitle: "Mock local AI history",
+        subtitle: "Local AI history",
         title: conversation?.prompt ?? note.linkedAIConversationId,
         type: "ai"
       });
@@ -369,7 +369,7 @@ export const notesService = {
       summaries.push({
         icon: "translate",
         id: note.linkedTranslationRecordId,
-        subtitle: record ? `${record.sourceLanguage} to ${record.targetLanguage}` : "Translation placeholder",
+        subtitle: record ? `${record.sourceLanguage} to ${record.targetLanguage}` : "Not linked",
         title: record?.sourceText ?? note.linkedTranslationRecordId,
         type: "translation"
       });
@@ -380,7 +380,7 @@ export const notesService = {
       summaries.push({
         icon: "calendar-outline",
         id: note.linkedCalendarEventId,
-        subtitle: event?.date ?? "Calendar placeholder",
+        subtitle: event?.date ?? "Not linked",
         title: event?.title ?? note.linkedCalendarEventId,
         type: "calendar"
       });
@@ -391,7 +391,7 @@ export const notesService = {
       summaries.push({
         icon: "scale-balance",
         id: note.linkedCourtEventId,
-        subtitle: court?.date ?? "Court placeholder",
+        subtitle: court?.date ?? "Not linked",
         title: court?.matterName ?? note.linkedCourtEventId,
         type: "court"
       });
@@ -402,7 +402,7 @@ export const notesService = {
       summaries.push({
         icon: "school-outline",
         id: note.linkedTrainingEventId,
-        subtitle: training?.date ?? "Training placeholder",
+        subtitle: training?.date ?? "Not linked",
         title: training?.title ?? note.linkedTrainingEventId,
         type: "training"
       });
@@ -413,7 +413,7 @@ export const notesService = {
       summaries.push({
         icon: "target",
         id: note.linkedRequalificationId,
-        subtitle: requalification?.dueDate ?? "Requalification placeholder",
+        subtitle: requalification?.dueDate ?? "Not linked",
         title: requalification?.title ?? note.linkedRequalificationId,
         type: "requalification"
       });
@@ -424,7 +424,7 @@ export const notesService = {
       summaries.push({
         icon: "clipboard-check-outline",
         id: note.linkedFollowUpId,
-        subtitle: followUp?.dueDate ?? "Follow-up placeholder",
+        subtitle: followUp?.dueDate ?? "Not linked",
         title: followUp?.title ?? note.linkedFollowUpId,
         type: "followUp"
       });

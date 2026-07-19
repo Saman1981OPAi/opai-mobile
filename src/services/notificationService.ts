@@ -73,7 +73,7 @@ export const notificationService = {
   buildScheduledReminderMetadata(localData: LocalAppData): ScheduledReminder[] {
     const preference = localData.notificationPreference;
     const requalificationReminder: ScheduledReminder = {
-      body: "Annual qualification deadline demo. Verify official qualification deadlines through authorized systems.",
+      body: "Annual qualification deadline reminder. Verify official qualification deadlines through authorized systems.",
       createdAt: new Date().toISOString(),
       enabled: preference.requalificationRemindersEnabled,
       id: "notification-requalification-demo",
@@ -137,25 +137,25 @@ export const notificationService = {
 
   async scheduleDemoCourtReminder() {
     return notificationScheduler.scheduleLocalNotification({
-      body: "Demo court reminder. Verify official court details through authorized systems.",
+      body: "Test court reminder. Verify official court details through authorized systems.",
       data: {
         relatedEntityType: "court",
         type: "courtReminder"
       },
       secondsFromNow: 10,
-      title: "Demo Court Reminder"
+      title: "Test Court Reminder"
     });
   },
 
   async scheduleDemoTrainingReminder() {
     return notificationScheduler.scheduleLocalNotification({
-      body: "Demo training reminder. Confirm official training details through authorized systems.",
+      body: "Test training reminder. Confirm official training details through authorized systems.",
       data: {
         relatedEntityType: "training",
         type: "trainingReminder"
       },
       secondsFromNow: 10,
-      title: "Demo Training Reminder"
+      title: "Test Training Reminder"
     });
   },
 
