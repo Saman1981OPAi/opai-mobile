@@ -11,28 +11,54 @@ permissions:
 
 jobs:
   verify:
-    name: Install and typecheck
-    runs-on: ubuntu-latest
+    name: Release checks (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.7.0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
+          node-version: 22.23.1
+
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.9.0 --activate
+          node --version
+          pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Expo Doctor
+        run: pnpm doctor
+
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Verify release profiles
+        run: pnpm verify:release-config
+
+      - name: Release security scans
+        run: pnpm scan:release
+
+      - name: Clean iOS export
+        run: pnpm export:ios
+
+      - name: Clean Android export
+        run: pnpm export:android
+
       - name: Verify EAS CLI
-        run: pnpm exec eas --version
+        run: pnpm dlx eas-cli@20.5.1 --version

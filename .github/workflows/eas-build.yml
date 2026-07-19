@@ -33,22 +33,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.7.0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
+          node-version: 22.23.1
+
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.9.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm typecheck
+      - name: Validate release source
+        run: |
+          pnpm doctor
+          pnpm typecheck
+          pnpm verify:release-config
+          pnpm scan:release
 
       - name: Verify Expo token
         env:
@@ -62,7 +65,7 @@ jobs:
       - name: EAS staging build
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: pnpm exec eas build --platform ${{ inputs.platform || 'ios' }} --profile preview --non-interactive
+        run: pnpm dlx eas-cli@20.5.1 build --platform ${{ inputs.platform || 'ios' }} --profile internal-staging --non-interactive
 
   build-production:
     name: Build production
@@ -73,22 +76,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.7.0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
+          node-version: 22.23.1
+
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.9.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm typecheck
+      - name: Validate release source
+        run: |
+          pnpm doctor
+          pnpm typecheck
+          pnpm verify:release-config
+          pnpm scan:release
 
       - name: Verify Expo token
         env:
@@ -102,4 +108,4 @@ jobs:
       - name: EAS production build
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: pnpm exec eas build --platform ${{ inputs.platform || 'ios' }} --profile production --non-interactive
+        run: pnpm dlx eas-cli@20.5.1 build --platform ${{ inputs.platform || 'ios' }} --profile production --non-interactive

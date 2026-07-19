@@ -19,6 +19,14 @@
           "locationWhenInUsePermission": "OPAi Police uses your approximate foreground location only when you choose local weather for the Home Dashboard. Location is not tracked in the background."
         }
       ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#05070B"
+        }
+      ],
       "./modules/opai-weatherkit/app.plugin.js",
       "expo-secure-store",
       [
@@ -35,11 +43,6 @@
         }
       ]
     ],
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#05070B"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.opaiapp.police",
