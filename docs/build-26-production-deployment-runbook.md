@@ -7,11 +7,27 @@ Key Vault Standard, managed identity, Azure RBAC, and `https://api.opaiapp.com`.
 
 ## Required Approvals
 
+- [x] Mobile PR #41 merged
+- [x] Mobile main validation passed
+- [ ] Backend main confirmed clean at the approved production SHA
+- [ ] Production documentation reviewed and merged
 - [ ] Azure calculator total approved under `docs/build-26-azure-cost-approval.md`
+- [ ] Verified Azure total is CAD 75 or less before OpenAI usage and taxes
+- [ ] Owner explicitly approved production deployment
+- [ ] Cost-alert recipient confirmed
+- [ ] Azure subscription and quota confirmed
+- [ ] Production resource names confirmed
+- [ ] Canada Central service availability confirmed
+- [ ] Key Vault public-endpoint and Azure RBAC residual risk accepted
+- [ ] Database backup and rollback process approved
+- [ ] DNS record change separately approved
+- [ ] Production reviewer-account procedure approved
 - [ ] Backend production PR reviewed and merged
 - [ ] Named human authorizes paid resource creation
 - [ ] Production secret owners are available
 - [ ] Maintenance and rollback windows are approved
+
+Documentation completion alone does not authorize deployment.
 
 ## Pre-Deployment Evidence
 
@@ -55,3 +71,7 @@ Record without secret values:
 
 Stop on migration failure, readiness failure, credential exposure, unexpected PII logging,
 unbounded rate limits, cost above the approved ceiling, or any unreviewed infrastructure change.
+
+Until every required approval is recorded:
+
+**PRODUCTION DEPLOYMENT: NO-GO**
