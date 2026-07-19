@@ -16,16 +16,39 @@ Build 25 is historical and must not be resubmitted. A replacement must use Build
 - Removed inactive biometric, verification-code, and password-reset controls from the public sign-in flow.
 - Removed Device Testing from public navigation and marketing scope while retaining its dormant source.
 - Removed metadata-only Notes & Files from public navigation.
-- Replaced public placeholder/demo wording with production wording or clearly fictional local examples.
+- Removed obsolete mock Translation source and routed Translation through the authenticated screen.
+- Removed production and TestFlight synthetic operational records while retaining internal-staging
+  fixtures.
+- Replaced public placeholder, demo, and test wording with production-safe wording.
+- Added complete, actionable empty states for visible operational features.
+- Confirmed production and TestFlight configuration points to `https://api.opaiapp.com`.
+- Confirmed website completeness corrections are implemented.
 - Kept AI, translation, professional-use, and wellness safety warnings.
 
-## Remaining release gates
+### Guideline 2.2 status
 
-- Deploy and certify the production backend at `https://api.opaiapp.com`.
-- Provision and certify a dedicated non-expiring reviewer account in the production database.
-- Verify sign-in, refresh, relaunch, and all reviewable features from a clean iPhone and iPad installation.
-- Complete the public-completeness audit after all Build 26 feature branches are merged.
-- Do not submit until an independent final review explicitly returns `SAFE TO SUBMIT TO APPLE`.
+**SOURCE REMEDIATION COMPLETE - FINAL BINARY CERTIFICATION PENDING**
+
+## Guideline 2.1(a) Login Remediation
+
+Still pending:
+
+- production Azure deployment
+- production database migration
+- dedicated production reviewer account
+- stable reviewer credentials
+- clean iPhone sign-in
+- clean iPad Air 11-inch sign-in
+- session restoration
+- logout and repeated sign-in
+- production-backend availability
+- secure reviewer credentials entered in App Store Connect
+
+### Guideline 2.1(a) status
+
+**NOT YET CERTIFIED**
+
+Do not submit until an independent final review explicitly returns `SAFE TO SUBMIT TO APPLE`.
 
 ## Validation completed on this branch
 

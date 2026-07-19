@@ -14,10 +14,11 @@ Region: Canada Central. Currency: CAD. OpenAI usage, taxes, and unexpected egres
 | Bandwidth | Low initial Canadian egress estimate |
 | Weather | CAD 0 Azure weather cost; native Apple WeatherKit on iPhone |
 
-## Planning range
+## Calculator result
 
-The backend architecture review estimates CAD 35-60 per month before OpenAI and taxes. This is a
-planning range, not an approved calculator quote.
+No total is recorded until a human enters the exact assumptions in the Azure Pricing Calculator,
+saves or exports the estimate, and records the reviewed CAD result in
+`docs/build-26-azure-cost-approval.md`. Do not substitute a remembered or model-generated estimate.
 
 ## Hard gate
 
