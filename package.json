@@ -20,7 +20,7 @@
     "build:android": "pnpm dlx eas-cli@20.5.1 build --platform android --profile production",
     "submit:ios": "pnpm dlx eas-cli@20.5.1 submit --platform ios --profile production",
     "submit:android": "pnpm dlx eas-cli@20.5.1 submit --platform android --profile production",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --experimental-strip-types src/services/weather/*.test.ts src/features/audioStatement/*.test.ts src/features/paidDuty/*.test.ts src/features/canvass/*.test.ts src/features/mentalHealth/*.test.ts",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --experimental-strip-types src/services/weather/*.test.ts src/features/audioStatement/*.test.ts src/features/paidDuty/*.test.ts src/features/canvass/*.test.ts src/features/mentalHealth/*.test.ts src/release/*.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "doctor": "expo-doctor",

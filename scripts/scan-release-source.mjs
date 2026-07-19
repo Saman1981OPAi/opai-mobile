@@ -35,6 +35,43 @@ for (const file of sourceFiles) {
 }
 assert.deepEqual(findings, [], `Release source scan failed:\n${findings.join("\n")}`);
 
+const reachableUserFacingFiles = [
+  "src/screens/AuthFlow.tsx",
+  "src/screens/ModuleScreen.tsx",
+  "src/features/audioStatement/AudioStatementListScreen.tsx",
+  "src/features/build25/Build25TranslationScreen.tsx",
+  "src/features/canvass/CanvassListScreen.tsx",
+  "src/features/paidDuty/PaidDutyListScreen.tsx",
+  "src/services/notificationContent.ts"
+];
+const prohibitedReachablePhrases = [
+  /Test Court Reminder/i,
+  /Test Training Reminder/i,
+  /OPAi Test Reminder/i,
+  /Reset Sample Data/i,
+  /testing\/pre-launch/i,
+  /this testing version/i,
+  /test the workflow/i,
+  /mock translation/i,
+  /coming soon/i,
+  /under development/i,
+  /test version/i
+];
+const reachableFindings = [];
+for (const file of reachableUserFacingFiles) {
+  const content = readFileSync(file, "utf8");
+  for (const phrase of prohibitedReachablePhrases) {
+    if (phrase.test(content)) {
+      reachableFindings.push(`${file}: ${phrase}`);
+    }
+  }
+}
+assert.deepEqual(
+  reachableFindings,
+  [],
+  `Reachable user-facing release wording failed:\n${reachableFindings.join("\n")}`
+);
+
 const app = JSON.parse(readFileSync("app.json", "utf8"));
 const backgroundModes = app.expo?.ios?.infoPlist?.UIBackgroundModes ?? [];
 assert.ok(!backgroundModes.includes("audio"), "Background audio mode must remain disabled");

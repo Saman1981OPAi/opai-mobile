@@ -1,5 +1,6 @@
 import { emptyConsentState, mockUserProfile } from "@/data/authMock";
 import { calendarEvents, followUpReminders, incidentExamples, notesFiles, trainingReminders } from "@/data/uiMockups";
+import { selectSyntheticSeedData, shouldIncludeSyntheticSeedData } from "@/config/runtimeEnvironment";
 import { CURRENT_STORAGE_VERSION } from "@/storage/storageKeys";
 import type {
   LocalAppData,
@@ -271,7 +272,7 @@ export function createDefaultFollowUpWorkflowReminders(): FollowUpWorkflowRemind
       createdAt,
       dueDate: dateOffset(0),
       id: "follow-up-workflow-statement",
-      notes: "Demo follow-up reminder. Do not enter real personal information.",
+      notes: "Sample follow-up reminder. Use only information you are authorized to store.",
       priority: "high",
       relatedIncidentId: "draft-1",
       reminderEnabled: true,
@@ -284,7 +285,7 @@ export function createDefaultFollowUpWorkflowReminders(): FollowUpWorkflowRemind
       createdAt,
       dueDate: dateOffset(2),
       id: "follow-up-workflow-report",
-      notes: "Local placeholder only.",
+      notes: "Local sample reminder.",
       priority: "medium",
       relatedIncidentId: "draft-2",
       reminderEnabled: true,
@@ -434,14 +435,14 @@ function createNotesFiles(): LocalNoteFileMetadata[] {
 export function createDefaultNoteFolders(): LocalNoteFolder[] {
   const createdAt = nowIso();
   const folders: Array<Pick<LocalNoteFolder, "color" | "description" | "icon" | "id" | "name">> = [
-    { color: "#7FFFD4", description: "General local prototype notes.", icon: "note-text-outline", id: "folder-general-notes", name: "General Notes" },
+    { color: "#7FFFD4", description: "General notes stored locally on this device.", icon: "note-text-outline", id: "folder-general-notes", name: "General Notes" },
     { color: "#0A84FF", description: "Report draft notes. Not official RMS.", icon: "file-document-outline", id: "folder-incident-drafts", name: "Report Drafts" },
-    { color: "#B56CFF", description: "Court preparation placeholders.", icon: "scale-balance", id: "folder-court-preparation", name: "Court Preparation" },
+    { color: "#B56CFF", description: "Court preparation references.", icon: "scale-balance", id: "folder-court-preparation", name: "Court Preparation" },
     { color: "#4DA3FF", description: "Training and requalification support.", icon: "school-outline", id: "folder-training", name: "Training" },
-    { color: "#7FFFD4", description: "Translation-linked prototype notes.", icon: "translate", id: "folder-translation", name: "Translation" },
-    { color: "#0A84FF", description: "Mock AI response notes.", icon: "brain", id: "folder-ai-assistant", name: "AI Assistant" },
+    { color: "#7FFFD4", description: "Translation-linked notes.", icon: "translate", id: "folder-translation", name: "Translation" },
+    { color: "#0A84FF", description: "AI response notes that require verification.", icon: "brain", id: "folder-ai-assistant", name: "AI Assistant" },
     { color: "#FFD166", description: "Follow-up task notes.", icon: "clipboard-check-outline", id: "folder-follow-ups", name: "Follow-Ups" },
-    { color: "#8A94A6", description: "Archived local prototype items.", icon: "archive-outline", id: "folder-archived", name: "Archived" }
+    { color: "#8A94A6", description: "Archived local items.", icon: "archive-outline", id: "folder-archived", name: "Archived" }
   ];
 
   return folders.map((folder) => ({
@@ -457,13 +458,13 @@ export function createDefaultStructuredNotes(): LocalStructuredNote[] {
   const notes: Array<Omit<LocalStructuredNote, "createdAt" | "updatedAt">> = [
     {
       archived: false,
-      body: "Prototype shift reminder note. Verify official obligations through authorized systems and supervisors.",
+      body: "Sample shift reminder note. Verify official obligations through authorized systems and supervisors.",
       category: "Start My Shift Note",
       folderId: "folder-general-notes",
       id: "note-shift-readiness",
       linkedCalendarEventId: "calendar-workflow-court-prep",
       pinned: true,
-      tags: ["shift", "readiness", "prototype"],
+      tags: ["shift", "readiness", "sample"],
       title: "Shift readiness note"
     },
     {
@@ -479,24 +480,24 @@ export function createDefaultStructuredNotes(): LocalStructuredNote[] {
     },
     {
       archived: false,
-      body: "Mock AI response saved as a local note. AI content may be incomplete or inaccurate and must be verified.",
+      body: "AI response saved as a local note. AI content may be incomplete or inaccurate and must be verified.",
       category: "AI Assistant Note",
       folderId: "folder-ai-assistant",
       id: "note-ai-demo",
       linkedAIConversationId: "ai-history-1",
       pinned: false,
-      tags: ["ai", "mock", "verify"],
+      tags: ["ai", "verify"],
       title: "AI response note"
     },
     {
       archived: false,
-      body: "Mock translation-linked note. This is not certified translation, disclosure, evidence, or official interpretation.",
+      body: "Translation-linked note. This is not certified translation, disclosure, evidence, or official interpretation.",
       category: "Translation Note",
       folderId: "folder-translation",
       id: "note-translation-demo",
       linkedTranslationRecordId: "translation-history-1",
       pinned: false,
-      tags: ["translation", "mock", "local"],
+      tags: ["translation", "verify", "local"],
       title: "Translation note"
     }
   ];
@@ -514,7 +515,7 @@ export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceh
     {
       category: "Photo Metadata",
       description: "Metadata only. No photo is uploaded, stored, opened, or processed.",
-      fileName: "incident-photo-placeholder.jpg",
+      fileName: "incident-photo-reference.jpg",
       fileType: "photo",
       id: "file-meta-photo-demo",
       linkedIncidentId: "draft-1",
@@ -522,8 +523,8 @@ export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceh
     },
     {
       category: "Court Document Placeholder",
-      description: "Court document placeholder metadata only. Verify official court documents through authorized systems.",
-      fileName: "court-preparation-placeholder.pdf",
+      description: "Court document reference metadata only. Verify official court documents through authorized systems.",
+      fileName: "court-preparation-reference.pdf",
       fileType: "document",
       id: "file-meta-court-demo",
       linkedCourtEventId: "court-workflow-appearance",
@@ -531,8 +532,8 @@ export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceh
     },
     {
       category: "Translation Document Placeholder",
-      description: "Translation document placeholder metadata only. No document is parsed or uploaded.",
-      fileName: "translation-placeholder.txt",
+      description: "Translation document reference metadata only. No document is parsed or uploaded.",
+      fileName: "translation-reference.txt",
       fileType: "document",
       id: "file-meta-translation-demo",
       linkedNoteId: "note-translation-demo",
@@ -549,9 +550,7 @@ export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceh
 }
 
 export function normalizeStructuredNotes(notes: LocalStructuredNote[] | undefined): LocalStructuredNote[] {
-  const fallback = createDefaultStructuredNotes();
-
-  return (notes ?? fallback).map((note, index) => {
+  return (notes ?? []).map((note, index) => {
     const timestamp = nowIso();
 
     return {
@@ -568,9 +567,7 @@ export function normalizeStructuredNotes(notes: LocalStructuredNote[] | undefine
 }
 
 export function normalizeNoteFolders(folders: LocalNoteFolder[] | undefined): LocalNoteFolder[] {
-  const fallback = createDefaultNoteFolders();
-
-  return (folders ?? fallback).map((folder, index) => {
+  return (folders ?? []).map((folder, index) => {
     const timestamp = nowIso();
 
     return {
@@ -588,9 +585,7 @@ export function normalizeNoteFolders(folders: LocalNoteFolder[] | undefined): Lo
 export function normalizeFileMetadataPlaceholders(
   metadata: LocalFileMetadataPlaceholder[] | undefined
 ): LocalFileMetadataPlaceholder[] {
-  const fallback = createDefaultFileMetadataPlaceholders();
-
-  return (metadata ?? fallback).map((item, index) => {
+  return (metadata ?? []).map((item, index) => {
     const timestamp = nowIso();
 
     return {
@@ -598,7 +593,7 @@ export function normalizeFileMetadataPlaceholders(
       category: item.category ?? ("Other" as LocalFileMetadataCategory),
       createdAt: item.createdAt ?? timestamp,
       description: item.description ?? "Metadata only. No file is uploaded or stored.",
-      fileName: item.fileName ?? "file-placeholder",
+      fileName: item.fileName ?? "file-reference",
       fileType: item.fileType ?? "other",
       id: item.id ?? `file-meta-${index + 1}`,
       metadataOnly: true as const,
@@ -769,13 +764,19 @@ export function normalizeIncidentDraft(draft: LocalIncidentDraft): LocalIncident
 }
 
 export function normalizeIncidentDrafts(drafts: LocalIncidentDraft[] | undefined): LocalIncidentDraft[] {
-  return (drafts ?? createIncidentDrafts()).map(normalizeIncidentDraft);
+  return (drafts ?? []).map(normalizeIncidentDraft);
 }
 
-export function createDefaultLocalAppData(authOverride?: LocalAuthSession): LocalAppData {
+export function createDefaultLocalAppData(
+  authOverride?: LocalAuthSession,
+  appEnvironment = process.env.EXPO_PUBLIC_APP_ENV
+): LocalAppData {
   const seededAt = nowIso();
-  const reminders = createReminderCards();
   const history = createHistory();
+  const includeSyntheticSeedData = shouldIncludeSyntheticSeedData(appEnvironment);
+  const reminders = includeSyntheticSeedData
+    ? createReminderCards()
+    : { courtReminders: [], followUpReminders: [], trainingReminders: [] };
 
   return {
     aiHistory: history.aiHistory,
@@ -784,17 +785,17 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     audioStatements: [],
     canvassEntries: [],
     canvassSessions: [],
-    calendarEvents: createCalendarEvents(),
-    calendarWorkflowEvents: createDefaultCalendarWorkflowEvents(),
+    calendarEvents: selectSyntheticSeedData(createCalendarEvents, appEnvironment),
+    calendarWorkflowEvents: selectSyntheticSeedData(createDefaultCalendarWorkflowEvents, appEnvironment),
     courtReminders: reminders.courtReminders,
-    courtWorkflowEvents: createDefaultCourtWorkflowEvents(),
-    followUpWorkflowReminders: createDefaultFollowUpWorkflowReminders(),
+    courtWorkflowEvents: selectSyntheticSeedData(createDefaultCourtWorkflowEvents, appEnvironment),
+    followUpWorkflowReminders: selectSyntheticSeedData(createDefaultFollowUpWorkflowReminders, appEnvironment),
     followUpReminders: reminders.followUpReminders,
-    incidentDrafts: createIncidentDrafts(),
-    notesFiles: createNotesFiles(),
-    structuredNotes: createDefaultStructuredNotes(),
+    incidentDrafts: selectSyntheticSeedData(createIncidentDrafts, appEnvironment),
+    notesFiles: selectSyntheticSeedData(createNotesFiles, appEnvironment),
+    structuredNotes: selectSyntheticSeedData(createDefaultStructuredNotes, appEnvironment),
     noteFolders: createDefaultNoteFolders(),
-    fileMetadataPlaceholders: createDefaultFileMetadataPlaceholders(),
+    fileMetadataPlaceholders: selectSyntheticSeedData(createDefaultFileMetadataPlaceholders, appEnvironment),
     notificationPreference: createDefaultNotificationPreference(),
     paidDuties: [],
     preferences: {
@@ -807,12 +808,12 @@ export function createDefaultLocalAppData(authOverride?: LocalAuthSession): Loca
     },
     seededAt,
     shiftReminders: createDefaultShiftReminders(),
-    requalificationWorkflowReminders: createDefaultRequalificationWorkflowReminders(),
+    requalificationWorkflowReminders: selectSyntheticSeedData(createDefaultRequalificationWorkflowReminders, appEnvironment),
     trainingReminders: reminders.trainingReminders,
-    trainingWorkflowEvents: createDefaultTrainingWorkflowEvents(),
+    trainingWorkflowEvents: selectSyntheticSeedData(createDefaultTrainingWorkflowEvents, appEnvironment),
     translationHistory: history.translationHistory,
     translationPreferences: createDefaultTranslationPreferences(),
-    scheduledReminders: createDefaultScheduledReminders(),
+    scheduledReminders: selectSyntheticSeedData(createDefaultScheduledReminders, appEnvironment),
     updatedAt: seededAt,
     version: CURRENT_STORAGE_VERSION
   };

@@ -39,9 +39,9 @@ import {
 } from "@/services/incidentWorkflowService";
 import { fileMetadataCategories, linkedTypeOptions, noteCategories, notesService } from "@/services/notesService";
 import { notificationService } from "@/services/notificationService";
+import { getReminderPreviewContent } from "@/services/notificationContent";
 import { notificationScheduler } from "@/services/notificationScheduler";
 import type { LocalAppData, LocalIncidentDraft } from "@/storage/storageTypes";
-import { translationService } from "@/services/translationService";
 import { workflowService } from "@/services/workflowService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
 import type { AICategoryId, AIConversation } from "@/types/ai";
@@ -57,7 +57,6 @@ import type {
   LocalStructuredNote,
   NotesFilesFilters
 } from "@/types/notesFiles";
-import type { TranslationLanguage, TranslationMode, TranslationRecord } from "@/types/translation";
 import type {
   IncidentAttachmentMetadata,
   IncidentDraftStatus,
@@ -411,28 +410,6 @@ export function ModuleScreen({
     }));
   };
 
-  const addTranslationHistory = (prompt: string) => {
-    const createdAt = timestamp();
-    onUpdateLocalData((current) => ({
-      ...current,
-      translationHistory: [
-        {
-          createdAt,
-          id: `translation-history-${Date.now()}`,
-          mode: "text" as const,
-          notes: "Mock local translation only. Production translation is not connected.",
-          relatedIncidentId: "",
-          sourceLanguage: current.translationPreferences.preferredSourceLanguage,
-          sourceText: prompt,
-          targetLanguage: current.translationPreferences.preferredTargetLanguage,
-          translatedText: translationService.mockTranslateText(prompt)
-        },
-        ...current.translationHistory
-      ].slice(0, 12),
-      updatedAt: timestamp()
-    }));
-  };
-
   if (module.id === "dashboard") {
     return (
       <HomeDashboardScreen
@@ -545,7 +522,7 @@ export function ModuleScreen({
     return (
       <ScreenFrame activeModule="translation" isTablet={isTablet} onSelectModule={onSelectModule}>
         <AppHeader title="Translation" />
-        <Build25TranslationScreen />
+        <Build25TranslationScreen history={localData.translationHistory} />
         <CoreDisclaimer />
       </ScreenFrame>
     );
@@ -1183,7 +1160,13 @@ function NewIncidentScreen({
         })}
       </View>
       {incidentDrafts.length === 0 ? (
-        <EmptyState icon="file-document-outline" title="No drafts" message="Create or reset local report drafts." />
+        <EmptyState
+          actionLabel="Create Report"
+          icon="file-document-outline"
+          message="Create a local report draft from officer-supplied facts."
+          onAction={resetDraft}
+          title="No reports saved"
+        />
       ) : null}
 
       <SectionHeader icon="progress-check" title={`Step ${stepIndex + 1} of ${incidentStepTitles.length}: ${incidentStepTitles[stepIndex]}`} />
@@ -1789,7 +1772,13 @@ function AIAssistantScreen({
             </View>
           ))
         ) : (
-          <EmptyState icon="history" message="AI conversations saved on this device will appear here." title="No AI history" />
+          <EmptyState
+            actionLabel="Start Conversation"
+            icon="history"
+            message="AI conversations saved on this device will appear here."
+            onAction={() => setSelectedCategory("general")}
+            title="No AI history"
+          />
         )}
       </View>
       <SecondaryButton label="Clear AI History" onPress={clearHistory}>
@@ -1797,327 +1786,6 @@ function AIAssistantScreen({
       </SecondaryButton>
 
       <PrototypeSelection label={selectedItem} />
-      <LocalPrototypeWarning />
-      <CoreDisclaimer />
-    </ScreenFrame>
-  );
-}
-
-function TranslationScreen({
-  isTablet,
-  localData,
-  onSelectItem,
-  onSelectModule,
-  onUpdateLocalData,
-  selectedItem
-}: {
-  isTablet: boolean;
-  localData: LocalAppData;
-  onAddHistory: (prompt: string) => void;
-  onSelectItem: (label: string) => void;
-  onSelectModule: (module: ModuleId) => void;
-  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
-  selectedItem: string;
-}) {
-  const [mode, setMode] = useState<TranslationMode | "history">("text");
-  const [sourceLanguage, setSourceLanguage] = useState<TranslationLanguage>(localData.translationPreferences.preferredSourceLanguage);
-  const [targetLanguage, setTargetLanguage] = useState<TranslationLanguage>(localData.translationPreferences.preferredTargetLanguage);
-  const [sourceText, setSourceText] = useState("Where are you coming from?");
-  const [translatedText, setTranslatedText] = useState(translationService.mockTranslateText("Where are you coming from?"));
-  const [saveToHistory, setSaveToHistory] = useState(localData.translationPreferences.saveToHistory);
-  const [historyFilter, setHistoryFilter] = useState<TranslationMode | "all">("all");
-  const [historySearch, setHistorySearch] = useState("");
-  const [relatedIncidentId, setRelatedIncidentId] = useState(localData.incidentDrafts[0]?.id ?? "");
-  const modes = translationService.getTranslationModes();
-  const languages = translationService.getSupportedLanguages();
-  const history = translationService
-    .getTranslationHistory(localData)
-    .filter((item) => historyFilter === "all" || item.mode === historyFilter)
-    .filter((item) => {
-      const query = historySearch.trim().toLowerCase();
-      if (!query) return true;
-      return `${item.sourceLanguage} ${item.targetLanguage} ${item.sourceText} ${item.translatedText}`.toLowerCase().includes(query);
-    });
-
-  const persistPreferences = (nextSource = sourceLanguage, nextTarget = targetLanguage, nextSave = saveToHistory) => {
-    onUpdateLocalData((current) =>
-      translationService.saveTranslationPreferences(current, {
-        lastUpdatedAt: new Date().toISOString(),
-        preferredSourceLanguage: nextSource,
-        preferredTargetLanguage: nextTarget,
-        saveToHistory: nextSave
-      })
-    );
-  };
-
-  const buildRecord = (recordMode: TranslationMode, input: string, output: string): TranslationRecord => ({
-    createdAt: new Date().toISOString(),
-    id: `translation-record-${Date.now()}`,
-    mode: recordMode,
-    notes: "Local prototype translation record only.",
-    relatedIncidentId,
-    sourceLanguage,
-    sourceText: input,
-    targetLanguage,
-    translatedText: output
-  });
-
-  const saveRecord = (record: TranslationRecord) => {
-    const incident = localData.incidentDrafts.find((item) => item.id === relatedIncidentId);
-    const nextRecord = incident ? translationService.attachTranslationToIncidentDraft(record, incident) : record;
-    onUpdateLocalData((current) => translationService.saveTranslationRecord(current, nextRecord));
-    onSelectItem("Translation saved");
-  };
-
-  const runMockTranslation = () => {
-    const result = translationService.mockTranslateText(sourceText);
-    setTranslatedText(result);
-    persistPreferences();
-    if (saveToHistory) {
-      saveRecord(buildRecord("text", sourceText, result));
-    }
-  };
-
-  const savePlaceholder = (recordMode: TranslationMode, input: string) => {
-    const output = translationService.mockTranslateText(input);
-    setTranslatedText(output);
-    persistPreferences();
-    if (saveToHistory) {
-      saveRecord(buildRecord(recordMode, input, output));
-    }
-  };
-
-  const deleteHistoryItem = (id: string) => {
-    onUpdateLocalData((current) => translationService.deleteTranslationRecord(current, id));
-  };
-
-  const clearHistory = () => {
-    Alert.alert("Clear Translation History", "Delete all local prototype translation records?", [
-      { style: "cancel", text: "Cancel" },
-      {
-        onPress: () => onUpdateLocalData((current) => translationService.clearTranslationHistory(current)),
-        style: "destructive",
-        text: "Clear"
-      }
-    ]);
-  };
-
-  const cycleSourceLanguage = () => {
-    const next = cycleOption(languages, sourceLanguage);
-    setSourceLanguage(next);
-    persistPreferences(next, targetLanguage, saveToHistory);
-  };
-
-  const cycleTargetLanguage = () => {
-    const next = cycleOption(languages, targetLanguage);
-    setTargetLanguage(next);
-    persistPreferences(sourceLanguage, next, saveToHistory);
-  };
-
-  const cycleIncidentLink = () => {
-    if (localData.incidentDrafts.length === 0) {
-      setRelatedIncidentId("");
-      return;
-    }
-    const ids = localData.incidentDrafts.map((item) => item.id);
-    setRelatedIncidentId(cycleOption(ids, relatedIncidentId || (ids[0] ?? "")));
-  };
-
-  const selectedIncident = localData.incidentDrafts.find((item) => item.id === relatedIncidentId);
-
-  return (
-    <ScreenFrame activeModule="translation" isTablet={isTablet} onSelectModule={onSelectModule}>
-      <AppHeader title="Translation" />
-      <View style={styles.hero}>
-        <View style={styles.heroCopy}>
-          <Text style={styles.heroTitle}>Communicate clearly.</Text>
-          <Text style={styles.heroSub}>Text, voice, camera, document.</Text>
-        </View>
-        <MaterialCommunityIcons name="translate" size={48} color={colors.primaryBlue} />
-      </View>
-
-      <SectionHeader icon="translate" title="Modes" />
-      <View style={styles.filterRow}>
-        {modes.map((mode) => (
-          <SecondaryButton key={mode.id} label={mode.label} onPress={() => setMode(mode.id)}>
-            <MaterialCommunityIcons name={mode.id === "history" ? "history" : mode.id === "voice" ? "microphone-outline" : mode.id === "camera" ? "camera-outline" : mode.id === "document" ? "file-document-outline" : mode.id === "conversation" ? "chat-processing-outline" : "translate"} size={18} color={colors.primaryBlue} />
-          </SecondaryButton>
-        ))}
-      </View>
-      <DisclaimerBanner message={modes.find((item) => item.id === mode)?.notice ?? "Local prototype translation only."} />
-
-      {mode !== "history" ? (
-        <WorkflowFormPanel icon="translate" title="Language Settings">
-          <View style={styles.filterRow}>
-            <SecondaryButton label={`From: ${sourceLanguage}`} onPress={cycleSourceLanguage}>
-              <MaterialCommunityIcons name="translate" size={18} color={colors.primaryBlue} />
-            </SecondaryButton>
-            <SecondaryButton label={`To: ${targetLanguage}`} onPress={cycleTargetLanguage}>
-              <MaterialCommunityIcons name="swap-horizontal" size={18} color={colors.ptsdGreen} />
-            </SecondaryButton>
-            <SecondaryButton label={`Save ${saveToHistory ? "On" : "Off"}`} onPress={() => {
-              const next = !saveToHistory;
-              setSaveToHistory(next);
-              persistPreferences(sourceLanguage, targetLanguage, next);
-            }}>
-              <MaterialCommunityIcons name={saveToHistory ? "content-save-check-outline" : "content-save-off-outline"} size={18} color={colors.primaryBlue} />
-            </SecondaryButton>
-            <SecondaryButton label={selectedIncident ? `Report: ${selectedIncident.incidentType}` : "Report: none"} onPress={cycleIncidentLink}>
-              <MaterialCommunityIcons name="file-link-outline" size={18} color={colors.primaryBlue} />
-            </SecondaryButton>
-          </View>
-          <DisclaimerBanner message="Linked translations are local prototype notes only and do not replace official translation, interpretation, disclosure, evidence, or reporting requirements." />
-        </WorkflowFormPanel>
-      ) : null}
-
-      {mode === "text" ? (
-        <WorkflowFormPanel icon="text-box-edit-outline" title="Text Translation">
-          <WorkflowField label="Source text" multiline value={sourceText} onChangeText={setSourceText} />
-          <WorkflowField label="Mock translated text" multiline value={translatedText} onChangeText={setTranslatedText} />
-          <View style={styles.actionRow}>
-            <PrimaryButton label="Mock Translate" onPress={runMockTranslation}>
-              <MaterialCommunityIcons name="translate" size={20} color={colors.textPrimary} />
-            </PrimaryButton>
-            <SecondaryButton label="Clear" onPress={() => {
-              setSourceText("");
-              setTranslatedText("");
-            }}>
-              <MaterialCommunityIcons name="close-circle-outline" size={20} color={colors.primaryBlue} />
-            </SecondaryButton>
-            <SecondaryButton label="Copy Placeholder" onPress={() => Alert.alert("Copy Placeholder", "Copy behavior is not connected in this prototype.")}>
-              <MaterialCommunityIcons name="content-copy" size={20} color={colors.primaryBlue} />
-            </SecondaryButton>
-          </View>
-        </WorkflowFormPanel>
-      ) : null}
-
-      {mode === "voice" ? (
-        <WorkflowFormPanel icon="microphone-outline" title="Voice Translation Placeholder">
-          <View style={styles.aiOrb}>
-            <MaterialCommunityIcons name="microphone-outline" size={44} color={colors.primaryBlue} />
-          </View>
-          <WorkflowField label="Mock transcript" multiline value="Voice transcript placeholder. No microphone permission or recording is used." onChangeText={() => undefined} />
-          <WorkflowField label="Mock result" multiline value={translationService.mockTranslateText("Voice translation placeholder")} onChangeText={() => undefined} />
-          <View style={styles.actionRow}>
-            <SecondaryButton label="Start Placeholder" onPress={() => savePlaceholder("voice", "Voice translation placeholder")}>
-              <MaterialCommunityIcons name="play-circle-outline" size={20} color={colors.primaryBlue} />
-            </SecondaryButton>
-            <SecondaryButton label="Stop Placeholder" onPress={() => Alert.alert("Voice Placeholder", "No audio is recorded or uploaded in Sprint 011.")}>
-              <MaterialCommunityIcons name="stop-circle-outline" size={20} color={colors.primaryBlue} />
-            </SecondaryButton>
-          </View>
-          <DisclaimerBanner message="Voice translation is currently a prototype placeholder. Do not record or enter sensitive information in this testing version." />
-        </WorkflowFormPanel>
-      ) : null}
-
-      {mode === "conversation" ? (
-        <WorkflowFormPanel icon="chat-processing-outline" title="Conversation Mode Placeholder">
-          <WorkflowItemCard
-            accent={colors.primaryBlue}
-            active={false}
-            icon="account-tie-outline"
-            meta={sourceLanguage}
-            onDelete={() => undefined}
-            onEdit={() => undefined}
-            onPress={() => undefined}
-            onPrimary={() => savePlaceholder("conversation", "Officer: Where are you coming from?")}
-            primaryLabel="Save"
-            reminderEnabled={false}
-            status="Mock"
-            subtitle="[Mock Translation] Future translation output will appear here."
-            title="Officer: Where are you coming from?"
-          />
-          <WorkflowItemCard
-            accent={colors.ptsdGreen}
-            active={false}
-            icon="account-outline"
-            meta={targetLanguage}
-            onDelete={() => undefined}
-            onEdit={() => undefined}
-            onPress={() => undefined}
-            onPrimary={() => savePlaceholder("conversation", "Civilian: Je viens de la maison.")}
-            primaryLabel="Save"
-            reminderEnabled={false}
-            status="Mock"
-            subtitle="[Mock Translation] Future translation output will appear here."
-            title="Civilian: Je viens de la maison."
-          />
-          <SecondaryButton label="Clear Conversation" onPress={() => Alert.alert("Conversation Placeholder", "Placeholder conversation cleared locally.")}>
-            <MaterialCommunityIcons name="delete-sweep-outline" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-        </WorkflowFormPanel>
-      ) : null}
-
-      {mode === "camera" ? (
-        <WorkflowFormPanel icon="camera-outline" title="Camera / OCR Placeholder">
-          <WorkflowField label="Detected text placeholder" multiline value="Camera/OCR detected text placeholder. No image is processed." onChangeText={() => undefined} />
-          <WorkflowField label="Mock translation result" multiline value={translationService.mockTranslateText("Camera OCR placeholder")} onChangeText={() => undefined} />
-          <View style={styles.actionRow}>
-            <SecondaryButton label="Scan Placeholder" onPress={() => savePlaceholder("camera", "Camera OCR placeholder")}>
-              <MaterialCommunityIcons name="camera-outline" size={20} color={colors.primaryBlue} />
-            </SecondaryButton>
-            <SecondaryButton label="Image Import Placeholder" onPress={() => Alert.alert("Image Placeholder", "No camera, photo library, upload, or OCR is connected.")}>
-              <MaterialCommunityIcons name="image-outline" size={20} color={colors.primaryBlue} />
-            </SecondaryButton>
-          </View>
-          <DisclaimerBanner message="Camera and OCR translation are planned features. This testing version does not process real images." />
-        </WorkflowFormPanel>
-      ) : null}
-
-      {mode === "document" ? (
-        <WorkflowFormPanel icon="file-document-outline" title="Document Translation Placeholder">
-          <WorkflowField label="Document name placeholder" value="sample-document-placeholder.pdf" onChangeText={() => undefined} />
-          <WorkflowField label="Mock extracted text" multiline value="Document extracted text placeholder. No file is parsed or uploaded." onChangeText={() => undefined} />
-          <WorkflowField label="Mock translation result" multiline value={translationService.mockTranslateText("Document translation placeholder")} onChangeText={() => undefined} />
-          <SecondaryButton label="Select Document Placeholder" onPress={() => savePlaceholder("document", "Document translation placeholder")}>
-            <MaterialCommunityIcons name="file-plus-outline" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-          <DisclaimerBanner message="Document translation is currently a prototype placeholder. Do not upload real police records, confidential documents, or sensitive personal information." />
-        </WorkflowFormPanel>
-      ) : null}
-
-      {mode === "history" ? (
-        <WorkflowFormPanel icon="history" title="Translation History">
-          <WorkflowField label="Search history" value={historySearch} onChangeText={setHistorySearch} />
-          <View style={styles.filterRow}>
-            {(["all", "text", "voice", "conversation", "camera", "document"] as Array<TranslationMode | "all">).map((item) => (
-              <SecondaryButton key={item} label={item === "all" ? "All" : item} onPress={() => setHistoryFilter(item)}>
-                <MaterialCommunityIcons name={historyFilter === item ? "check-circle-outline" : "circle-outline"} size={18} color={colors.primaryBlue} />
-              </SecondaryButton>
-            ))}
-          </View>
-          <SecondaryButton label="Clear All History" onPress={clearHistory}>
-            <MaterialCommunityIcons name="delete-sweep-outline" size={20} color={colors.danger} />
-          </SecondaryButton>
-          <View style={styles.stack}>
-            {history.map((item) => (
-              <WorkflowItemCard
-                accent={colors.primaryBlue}
-                active={selectedItem === item.id}
-                icon="translate"
-                key={item.id}
-                meta={`${item.sourceLanguage} to ${item.targetLanguage} - ${item.mode}`}
-                onDelete={() => deleteHistoryItem(item.id)}
-                onEdit={() => onSelectItem(item.id)}
-                onPress={() => onSelectItem(item.id)}
-                onPrimary={() => Alert.alert("History Placeholder", "This local record is available for future detail review.")}
-                primaryLabel="View"
-                reminderEnabled={Boolean(item.relatedIncidentId)}
-                status="Local"
-                subtitle={item.translatedText}
-                title={item.sourceText}
-              />
-            ))}
-          </View>
-          {history.length === 0 ? (
-            <EmptyState icon="history" title="No translation history" message="Save a mock translation to local history." />
-          ) : null}
-        </WorkflowFormPanel>
-      ) : null}
-
-      <PrototypeSelection label={selectedItem} />
-      <DisclaimerBanner message="OPAi translation features are productivity aids only. Translation output may be incomplete, inaccurate, or contextually incorrect and must be verified by the user. For official proceedings, investigations, court, statements, cautions, rights, or legal processes, users must follow authorized service procedures and obtain qualified interpretation or certified translation where required." />
-      <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real statements, real evidence, or official documents into this prototype." />
       <LocalPrototypeWarning />
       <CoreDisclaimer />
     </ScreenFrame>
@@ -2504,7 +2172,13 @@ function CalendarScreen({
         ))}
       </View>
       {events.length === 0 ? (
-        <EmptyState icon="calendar-blank-outline" title="No calendar items" message="Add an item or change the filter." />
+        <EmptyState
+          actionLabel="Add Calendar Item"
+          icon="calendar-blank-outline"
+          message="Add a local calendar item or change the filter."
+          onAction={resetEventDraft}
+          title="No calendar items"
+        />
       ) : null}
 
       <WorkflowFormPanel icon="clipboard-plus-outline" title={followUpEditingId ? "Edit Follow-Up" : "Add Follow-Up"}>
@@ -2562,6 +2236,15 @@ function CalendarScreen({
           />
         ))}
       </View>
+      {followUps.length === 0 ? (
+        <EmptyState
+          actionLabel="Add Follow-Up"
+          icon="clipboard-check-outline"
+          message="Add a local follow-up reminder for an upcoming task."
+          onAction={resetFollowUpDraft}
+          title="No follow-ups"
+        />
+      ) : null}
 
       <SecondaryButton label="External Sync Later">
         <Ionicons name="lock-closed-outline" size={20} color={colors.primaryBlue} />
@@ -2750,7 +2433,13 @@ function CourtScreen({
         ))}
       </View>
       {events.length === 0 ? (
-        <EmptyState icon="scale-balance" title="No court reminders" message="Add a local court reminder to test the workflow." />
+        <EmptyState
+          actionLabel="Add Court Reminder"
+          icon="scale-balance"
+          message="Add a local reminder and verify all details through authorized systems."
+          onAction={resetDraft}
+          title="No court reminders"
+        />
       ) : null}
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="Court reminders are productivity aids only. Always verify court dates, file details, locations, adjournments, and obligations through authorized systems." />
@@ -3019,6 +2708,15 @@ function TrainingScreen({
           />
         ))}
       </View>
+      {trainingEvents.length === 0 ? (
+        <EmptyState
+          actionLabel="Add Training"
+          icon="school-outline"
+          message="Add a local training event and optional reminder."
+          onAction={resetTrainingDraft}
+          title="No training events"
+        />
+      ) : null}
 
       <WorkflowFormPanel icon="target" title={requalificationEditingId ? "Edit Qualification" : "Add Qualification"}>
         <WorkflowField label="Title" value={requalificationDraft.title} onChangeText={(title) => setRequalificationDraft((item) => ({ ...item, title }))} />
@@ -3075,6 +2773,15 @@ function TrainingScreen({
           />
         ))}
       </View>
+      {requalificationReminders.length === 0 ? (
+        <EmptyState
+          actionLabel="Add Qualification"
+          icon="target"
+          message="Add a local qualification or renewal deadline."
+          onAction={resetRequalificationDraft}
+          title="No qualification reminders"
+        />
+      ) : null}
       <PrototypeSelection label={selectedItem} />
       <DisclaimerBanner message="Training and requalification reminders are supportive local reminders only. Verify all mandatory training, qualifications, and policy requirements through authorized systems and supervisors." />
       <CoreDisclaimer />
@@ -3180,7 +2887,7 @@ function NotesFilesScreen({
 
   const saveMetadata = () => {
     onUpdateLocalData((current) => notesService.upsertFileMetadata(current, metadataDraft));
-    onSelectItem(metadataDraft.fileName || "File metadata placeholder");
+    onSelectItem(metadataDraft.fileName || "File reference");
     startNewMetadata();
   };
 
@@ -3206,6 +2913,8 @@ function NotesFilesScreen({
 
   const linkedTypeLabel = (type: LocalLinkedItemType | "All") =>
     type === "All" ? "All links" : type === "followUp" ? "Follow-up" : type === "ai" ? "AI" : type;
+  const fileMetadataCategoryLabel = (category: LocalFileMetadataCategory) =>
+    category.replace(" Placeholder", " Reference");
 
   const confirmLocalAction = (title: string, message: string, actionLabel: string, action: () => void) => {
     Alert.alert(title, message, [
@@ -3225,8 +2934,8 @@ function NotesFilesScreen({
         <MaterialCommunityIcons name="folder-outline" size={48} color={colors.primaryBlue} />
       </View>
 
-      <DisclaimerBanner message="OPAi is currently in testing/pre-launch. Do not enter real police records, confidential information, sensitive personal information, real evidence, real statements, or official documents into this prototype." />
-      <DisclaimerBanner message="Files in this prototype are metadata placeholders only. OPAi does not upload, store, process, or sync real files in this testing version." />
+      <DisclaimerBanner message="Use only information you are authorized to process. Follow service policy for police records, evidence, statements, and official documents." />
+      <DisclaimerBanner message="File references store descriptive information on this device only. OPAi does not upload, store, process, or sync the referenced files." />
 
       <View style={styles.filterRow}>
         {tabs.map((tab) => (
@@ -3358,7 +3067,7 @@ function NotesFilesScreen({
               <EmptyState
                 actionLabel="New Note"
                 icon="note-text-outline"
-                message="Create a local prototype note or adjust filters. Do not enter real police records or sensitive information."
+                message="Create a local note or adjust filters. Use only information you are authorized to store on this device."
                 onAction={startNewNote}
                 title="No notes found"
               />
@@ -3374,7 +3083,7 @@ function NotesFilesScreen({
                     key={note.id}
                     meta={`${note.category} - ${notesService.getFolderName(localData, note.folderId)}`}
                     onDelete={() =>
-                      confirmLocalAction("Delete Note", "Remove this local prototype note from the device?", "Delete", () =>
+                      confirmLocalAction("Delete Note", "Remove this local note from the device?", "Delete", () =>
                         onUpdateLocalData((current) => notesService.deleteNote(current, note.id))
                       )
                     }
@@ -3417,7 +3126,7 @@ function NotesFilesScreen({
               <EmptyState
                 actionLabel="New Folder"
                 icon="folder-outline"
-                message="Create a local prototype folder or adjust filters. Folders stay on this device only."
+                message="Create a local folder or adjust filters. Folders stay on this device only."
                 onAction={startNewFolder}
                 title="No folders found"
               />
@@ -3433,7 +3142,7 @@ function NotesFilesScreen({
                     key={folder.id}
                     meta={`${noteCount} local notes`}
                     onDelete={() =>
-                      confirmLocalAction("Delete Folder", "Remove this local prototype folder and its local references?", "Delete", () =>
+                      confirmLocalAction("Delete Folder", "Remove this local folder and its local references?", "Delete", () =>
                         onUpdateLocalData((current) => notesService.deleteFolder(current, folder.id))
                       )
                     }
@@ -3442,7 +3151,7 @@ function NotesFilesScreen({
                     onPrimary={() =>
                       folder.archived
                         ? onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))
-                        : confirmLocalAction("Archive Folder", "Archive this local prototype folder?", "Archive", () =>
+                        : confirmLocalAction("Archive Folder", "Archive this local folder?", "Archive", () =>
                             onUpdateLocalData((current) => notesService.archiveFolder(current, folder.id))
                           )
                     }
@@ -3461,10 +3170,10 @@ function NotesFilesScreen({
 
       {activeTab === "File Metadata" ? (
         <>
-          <WorkflowFormPanel icon="file-plus-outline" title={metadataEditingId ? "Edit Metadata Placeholder" : "Add File Metadata"}>
+          <WorkflowFormPanel icon="file-plus-outline" title={metadataEditingId ? "Edit File Reference" : "Add File Reference"}>
             <View style={styles.formRow}>
               <WorkflowField
-                label="File name placeholder"
+                label="File name"
                 onChangeText={(fileName) => setMetadataField("fileName", fileName)}
                 value={metadataDraft.fileName}
               />
@@ -3475,7 +3184,7 @@ function NotesFilesScreen({
               />
             </View>
             <View style={styles.actionRow}>
-              <SecondaryButton label={`Category: ${metadataDraft.category}`} onPress={cycleMetadataCategory} />
+              <SecondaryButton label={`Category: ${fileMetadataCategoryLabel(metadataDraft.category)}`} onPress={cycleMetadataCategory} />
               <SecondaryButton
                 label={`Linked note: ${notesService.getFolderName(localData, localData.structuredNotes.find((note) => note.id === metadataDraft.linkedNoteId)?.folderId)}`}
                 onPress={() => {
@@ -3484,21 +3193,21 @@ function NotesFilesScreen({
                   setMetadataField("linkedNoteId", notes[(currentIndex + 1) % Math.max(notes.length, 1)]?.id);
                 }}
               />
-              <PrimaryButton label={metadataEditingId ? "Save Metadata" : "Add Metadata"} onPress={saveMetadata} />
-              <SecondaryButton label="New Metadata" onPress={startNewMetadata} />
+              <PrimaryButton label={metadataEditingId ? "Save Reference" : "Add Reference"} onPress={saveMetadata} />
+              <SecondaryButton label="New Reference" onPress={startNewMetadata} />
             </View>
-            <DisclaimerBanner message="Metadata placeholders do not open camera, microphone, photo library, document picker, file upload, file sync, or cloud storage." />
+            <DisclaimerBanner message="File references do not open the camera, microphone, photo library, document picker, file upload, file sync, or cloud storage." />
           </WorkflowFormPanel>
 
-          <SectionHeader icon="file-cabinet" title="File Metadata Placeholders" />
+          <SectionHeader icon="file-cabinet" title="File References" />
           <View style={[styles.workflowGrid, isTablet ? styles.workflowGridTablet : null]}>
             {filteredMetadata.length === 0 ? (
               <EmptyState
-                actionLabel="New Metadata"
+                actionLabel="New Reference"
                 icon="file-document-outline"
-                message="Add a local metadata placeholder. This prototype does not upload, open, or process real files."
+                message="Add a local file reference. OPAi does not upload, open, or process the referenced file."
                 onAction={startNewMetadata}
-                title="No file metadata"
+                title="No file references"
               />
             ) : (
               filteredMetadata.map((item) => (
@@ -3507,9 +3216,9 @@ function NotesFilesScreen({
                   active={selectedItem === item.fileName}
                   icon="file-document-outline"
                   key={item.id}
-                  meta={`${item.category} - ${item.fileType}`}
+                  meta={`${fileMetadataCategoryLabel(item.category)} - ${item.fileType}`}
                   onDelete={() =>
-                    confirmLocalAction("Delete Metadata", "Remove this local file metadata placeholder?", "Delete", () =>
+                    confirmLocalAction("Delete File Reference", "Remove this local file reference?", "Delete", () =>
                       onUpdateLocalData((current) => notesService.deleteFileMetadata(current, item.id))
                     )
                   }
@@ -3575,11 +3284,11 @@ function NotesFilesScreen({
       <View style={styles.localDataPanel}>
         <View style={styles.localDataHeader}>
           <MaterialCommunityIcons name="shield-lock-outline" size={24} color={colors.ptsdGreen} />
-          <Text style={styles.profileName}>Local Prototype Limits</Text>
+          <Text style={styles.profileName}>Local Storage Limits</Text>
         </View>
         <Text style={styles.profileMeta}>
-          Notes, folders, metadata, and links are stored locally through the existing offline prototype storage. Reset Demo Data restores
-          default samples. Clear Local Data removes them from this device.
+          Notes, folders, file references, and links are stored locally on this device. Reset App Data restores clean local defaults.
+          Clear Local Data removes local content and signs out.
         </Text>
       </View>
 
@@ -3758,13 +3467,9 @@ function SettingsScreen({
             : await notificationService.scheduleTestNotification();
 
       const now = new Date().toISOString();
+      const content = getReminderPreviewContent(kind === "test" ? "system" : kind);
       const reminder: ScheduledReminder = {
-        body:
-          kind === "court"
-            ? "Demo court reminder. Verify official court details through authorized systems."
-            : kind === "training"
-              ? "Demo training reminder. Confirm official training details through authorized systems."
-              : "This reminder was scheduled locally on this device.",
+        body: content.body,
         createdAt: now,
         enabled: true,
         id: `scheduled-${kind}-${Date.now()}`,
@@ -3772,7 +3477,7 @@ function SettingsScreen({
         relatedEntityId: `${kind}-demo`,
         relatedEntityType: kind === "court" ? "court" : kind === "training" ? "training" : "system",
         scheduledAt: new Date(Date.now() + 10 * 1000).toISOString(),
-        title: kind === "court" ? "Demo Court Reminder" : kind === "training" ? "Demo Training Reminder" : "OPAi Test Reminder",
+        title: content.title,
         type: kind === "court" ? "courtReminder" : kind === "training" ? "trainingReminder" : "systemReminder",
         updatedAt: now
       };
@@ -3840,8 +3545,8 @@ function SettingsScreen({
 
   const confirmResetDemoData = () => {
     Alert.alert(
-      "Reset Sample Data",
-      "This will restore fictional reminders, drafts, notes, and history while keeping the current sign-in.",
+      "Reset App Data",
+      "This will remove locally stored operational records and restore clean app defaults while keeping the current sign-in.",
       [
         { style: "cancel", text: "Cancel" },
         { onPress: onResetDemoData, text: "Reset" }
@@ -4020,14 +3725,14 @@ function SettingsScreen({
             ))}
           </View>
           <View style={styles.actionRow}>
-            <SecondaryButton label="Reset Sample Data" onPress={confirmResetDemoData}>
+            <SecondaryButton label="Reset App Data" onPress={confirmResetDemoData}>
               <MaterialCommunityIcons name="backup-restore" size={20} color={colors.primaryBlue} />
             </SecondaryButton>
             <SecondaryButton label="Clear Local Data" onPress={confirmClearLocalData}>
               <MaterialCommunityIcons name="delete-outline" size={20} color={colors.danger} />
             </SecondaryButton>
           </View>
-          <DisclaimerBanner message="Clear Local Data removes device-local data, signs out the account, and returns to Welcome. Reset Sample Data restores fictional examples while keeping the current sign-in." />
+          <DisclaimerBanner message="Clear Local Data removes device-local content, signs out the account, and returns to Welcome. Reset App Data restores clean local defaults while keeping the current sign-in." />
         </SettingsPanel>
       ) : null}
 
