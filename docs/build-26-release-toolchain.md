@@ -63,6 +63,9 @@ both clean exports without a custom Metro resolver.
 Expo SDK 57 patch packages and required peer packages were aligned only where
 Expo Doctor identified compatibility issues. Expo, React Native, React, Metro,
 and native architecture were not upgraded to a different release family.
+The CI follow-up also aligned AsyncStorage to `2.2.0` and
+`react-native-safe-area-context` to `5.7.0`, matching the versions required by
+the installed Expo SDK on both Ubuntu and Windows.
 
 `pnpm peers check` reports one upstream metadata warning:
 `@expo/log-box@57.0.1` requests `@expo/dom-webview` `^57.0.1`, while Expo
