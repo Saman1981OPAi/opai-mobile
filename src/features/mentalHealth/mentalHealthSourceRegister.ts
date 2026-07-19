@@ -1,7 +1,7 @@
 import type { MentalHealthResource } from "./mentalHealthResourceTypes.ts";
 
-export const mentalHealthVerificationDate = "2026-07-16";
-export const mentalHealthNextReviewDate = "2026-10-16";
+export const mentalHealthVerificationDate = "2026-07-18";
+export const mentalHealthNextReviewDate = "2026-10-18";
 
 export const mentalHealthSourceRegister: MentalHealthResource[] = [
   {
@@ -36,10 +36,10 @@ export const mentalHealthSourceRegister: MentalHealthResource[] = [
     verifiedDate: mentalHealthVerificationDate
   },
   {
-    audience: "Serving or retired first responders, sworn or civilian",
+    audience: "Serving and retired first responders, sworn and civilian personnel, military members, and veterans",
     callNumber: "+18336772668",
-    coverage: "Ontario-based peer helpline",
-    displayNumber: "1-833-677-2668",
+    coverage: "Ontario-based anonymous peer helpline",
+    displayNumber: "1-833-677-BOOT (2668)",
     hours: "24/7",
     id: "boots-on-the-ground",
     nextReviewDate: mentalHealthNextReviewDate,
@@ -51,17 +51,17 @@ export const mentalHealthSourceRegister: MentalHealthResource[] = [
     verifiedDate: mentalHealthVerificationDate
   },
   {
-    audience: "People seeking non-clinical health and social-service navigation",
+    audience: "People seeking government and community-based, non-clinical health and social services",
     callNumber: "211",
-    coverage: "Most of Canada",
+    coverage: "Canada; channels and availability vary by region",
     displayNumber: "2-1-1",
-    hours: "24 hours in most of Canada; local availability may vary",
+    hours: "24/7 in most of Canada; regional hours may vary",
     id: "211-canada",
     nextReviewDate: mentalHealthNextReviewDate,
     officialUrl: "https://211.ca/",
     organization: "211 Canada",
     section: "communitySupport",
-    service: "Free, confidential community and social-service navigation",
+    service: "Free, confidential navigation to government and community-based services",
     status: "verified",
     verifiedDate: mentalHealthVerificationDate
   },
@@ -82,8 +82,8 @@ export const mentalHealthSourceRegister: MentalHealthResource[] = [
     audience: "People in the listed service areas who need immediate mental-health crisis support",
     callNumber: "+18553102673",
     coverage: "York Region, South Simcoe, and North York",
-    disclosure: "Provider notice: calls may be recorded for training purposes.",
-    displayNumber: "1-855-310-COPE (2673)",
+    disclosure: "Provider notice: calls may be recorded for quality and training purposes.",
+    displayNumber: "1-855-310-2673",
     hours: "24/7 phone and text support",
     id: "yssn-310-cope",
     nextReviewDate: mentalHealthNextReviewDate,
