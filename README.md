@@ -1,6 +1,19 @@
 # OPAi Mobile
 
-Build 25 staging integration uses `EXPO_PUBLIC_OPAI_API_BASE_URL`. Copy `.env.example` to an ignored local environment file for local development; never place backend or OpenAI secrets in the app. Preview/TestFlight targets the certified staging backend, while production remains a separate future environment.
+Local and internal-staging development uses
+`EXPO_PUBLIC_OPAI_API_BASE_URL`. Copy `.env.example` to an ignored local
+environment file for local development; never place backend or OpenAI secrets
+in the app. The `testflight` profile inherits the production environment and
+targets `https://api.opaiapp.com`; it must not be used until that production
+backend is deployed and certified.
+
+## Supported Release Toolchain
+
+Build and release validation uses Node.js `22.23.1` and pnpm `11.9.0`.
+Corepack activates the package-manager version declared in `package.json`.
+See
+[`docs/build-26-release-toolchain.md`](docs/build-26-release-toolchain.md) for
+the clean-install and export certification record.
 
 Cross-platform OPAi Police mobile application for iOS and Android, with current launch priority on iOS.
 
