@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { BottomNavigation } from "@/components/ui/BottomNavigation";
 import { ModuleScreen } from "@/screens/ModuleScreen";
+import { ToolsScreen } from "@/features/tools/ToolsScreen";
 import type { LocalAppData } from "@/storage/storageTypes";
 import { colors } from "@/theme/tokens";
 import type { MockUserProfile } from "@/types/auth";
@@ -36,7 +37,14 @@ export function AppShell({
 
   return (
     <View style={styles.shell}>
-      {activeModule.id === "ai" ? (
+      {activeModule.id === "tools" ? (
+        <ToolsScreen
+          localData={localData}
+          onSelectModule={onSelectModule}
+          onUpdateLocalData={onUpdateLocalData}
+          userId={profile?.userId ?? ""}
+        />
+      ) : activeModule.id === "ai" ? (
         <ModuleScreen
           localData={localData}
           module={activeModule}

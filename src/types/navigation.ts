@@ -8,6 +8,7 @@ export type ModuleId =
   | "mentalHealth"
   | "deviceTesting"
   | "translation"
+  | "tools"
   | "calendar"
   | "ai"
   | "court"

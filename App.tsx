@@ -8,7 +8,10 @@ import { emptyConsentState } from "@/data/authMock";
 import { modules } from "@/data/modules";
 import { AuthFlow } from "@/screens/AuthFlow";
 import { audioStatementRepository } from "@/features/audioStatement/audioStatementRepository";
-import { assistantRepository } from "@/features/assistant/assistantRepository";
+import { protectedReportMigration } from "@/features/reports/protectedReportMigration";
+import { protectedReportRepository } from "@/features/reports/protectedReportRepository";
+import { clearAttachmentTemporaryFiles } from "@/storage/attachments/attachmentCleanup";
+import { protectedUserDataService } from "@/storage/protected/protectedUserDataService";
 import { authApi } from "@/services/api/authApi";
 import { apiClient } from "@/services/api/apiClient";
 import { notificationService } from "@/services/notificationService";
@@ -27,6 +30,7 @@ export default function App() {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("signedOut");
   const [localData, setLocalData] = useState<LocalAppData | null>(null);
   const [profile, setProfile] = useState<MockUserProfile | null>(null);
+  const [storageError, setStorageError] = useState<string | null>(null);
 
   const active = useMemo(
     () => modules.find((module) => module.id === activeModule) ?? modules[0]!,
@@ -36,23 +40,51 @@ export default function App() {
   useEffect(() => {
     let mounted = true;
 
-    Promise.all([persistenceService.loadOrSeed(), authApi.restore()]).then(([data, restoredProfile]) => {
-      if (!mounted) {
-        return;
-      }
+    void clearAttachmentTemporaryFiles();
 
-      setLocalData(data);
-      if (restoredProfile && data.auth.consent.aiProcessing) {
-        const nextProfile = mapOfficerProfile(restoredProfile, data.auth.profile);
-        setProfile(nextProfile);
-        setAuthStatus("signedIn");
-      } else if (restoredProfile) {
-        void secureSession.clear();
-        setLocalData({ ...data, auth: { ...data.auth, profile: null, status: "signedOut" } });
-      } else if (data.auth.status === "signedIn") {
-        setLocalData({ ...data, auth: { ...data.auth, profile: null, status: "signedOut" } });
+    void (async () => {
+      try {
+        const [data, restoredProfile] = await Promise.all([
+          persistenceService.loadOrSeed(),
+          authApi.restore()
+        ]);
+        if (!mounted) return;
+
+        if (restoredProfile && data.auth.consent.aiProcessing) {
+          const nextProfile = mapOfficerProfile(restoredProfile, data.auth.profile);
+          const reports = await protectedReportMigration.loadOrMigrate({
+            legacyDrafts: data.incidentDrafts,
+            legacyOwnerId: data.auth.profile?.userId ?? null,
+            userId: nextProfile.userId
+          });
+          if (!mounted) return;
+          setLocalData({ ...data, incidentDrafts: reports.drafts });
+          setProfile(nextProfile);
+          setAuthStatus("signedIn");
+        } else if (restoredProfile) {
+          await secureSession.clear();
+          setLocalData({
+            ...data,
+            auth: { ...data.auth, profile: null, status: "signedOut" },
+            incidentDrafts: []
+          });
+        } else {
+          setLocalData({
+            ...data,
+            ...(data.auth.status === "signedIn"
+              ? { auth: { ...data.auth, profile: null, status: "signedOut" as const } }
+              : {}),
+            incidentDrafts: []
+          });
+        }
+      } catch {
+        if (mounted) {
+          setStorageError(
+            "Protected local data could not be opened. Your existing data was not changed."
+          );
+        }
       }
-    });
+    })();
 
     return () => {
       mounted = false;
@@ -61,6 +93,7 @@ export default function App() {
 
   useEffect(() => {
     apiClient.setSessionExpiredHandler(async () => {
+      await clearAttachmentTemporaryFiles();
       setProfile(null);
       setAuthStatus("signedOut");
       setActiveModule("ai");
@@ -73,9 +106,10 @@ export default function App() {
             profile: null,
             status: "signedOut" as const
           },
+          incidentDrafts: [],
           updatedAt: new Date().toISOString()
         };
-        void persistenceService.save(next);
+        void persistenceService.saveWithFrozenLegacyReports(next);
         return next;
       });
     });
@@ -87,7 +121,13 @@ export default function App() {
     setLocalData((current) => {
       const base = current ?? createDefaultLocalAppData();
       const next = updater(base);
-      persistenceService.save(next);
+      const userId = next.auth.status === "signedIn" ? next.auth.profile?.userId : null;
+      void (async () => {
+        if (userId) await protectedReportRepository.save(userId, next.incidentDrafts);
+        await persistenceService.saveWithFrozenLegacyReports(next);
+      })().catch(() => {
+        setStorageError("A protected local change could not be saved. Try again before closing OPAi.");
+      });
       return next;
     });
   };
@@ -104,60 +144,80 @@ export default function App() {
       translationDisclaimer: true
     };
 
-    setProfile(nextProfile);
-    setAuthStatus("signedIn");
-    setActiveModule("ai");
-    updateLocalData((current) => ({
-      ...current,
-      auth: {
-        ...current.auth,
-        biometricPreference: nextProfile.biometricEnabled ? "deviceBiometrics" : current.auth.biometricPreference,
-        consent: acceptedConsent,
-        consentAcceptedAt: {
-          aiDisclaimer: acceptedAt,
-          aiProcessing: acceptedAt,
-          privacy: acceptedAt,
-          prototypeDisclaimer: acceptedAt,
-          ptsdDisclaimer: acceptedAt,
-          terms: acceptedAt,
-          translationDisclaimer: acceptedAt
+    void (async () => {
+      const current = localData ?? createDefaultLocalAppData();
+      const reports = await protectedReportMigration.loadOrMigrate({
+        legacyDrafts: current.incidentDrafts,
+        legacyOwnerId: current.auth.profile?.userId ?? null,
+        userId: nextProfile.userId
+      });
+      const next: LocalAppData = {
+        ...current,
+        auth: {
+          ...current.auth,
+          biometricPreference: nextProfile.biometricEnabled ? "deviceBiometrics" : current.auth.biometricPreference,
+          consent: acceptedConsent,
+          consentAcceptedAt: {
+            aiDisclaimer: acceptedAt,
+            aiProcessing: acceptedAt,
+            privacy: acceptedAt,
+            prototypeDisclaimer: acceptedAt,
+            ptsdDisclaimer: acceptedAt,
+            terms: acceptedAt,
+            translationDisclaimer: acceptedAt
+          },
+          lastSignedInAt: acceptedAt,
+          notificationPreferences: nextProfile.notificationPreferences,
+          profile: nextProfile,
+          status: "signedIn"
         },
-        lastSignedInAt: acceptedAt,
-        notificationPreferences: nextProfile.notificationPreferences,
-        profile: nextProfile,
-        status: "signedIn"
-      },
-      preferences: {
-        ...current.preferences,
-        biometricEnabled: nextProfile.biometricEnabled,
-        consentStatus: acceptedConsent,
-        preferredLanguage: nextProfile.preferredLanguage
-      },
-      updatedAt: new Date().toISOString()
-    }));
+        incidentDrafts: reports.drafts,
+        preferences: {
+          ...current.preferences,
+          biometricEnabled: nextProfile.biometricEnabled,
+          consentStatus: acceptedConsent,
+          preferredLanguage: nextProfile.preferredLanguage
+        },
+        updatedAt: new Date().toISOString()
+      };
+      await protectedReportRepository.save(nextProfile.userId, next.incidentDrafts);
+      await persistenceService.saveWithFrozenLegacyReports(next);
+      setProfile(nextProfile);
+      setAuthStatus("signedIn");
+      setActiveModule("ai");
+      setLocalData(next);
+    })().catch(() => {
+      setStorageError("Protected report storage could not be prepared. Sign-in was stopped safely.");
+      setAuthStatus("signedOut");
+    });
   };
 
   const handleSignOut = async () => {
     await authApi.signOut();
+    await clearAttachmentTemporaryFiles();
     setProfile(null);
     setAuthStatus("signedOut");
     setActiveModule("ai");
-    updateLocalData((current) => ({
-      ...current,
-      auth: {
-        ...current.auth,
-        profile: null,
-        status: "signedOut"
-      },
-      updatedAt: new Date().toISOString()
-    }));
+    setLocalData((current) => {
+      if (!current) return current;
+      const next: LocalAppData = {
+        ...current,
+        auth: { ...current.auth, profile: null, status: "signedOut" },
+        incidentDrafts: [],
+        updatedAt: new Date().toISOString()
+      };
+      void persistenceService.saveWithFrozenLegacyReports(next);
+      return next;
+    });
   };
 
   const handleResetDemoData = async () => {
-    if (profile?.userId) await assistantRepository.clearHistory(profile.userId);
+    if (profile?.userId) await protectedUserDataService.clearAll(profile.userId);
     await audioStatementRepository.deleteAll(localData?.audioStatements ?? []);
     await notificationService.cancelAll().catch(() => undefined);
-    const seeded = await persistenceService.resetDemoData(localData?.auth);
+    const seeded = createDefaultLocalAppData(localData?.auth);
+    if (profile?.userId) await protectedReportRepository.save(profile.userId, seeded.incidentDrafts);
+    await persistenceService.clearLegacyReports({ ...seeded, incidentDrafts: [] });
     setLocalData(seeded);
     if (seeded.auth.status === "signedIn" && seeded.auth.profile) {
       setAuthStatus("signedIn");
@@ -166,7 +226,7 @@ export default function App() {
   };
 
   const handleClearLocalData = async () => {
-    if (profile?.userId) await assistantRepository.clearUserData(profile.userId);
+    if (profile?.userId) await protectedUserDataService.clearAll(profile.userId);
     await audioStatementRepository.deleteAll(localData?.audioStatements ?? []);
     await notificationService.cancelAll().catch(() => undefined);
     await secureSession.clear();
@@ -197,7 +257,13 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#05070B" }}>
         <StatusBar style="light" />
-        {!localData ? (
+        {storageError ? (
+          <View style={{ alignItems: "center", flex: 1, gap: spacing.md, justifyContent: "center", padding: spacing.xl }}>
+            <Text accessibilityRole="alert" style={{ color: colors.textPrimary, fontSize: typography.body, textAlign: "center" }}>
+              {storageError}
+            </Text>
+          </View>
+        ) : !localData ? (
           <View style={{ alignItems: "center", flex: 1, gap: spacing.md, justifyContent: "center" }}>
             <ActivityIndicator accessibilityLabel="Loading OPAi Police" accessibilityRole="progressbar" color={colors.primaryBlue} />
             <Text maxFontSizeMultiplier={1.3} style={{ color: colors.textMuted, fontSize: typography.small, fontWeight: "700" }}>

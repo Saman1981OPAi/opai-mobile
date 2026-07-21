@@ -74,6 +74,14 @@ export const modules: AppModule[] = [
     summary: "Secure AI assistance for drafting, organization, review, and summaries."
   },
   {
+    id: "tools",
+    label: "Daily Tools",
+    shortLabel: "Tools",
+    icon: "TL",
+    priority: "primary",
+    summary: "Protected offline tools for notes, timelines, descriptions, calculations, and checklists."
+  },
+  {
     id: "calendar",
     label: "Calendar",
     shortLabel: "Calendar",
