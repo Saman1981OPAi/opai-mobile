@@ -26,6 +26,18 @@ export const persistenceService = {
     await storageClient.setJson(STORAGE_KEYS.storageVersion, CURRENT_STORAGE_VERSION);
   },
 
+  async saveWithFrozenLegacyReports(data: LocalAppData): Promise<void> {
+    const existing = await storageClient.getJson<LocalAppData>(STORAGE_KEYS.localAppData);
+    await this.save({
+      ...data,
+      incidentDrafts: existing?.incidentDrafts ?? []
+    });
+  },
+
+  async clearLegacyReports(data: LocalAppData): Promise<void> {
+    await this.save({ ...data, incidentDrafts: [] });
+  },
+
   async resetDemoData(authOverride?: LocalAuthSession): Promise<LocalAppData> {
     const seeded = createDefaultLocalAppData(authOverride);
     await this.save(seeded);

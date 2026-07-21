@@ -7,6 +7,10 @@ const list = readFileSync(new URL("./AssistantMessageList.tsx", import.meta.url)
 const voice = readFileSync(new URL("./useAssistantVoiceInput.ts", import.meta.url), "utf8");
 const voiceApi = readFileSync(new URL("./assistantVoiceApi.ts", import.meta.url), "utf8");
 const repository = readFileSync(new URL("./assistantRepository.ts", import.meta.url), "utf8");
+const protectedEngine = readFileSync(
+  new URL("../../storage/protected/protectedStorageEngine.ts", import.meta.url),
+  "utf8"
+);
 const navigation = readFileSync(
   new URL("../../components/ui/BottomNavigation.tsx", import.meta.url),
   "utf8"
@@ -29,9 +33,9 @@ test("Assistant message rendering is virtualized and raw content is restricted",
   assert.equal(list.includes("getScriptAwareTextStyle(content)"), true);
 });
 
-test("primary navigation is OPAi, Report, Translate, Calendar, Settings", () => {
+test("primary navigation is OPAi, Report, Translate, Tools, Settings", () => {
   const labels = [...navigation.matchAll(/label: "([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(labels, ["OPAi", "Report", "Translate", "Calendar", "Settings"]);
+  assert.deepEqual(labels, ["OPAi", "Report", "Translate", "Tools", "Settings"]);
 });
 
 test("Assistant supports explicit foreground-only voice transcription", () => {
@@ -51,10 +55,7 @@ test("OPAi answers use a distinct response bubble and errors retain warning styl
 });
 
 test("clearing protected Assistant data waits for queued writes before deleting keys", () => {
-  const waitForQueue = repository.indexOf(
-    "await (writeQueues.get(userId) ?? Promise.resolve()).catch"
-  );
-  const removeEncryptedData = repository.indexOf("AsyncStorage.removeItem(storageKey(userId))");
-  assert.ok(waitForQueue >= 0);
-  assert.ok(removeEncryptedData > waitForQueue);
+  assert.equal(repository.includes("protectedStorage.remove(options(userId))"), true);
+  assert.equal(protectedEngine.includes("const queues = new Map<string, Promise<void>>()"), true);
+  assert.equal(protectedEngine.includes("await enqueue(queueKey"), true);
 });
