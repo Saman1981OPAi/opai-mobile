@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type ButtonProps = {
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: 18,
     flexShrink: 1,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   secondary: {
     alignItems: "center",
@@ -91,6 +92,6 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: 16,
     flexShrink: 1,
-    fontWeight: "800"
+    fontWeight: "700"
   }
 });

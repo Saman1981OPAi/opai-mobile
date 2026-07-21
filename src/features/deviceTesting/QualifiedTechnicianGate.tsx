@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
 
 type QualifiedTechnicianGateProps = {
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   primaryText: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   secondary: {
@@ -77,12 +78,12 @@ const styles = StyleSheet.create({
   secondaryText: {
     color: colors.textSecondary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   title: {
     color: colors.textPrimary,
     fontSize: typography.h2,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   }
 });

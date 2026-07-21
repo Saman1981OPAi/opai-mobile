@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { getModelOptions } from "@/features/deviceTesting/deviceTestingAssistantService";
 import type { DeviceModelOption, DeviceTestCategory } from "@/features/deviceTesting/deviceTestingTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   manufacturer: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   meta: {
     color: colors.textMuted,
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
   model: {
     color: colors.textSecondary,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 19
   },
   pressed: {

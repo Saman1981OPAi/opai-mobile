@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type EventCardProps = {
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "right"
   },
   hour: {
@@ -99,6 +100,6 @@ const styles = StyleSheet.create({
   title: {
     color: colors.textPrimary,
     fontSize: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   }
 });

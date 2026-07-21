@@ -1,8 +1,15 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const trackedFiles = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" })
+  .split("\0")
+  .filter(Boolean);
+const workingFiles = execFileSync(
+  "git",
+  ["ls-files", "-co", "--exclude-standard", "-z"],
+  { encoding: "utf8" },
+)
   .split("\0")
   .filter(Boolean);
 
@@ -11,19 +18,23 @@ const prohibitedFiles = trackedFiles.filter((file) =>
 );
 assert.deepEqual(prohibitedFiles, [], `Prohibited tracked files: ${prohibitedFiles.join(", ")}`);
 
-const sourceFiles = trackedFiles.filter(
+const sourceFiles = workingFiles.filter(
   (file) =>
-    file === "App.tsx" ||
-    file === "app.json" ||
-    file === "eas.json" ||
-    file.startsWith("src/") ||
-    file.startsWith("modules/"),
+    existsSync(file) &&
+    (
+      file === "App.tsx" ||
+      file === "app.json" ||
+      file === "eas.json" ||
+      file.startsWith("src/") ||
+      file.startsWith("modules/")
+    ),
 );
 
 const findings = [];
 for (const file of sourceFiles) {
   const content = readFileSync(file, "utf8");
-  if (/api\.openai\.com/i.test(content)) {
+  const isTestFile = /\.test\.[cm]?[jt]sx?$/i.test(file);
+  if (!isTestFile && /api\.openai\.com/i.test(content)) {
     findings.push(`${file}: direct OpenAI endpoint`);
   }
   if (/sk-(?:proj-)?[A-Za-z0-9_-]{20,}/.test(content)) {

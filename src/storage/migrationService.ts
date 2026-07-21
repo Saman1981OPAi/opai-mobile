@@ -37,7 +37,11 @@ export const migrationService = {
         consentAcceptedAt: data.auth.consentAcceptedAt ?? {}
       },
       aiHistory: normalizeAIHistory(data.aiHistory),
-      aiPreferences: data.aiPreferences ?? createDefaultAIPreferences(),
+      aiPreferences: {
+        ...createDefaultAIPreferences(),
+        ...(data.aiPreferences ?? {}),
+        protectedStorageVersion: 1
+      },
       calendarWorkflowEvents: data.calendarWorkflowEvents ?? [],
       courtWorkflowEvents: data.courtWorkflowEvents ?? [],
       fileMetadataPlaceholders: normalizeFileMetadataPlaceholders(data.fileMetadataPlaceholders),

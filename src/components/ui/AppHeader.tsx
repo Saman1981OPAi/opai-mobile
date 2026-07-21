@@ -1,16 +1,18 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type AppHeaderProps = {
+  compact?: boolean;
   eyebrow?: string;
   title?: string;
 };
 
-export function AppHeader({ eyebrow = "Canadian Police", title }: AppHeaderProps) {
+export function AppHeader({ compact = false, eyebrow = "Canadian Police", title }: AppHeaderProps) {
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, compact ? styles.wrapCompact : null]}>
       <View style={styles.brandSide}>
         <BrandMark compact />
         {title ? <Text numberOfLines={1} adjustsFontSizeToFit style={styles.title}>{title}</Text> : null}
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
   badgeText: {
     color: colors.textSecondary,
     fontSize: 10.5,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   brandSide: {
     alignItems: "center",
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     flex: 1,
     fontSize: 18,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   wrap: {
     alignItems: "center",
@@ -68,5 +70,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     justifyContent: "space-between",
     marginBottom: spacing.lg
+  },
+  wrapCompact: {
+    marginBottom: 0
   }
 });

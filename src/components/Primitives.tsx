@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, shadows, spacing, typography } from "@/theme/tokens";
 
 type CardProps = {
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   eyebrow: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: 1.2,
     textTransform: "uppercase"
   },
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   pillText: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   pillTextNeutral: {
     color: colors.textSecondary
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     color: colors.textPrimary,
     fontSize: typography.h1,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 30,
     marginTop: spacing.xs
   },

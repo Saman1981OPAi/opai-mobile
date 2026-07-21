@@ -43,15 +43,6 @@ export const incidentSteps = [
   { icon: "clipboard-check-outline" as MciIcon, title: "Follow-Up", subtitle: "Tasks" }
 ];
 
-export const aiTools = [
-  { icon: "microphone-outline" as MciIcon, title: "Talk to AI", subtitle: "Voice command" },
-  { icon: "file-search-outline" as MciIcon, title: "Review Report", subtitle: "Clarity check" },
-  { icon: "scale-balance" as MciIcon, title: "Criminal Code", subtitle: "Reference" },
-  { icon: "note-text-outline" as MciIcon, title: "Summarize", subtitle: "Short notes" },
-  { icon: "paperclip" as MciIcon, title: "Evidence", subtitle: "Organize" },
-  { icon: "pencil-outline" as MciIcon, title: "Draft", subtitle: "Report outline" }
-];
-
 export const translationModes = [
   { icon: "text-box-outline" as MciIcon, title: "Text", subtitle: "Translate" },
   { icon: "microphone-outline" as MciIcon, title: "Voice", subtitle: "Speak" },

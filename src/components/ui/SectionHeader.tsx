@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, spacing } from "@/theme/tokens";
 
 type SectionHeaderProps = {
@@ -25,12 +26,12 @@ const styles = StyleSheet.create({
   action: {
     color: colors.textMuted,
     fontSize: 13,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   title: {
     color: colors.textPrimary,
     fontSize: 22,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   titleWrap: {
     alignItems: "center",

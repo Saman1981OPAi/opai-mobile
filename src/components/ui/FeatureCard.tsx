@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type FeatureCardProps = {
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   title: {
     color: colors.textPrimary,
     fontSize: 17,
-    fontWeight: "900",
+    fontWeight: "700",
     maxWidth: "100%",
     textAlign: "center"
   }

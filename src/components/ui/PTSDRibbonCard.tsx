@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 export function PTSDRibbonCard() {
@@ -39,6 +40,6 @@ const styles = StyleSheet.create({
   title: {
     color: colors.ptsdGreenSoft,
     fontSize: 19,
-    fontWeight: "900"
+    fontWeight: "700"
   }
 });

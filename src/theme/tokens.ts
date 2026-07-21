@@ -43,17 +43,7 @@ export const radius = {
   full: 999
 } as const;
 
-export const typography = {
-  hero: 34,
-  title: 28,
-  h1: 24,
-  h2: 20,
-  h3: 18,
-  body: 16,
-  small: 14,
-  caption: 12,
-  tiny: 10
-} as const;
+export { typography } from "./typography";
 
 export const shadows = {
   card: {

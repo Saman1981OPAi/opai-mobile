@@ -34,10 +34,15 @@ export const authApi = {
   },
   async signOut() {
     const refreshToken = await secureSession.getRefreshToken();
-    try {
-      if (refreshToken) await apiClient.post("/auth/logout", { refresh_token: refreshToken }, { authenticated: false });
-    } finally {
-      await secureSession.clear();
+    apiClient.cancelAuthenticatedRequests();
+    await secureSession.clear();
+    if (refreshToken) {
+      void apiClient
+        .post("/auth/logout", { refresh_token: refreshToken }, {
+          authenticated: false,
+          timeoutMs: 1_500
+        })
+        .catch(() => undefined);
     }
   }
 };

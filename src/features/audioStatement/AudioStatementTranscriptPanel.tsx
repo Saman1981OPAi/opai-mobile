@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
@@ -63,8 +64,8 @@ export function AudioStatementTranscriptPanel({
 
 const styles = StyleSheet.create({
   actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
-  aiLabel: { color: colors.primaryBlue, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
-  editedLabel: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
+  aiLabel: { color: colors.primaryBlue, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
+  editedLabel: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
   input: { backgroundColor: "rgba(0,0,0,0.24)", borderColor: "rgba(77,163,255,0.28)", borderRadius: radius.md, borderWidth: 1, color: colors.textPrimary, fontSize: typography.body, lineHeight: 24, minHeight: 150, padding: spacing.md },
   labelRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.md },

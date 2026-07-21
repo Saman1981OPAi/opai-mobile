@@ -1,3 +1,12 @@
+packages:
+  - .
+
 allowBuilds:
-  dtrace-provider: false
-  unrs-resolver: true
+  unrs-resolver: false
+
+overrides:
+  '@expo/dom-webview': 57.0.1
+  'brace-expansion@<1.1.16': 1.1.16
+  'brace-expansion@>=2.0.0 <2.1.2': 2.1.2
+  linkify-it: 5.0.1
+  markdown-it: 14.3.0

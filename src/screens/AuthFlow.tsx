@@ -1,14 +1,8 @@
 import { useMemo, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  useWindowDimensions,
-  View
-} from "react-native";
+  Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { consentItems, emptyConsentState } from "@/data/authMock";
@@ -517,7 +511,7 @@ const styles = StyleSheet.create({
   brandTitle: {
     color: colors.textPrimary,
     fontSize: typography.h1,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   buttonStack: {
     gap: spacing.sm
@@ -551,7 +545,7 @@ const styles = StyleSheet.create({
   consentTitle: {
     color: colors.textPrimary,
     fontSize: typography.body,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   field: {
     alignItems: "center",
@@ -574,7 +568,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   errorBox: {
@@ -591,7 +585,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     flex: 1,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 20
   },
   headingCopy: {
@@ -615,7 +609,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     color: colors.textPrimary,
     fontSize: typography.title,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 34
   },
   inlineActions: {
@@ -627,7 +621,7 @@ const styles = StyleSheet.create({
   input: {
     color: colors.textPrimary,
     fontSize: typography.body,
-    fontWeight: "800",
+    fontWeight: "700",
     margin: 0,
     padding: 0
   },
@@ -653,7 +647,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: colors.textPrimary,
     fontSize: typography.h2,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   stack: {
     gap: spacing.md
@@ -673,7 +667,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   successIcon: {
     alignItems: "center",
@@ -695,12 +689,12 @@ const styles = StyleSheet.create({
   testingPillText: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   textButton: {
     color: colors.accentBlue,
     fontSize: typography.small,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   textButtonControl: {

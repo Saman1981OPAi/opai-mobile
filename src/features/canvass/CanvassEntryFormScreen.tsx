@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import type { CanvassContactResult, CanvassEntry, CanvassEntryDraft } from "@/features/canvass/canvassTypes";
@@ -64,11 +65,11 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   chip: { borderColor: "rgba(77,163,255,0.25)", borderRadius: radius.full, borderWidth: 1, minHeight: 42, paddingHorizontal: spacing.sm, paddingVertical: spacing.sm },
   chipSelected: { backgroundColor: "rgba(10,132,255,0.18)", borderColor: colors.primaryBlue },
-  chipText: { color: colors.textSecondary, fontSize: typography.caption, fontWeight: "900" },
+  chipText: { color: colors.textSecondary, fontSize: typography.caption, fontWeight: "700" },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   field: { flex: 1, gap: spacing.xs, minWidth: 145 },
   input: { backgroundColor: "rgba(0,0,0,0.24)", borderColor: "rgba(77,163,255,0.28)", borderRadius: radius.md, borderWidth: 1, color: colors.textPrimary, fontSize: typography.body, minHeight: 48, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
+  label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
   multiline: { minHeight: 110, textAlignVertical: "top" },
   row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   wrap: { gap: spacing.md }

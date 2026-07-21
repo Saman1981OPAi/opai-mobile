@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, layout } from "@/theme/tokens";
 import type { ModuleId } from "@/types/navigation";
 
@@ -11,11 +12,11 @@ type NavItem = {
 };
 
 const items: NavItem[] = [
-  { id: "dashboard", label: "Home", icon: "home" },
-  { id: "incident", label: "Report", icon: "document-text-outline" },
   { id: "ai", label: "OPAi", icon: "sparkles-outline" },
+  { id: "incident", label: "Report", icon: "document-text-outline" },
   { id: "translation", label: "Translate", icon: "language-outline" },
-  { id: "calendar", label: "Calendar", icon: "calendar-outline" }
+  { id: "calendar", label: "Calendar", icon: "calendar-outline" },
+  { id: "settings", label: "Settings", icon: "settings-outline" }
 ];
 
 type BottomNavigationProps = {
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
   label: {
     color: "rgba(255,255,255,0.68)",
     fontSize: 10,
-    fontWeight: "800",
+    fontWeight: "700",
     textAlign: "center"
   },
   labelActive: {

@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   body: { color: colors.textMuted, fontSize: typography.small, lineHeight: 21 },
   headerRow: { alignItems: "center", flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, justifyContent: "space-between" },
   input: { backgroundColor: "rgba(0,0,0,0.24)", borderColor: "rgba(77,163,255,0.28)", borderRadius: radius.md, borderWidth: 1, color: colors.textPrimary, fontSize: typography.body, minHeight: 48, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  meta: { color: colors.textMuted, flexShrink: 1, fontSize: typography.caption, fontWeight: "800" },
+  meta: { color: colors.textMuted, flexShrink: 1, fontSize: typography.caption, fontWeight: "700" },
   notes: { minHeight: 96, textAlignVertical: "top" },
   panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
   wrap: { gap: spacing.md }

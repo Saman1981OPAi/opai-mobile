@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
 
 type UnsupportedDeviceNoticeProps = {
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   copy: {
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   model: {
     color: colors.textMuted,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     textAlign: "center"
   },
   panel: {
@@ -90,13 +91,13 @@ const styles = StyleSheet.create({
   title: {
     color: colors.textPrimary,
     fontSize: typography.h2,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   warning: {
     color: colors.warning,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 18,
     textAlign: "center"
   }

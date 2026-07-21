@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
 
 function formatTime(seconds: number) {
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: typography.caption,
     fontVariant: ["tabular-nums"],
-    fontWeight: "800"
+    fontWeight: "700"
   },
   timeWrap: {
     alignItems: "center",

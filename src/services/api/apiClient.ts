@@ -19,7 +19,13 @@ type RequestOptions = RequestInit & {
   timeoutMs?: number;
 };
 
+type SessionExpiredHandler = () => void | Promise<void>;
+
 let refreshPromise: Promise<string | null> | null = null;
+let sessionExpiredHandler: SessionExpiredHandler | null = null;
+let sessionExpiryInProgress = false;
+const authenticatedControllers = new Set<AbortController>();
+const REFRESH_TIMEOUT_MS = 8_000;
 
 function safeMessage(status: number) {
   if (status === 401) return "Your session has expired. Please sign in again.";
@@ -45,39 +51,87 @@ async function parseError(response: Response) {
   return new ApiError(message, response.status, code, response.headers.get("x-request-id") ?? undefined);
 }
 
+async function expireSession() {
+  if (sessionExpiryInProgress) return;
+  sessionExpiryInProgress = true;
+  try {
+    authenticatedControllers.forEach((controller) => controller.abort());
+    authenticatedControllers.clear();
+    await secureSession.clear();
+    await sessionExpiredHandler?.();
+  } finally {
+    sessionExpiryInProgress = false;
+  }
+}
+
 async function refreshAccessToken() {
   const refreshToken = await secureSession.getRefreshToken();
-  if (!refreshToken) return null;
-
-  const response = await fetch(`${apiConfig.baseUrl}/auth/refresh`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: refreshToken })
-  });
-  if (!response.ok) {
-    await secureSession.clear();
+  if (!refreshToken) {
+    await expireSession();
     return null;
   }
-  const tokens = (await response.json()) as TokenResponse;
-  await secureSession.save(tokens);
-  return tokens.access_token;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REFRESH_TIMEOUT_MS);
+  try {
+    const response = await fetch(`${apiConfig.baseUrl}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+      signal: controller.signal
+    });
+    if (!response.ok) {
+      if ([400, 401, 403].includes(response.status)) {
+        await expireSession();
+        return null;
+      }
+      throw await parseError(response);
+    }
+    const tokens = (await response.json()) as TokenResponse;
+    await secureSession.save(tokens);
+    return tokens.access_token;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new ApiError("Session refresh timed out. Try again.", 408, "REFRESH_TIMEOUT");
+    }
+    throw new ApiError("Unable to refresh the session. Check your connection.", 0, "NETWORK_ERROR");
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function request<T>(path: string, options: RequestOptions = {}, retried = false): Promise<T> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? apiConfig.timeoutMs);
+  let timedOut = false;
+  let cancelledByCaller = false;
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, options.timeoutMs ?? apiConfig.timeoutMs);
   const headers = new Headers(options.headers);
   const authenticated = options.authenticated !== false;
-
-  if (authenticated) {
-    const accessToken = await secureSession.getAccessToken();
-    if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
-  }
-  if (options.body && !(options.body instanceof FormData) && !headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
+  const externalSignal = options.signal;
+  const cancelFromCaller = () => {
+    cancelledByCaller = true;
+    controller.abort();
+  };
+  if (externalSignal?.aborted) {
+    cancelFromCaller();
+  } else {
+    externalSignal?.addEventListener("abort", cancelFromCaller, { once: true });
   }
 
   try {
+    if (authenticated) {
+      authenticatedControllers.add(controller);
+      const accessToken = await secureSession.getAccessToken();
+      if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+    }
+    if (options.body && !(options.body instanceof FormData) && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
     const response = await fetch(`${apiConfig.baseUrl}${path}`, {
       ...options,
       headers,
@@ -90,6 +144,11 @@ async function request<T>(path: string, options: RequestOptions = {}, retried = 
       });
       const refreshed = await refreshPromise;
       if (refreshed) return request<T>(path, options, true);
+      throw new ApiError("Your session has expired. Please sign in again.", 401, "SESSION_EXPIRED");
+    }
+    if (response.status === 401 && authenticated && retried) {
+      await expireSession();
+      throw new ApiError("Your session has expired. Please sign in again.", 401, "SESSION_EXPIRED");
     }
 
     if (!response.ok) throw await parseError(response);
@@ -98,11 +157,16 @@ async function request<T>(path: string, options: RequestOptions = {}, retried = 
   } catch (error) {
     if (error instanceof ApiError) throw error;
     if (error instanceof Error && error.name === "AbortError") {
+      if (cancelledByCaller || (!timedOut && authenticated)) {
+        throw new ApiError("Request cancelled.", 0, "REQUEST_CANCELLED");
+      }
       throw new ApiError("The request timed out. Check your connection and try again.", 408, "TIMEOUT");
     }
     throw new ApiError("Unable to reach the OPAi service. Your local data remains available.", 0, "NETWORK_ERROR");
   } finally {
     clearTimeout(timeout);
+    externalSignal?.removeEventListener("abort", cancelFromCaller);
+    authenticatedControllers.delete(controller);
   }
 }
 
@@ -115,5 +179,12 @@ export const apiClient = {
   },
   delete<T>(path: string, options?: RequestOptions) {
     return request<T>(path, { ...options, method: "DELETE" });
+  },
+  cancelAuthenticatedRequests() {
+    authenticatedControllers.forEach((controller) => controller.abort());
+    authenticatedControllers.clear();
+  },
+  setSessionExpiredHandler(handler: SessionExpiredHandler | null) {
+    sessionExpiredHandler = handler;
   }
 };
