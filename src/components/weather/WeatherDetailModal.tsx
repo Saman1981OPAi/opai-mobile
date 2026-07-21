@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Modal, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { openExternalUrl } from "@/config/externalLinks";
 import type { WeatherAttribution, WeatherSnapshot } from "@/services/weather/weatherTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
@@ -79,7 +80,7 @@ function WeatherFact({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   appleMark: { height: 32, width: 150 },
-  appleText: { color: colors.textPrimary, fontSize: typography.body, fontWeight: "900" },
+  appleText: { color: colors.textPrimary, fontSize: typography.body, fontWeight: "700" },
   attributionPanel: {
     alignItems: "center",
     backgroundColor: colors.surface,
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.lg
   },
-  condition: { color: colors.textSecondary, fontSize: typography.body, fontWeight: "800" },
+  condition: { color: colors.textSecondary, fontSize: typography.body, fontWeight: "700" },
   conditions: {
     alignItems: "center",
     backgroundColor: "rgba(10,132,255,0.10)",
@@ -104,8 +105,8 @@ const styles = StyleSheet.create({
   disclaimer: { color: colors.textMuted, fontSize: typography.caption, lineHeight: 20, textAlign: "center" },
   fact: { backgroundColor: colors.surface, borderRadius: radius.md, flex: 1, gap: spacing.xs, minWidth: 130, padding: spacing.md },
   factGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
-  factLabel: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "800" },
-  factValue: { color: colors.textPrimary, fontSize: typography.small, fontWeight: "900" },
+  factLabel: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "700" },
+  factValue: { color: colors.textPrimary, fontSize: typography.small, fontWeight: "700" },
   header: { alignItems: "center", flexDirection: "row", gap: spacing.md, justifyContent: "space-between" },
   headerCopy: { flex: 1, minWidth: 0 },
   iconButton: {
@@ -118,10 +119,10 @@ const styles = StyleSheet.create({
     width: 44
   },
   legalLink: { alignItems: "center", flexDirection: "row", gap: spacing.xs, minHeight: 44 },
-  legalText: { color: colors.accentBlue, fontSize: typography.small, fontWeight: "900" },
+  legalText: { color: colors.accentBlue, fontSize: typography.small, fontWeight: "700" },
   pressed: { opacity: 0.72 },
   screen: { backgroundColor: colors.background, flex: 1, gap: spacing.lg, padding: spacing.lg, paddingTop: spacing.xl },
   subtitle: { color: colors.textMuted, fontSize: typography.caption, marginTop: 2 },
-  temperature: { color: colors.textPrimary, fontSize: 34, fontWeight: "900" },
-  title: { color: colors.textPrimary, fontSize: typography.h3, fontWeight: "900" }
+  temperature: { color: colors.textPrimary, fontSize: 34, fontWeight: "700" },
+  title: { color: colors.textPrimary, fontSize: typography.h3, fontWeight: "700" }
 });

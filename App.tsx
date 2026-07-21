@@ -1,13 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AppShell } from "@/components/AppShell";
 import { emptyConsentState } from "@/data/authMock";
 import { modules } from "@/data/modules";
 import { AuthFlow } from "@/screens/AuthFlow";
 import { audioStatementRepository } from "@/features/audioStatement/audioStatementRepository";
+import { assistantRepository } from "@/features/assistant/assistantRepository";
 import { authApi } from "@/services/api/authApi";
+import { apiClient } from "@/services/api/apiClient";
 import { notificationService } from "@/services/notificationService";
 import { secureSession } from "@/services/api/secureSession";
 import { weatherService } from "@/services/weather/weatherService";
@@ -20,7 +23,7 @@ import type { AuthStatus, MockUserProfile } from "@/types/auth";
 import type { ModuleId } from "@/types/navigation";
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ModuleId>("dashboard");
+  const [activeModule, setActiveModule] = useState<ModuleId>("ai");
   const [authStatus, setAuthStatus] = useState<AuthStatus>("signedOut");
   const [localData, setLocalData] = useState<LocalAppData | null>(null);
   const [profile, setProfile] = useState<MockUserProfile | null>(null);
@@ -56,6 +59,30 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    apiClient.setSessionExpiredHandler(async () => {
+      setProfile(null);
+      setAuthStatus("signedOut");
+      setActiveModule("ai");
+      setLocalData((current) => {
+        if (!current) return current;
+        const next = {
+          ...current,
+          auth: {
+            ...current.auth,
+            profile: null,
+            status: "signedOut" as const
+          },
+          updatedAt: new Date().toISOString()
+        };
+        void persistenceService.save(next);
+        return next;
+      });
+    });
+
+    return () => apiClient.setSessionExpiredHandler(null);
+  }, []);
+
   const updateLocalData = (updater: (current: LocalAppData) => LocalAppData) => {
     setLocalData((current) => {
       const base = current ?? createDefaultLocalAppData();
@@ -79,7 +106,7 @@ export default function App() {
 
     setProfile(nextProfile);
     setAuthStatus("signedIn");
-    setActiveModule("dashboard");
+    setActiveModule("ai");
     updateLocalData((current) => ({
       ...current,
       auth: {
@@ -114,7 +141,7 @@ export default function App() {
     await authApi.signOut();
     setProfile(null);
     setAuthStatus("signedOut");
-    setActiveModule("dashboard");
+    setActiveModule("ai");
     updateLocalData((current) => ({
       ...current,
       auth: {
@@ -127,6 +154,7 @@ export default function App() {
   };
 
   const handleResetDemoData = async () => {
+    if (profile?.userId) await assistantRepository.clearHistory(profile.userId);
     await audioStatementRepository.deleteAll(localData?.audioStatements ?? []);
     await notificationService.cancelAll().catch(() => undefined);
     const seeded = await persistenceService.resetDemoData(localData?.auth);
@@ -138,6 +166,7 @@ export default function App() {
   };
 
   const handleClearLocalData = async () => {
+    if (profile?.userId) await assistantRepository.clearUserData(profile.userId);
     await audioStatementRepository.deleteAll(localData?.audioStatements ?? []);
     await notificationService.cancelAll().catch(() => undefined);
     await secureSession.clear();
@@ -161,7 +190,7 @@ export default function App() {
     setLocalData(seeded);
     setProfile(null);
     setAuthStatus("signedOut");
-    setActiveModule("dashboard");
+    setActiveModule("ai");
   };
 
   return (
@@ -171,7 +200,7 @@ export default function App() {
         {!localData ? (
           <View style={{ alignItems: "center", flex: 1, gap: spacing.md, justifyContent: "center" }}>
             <ActivityIndicator accessibilityLabel="Loading OPAi Police" accessibilityRole="progressbar" color={colors.primaryBlue} />
-            <Text maxFontSizeMultiplier={1.3} style={{ color: colors.textMuted, fontSize: typography.small, fontWeight: "800" }}>
+            <Text maxFontSizeMultiplier={1.3} style={{ color: colors.textMuted, fontSize: typography.small, fontWeight: "700" }}>
               Loading OPAi Police
             </Text>
           </View>

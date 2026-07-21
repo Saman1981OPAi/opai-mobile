@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { AppHeader } from "@/components/ui/AppHeader";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   backText: {
     color: colors.primaryBlue,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   categoryCard: {
     alignItems: "center",
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
   categoryTitle: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   grid: {
     flexDirection: "row",
@@ -283,13 +284,13 @@ const styles = StyleSheet.create({
   heroSub: {
     color: colors.textMuted,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 20
   },
   heroTitle: {
     color: colors.textPrimary,
     fontSize: typography.h1,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   pressed: {
     opacity: 0.76,

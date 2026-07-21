@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -51,19 +52,19 @@ export function CanvassSessionScreen({ entries, onBack, onChangeEntries, onChang
 const styles = StyleSheet.create({
   card: { alignItems: "center", backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, flexDirection: "row", gap: spacing.sm, minHeight: 72, padding: spacing.md },
   cardMeta: { color: colors.textMuted, fontSize: typography.caption, marginTop: spacing.xs },
-  cardTitle: { color: colors.textPrimary, fontSize: typography.body, fontWeight: "900" },
+  cardTitle: { color: colors.textPrimary, fontSize: typography.body, fontWeight: "700" },
   filter: { borderColor: "rgba(77,163,255,0.22)", borderRadius: radius.full, borderWidth: 1, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   filterActive: { backgroundColor: "rgba(10,132,255,0.18)", borderColor: colors.primaryBlue },
-  filterText: { color: colors.textSecondary, fontSize: typography.caption, fontWeight: "800" },
+  filterText: { color: colors.textSecondary, fontSize: typography.caption, fontWeight: "700" },
   filters: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
   grow: { flex: 1, minWidth: 0 },
   hero: { alignItems: "center", backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.25)", borderRadius: radius.xl, borderWidth: 1, flexDirection: "row", gap: spacing.md, padding: spacing.md },
   list: { gap: spacing.sm },
   pressed: { opacity: 0.74 },
   search: { backgroundColor: "rgba(0,0,0,0.24)", borderColor: "rgba(77,163,255,0.28)", borderRadius: radius.md, borderWidth: 1, color: colors.textPrimary, fontSize: typography.body, minHeight: 48, paddingHorizontal: spacing.md },
-  status: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
+  status: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
   subtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs },
-  title: { color: colors.textPrimary, fontSize: typography.h2, fontWeight: "900" },
+  title: { color: colors.textPrimary, fontSize: typography.h2, fontWeight: "700" },
   topActions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, justifyContent: "space-between" },
   wrap: { gap: spacing.md }
 });

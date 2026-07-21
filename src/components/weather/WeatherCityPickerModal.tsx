@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { searchCanadianWeatherCities } from "@/services/weather/canadianWeatherCities";
 import type { WeatherCity } from "@/services/weather/weatherTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
@@ -70,7 +71,7 @@ export function WeatherCityPickerModal({ onClose, onSelect, visible }: Props) {
 
 const styles = StyleSheet.create({
   cityCopy: { flex: 1, minWidth: 0 },
-  cityName: { color: colors.textPrimary, fontSize: typography.body, fontWeight: "900" },
+  cityName: { color: colors.textPrimary, fontSize: typography.body, fontWeight: "700" },
   cityRow: {
     alignItems: "center",
     backgroundColor: colors.surface,
@@ -111,5 +112,5 @@ const styles = StyleSheet.create({
   },
   searchInput: { color: colors.textPrimary, flex: 1, fontSize: typography.body, minWidth: 0 },
   subtitle: { color: colors.textMuted, fontSize: typography.caption, marginTop: 2 },
-  title: { color: colors.textPrimary, fontSize: typography.h3, fontWeight: "900" }
+  title: { color: colors.textPrimary, fontSize: typography.h3, fontWeight: "700" }
 });

@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -146,13 +147,13 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   chip: { alignItems: "center", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.full, borderWidth: 1, flexDirection: "row", gap: spacing.xs, minHeight: 42, paddingHorizontal: spacing.sm },
   chipSelected: { backgroundColor: "rgba(127,255,212,0.08)", borderColor: "rgba(127,255,212,0.45)" },
-  chipText: { color: colors.textSecondary, fontSize: typography.caption, fontWeight: "900" },
+  chipText: { color: colors.textSecondary, fontSize: typography.caption, fontWeight: "700" },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   customRow: { alignItems: "center", flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   field: { flex: 1, gap: spacing.xs, minWidth: 145 },
   helper: { color: colors.textMuted, fontSize: typography.small, lineHeight: 20 },
   input: { backgroundColor: "rgba(0,0,0,0.24)", borderColor: "rgba(77,163,255,0.28)", borderRadius: radius.md, borderWidth: 1, color: colors.textPrimary, fontSize: typography.body, minHeight: 48, minWidth: 150, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
+  label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
   multiline: { minHeight: 86, textAlignVertical: "top" },
   panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
   row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },

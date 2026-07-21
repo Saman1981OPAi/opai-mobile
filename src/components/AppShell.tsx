@@ -36,14 +36,7 @@ export function AppShell({
 
   return (
     <View style={styles.shell}>
-      <ScrollView
-        automaticallyAdjustKeyboardInsets
-        contentContainerStyle={styles.content}
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="handled"
-        ref={scrollRef}
-        showsVerticalScrollIndicator={false}
-      >
+      {activeModule.id === "ai" ? (
         <ModuleScreen
           localData={localData}
           module={activeModule}
@@ -54,7 +47,27 @@ export function AppShell({
           onUpdateLocalData={onUpdateLocalData}
           profile={profile}
         />
-      </ScrollView>
+      ) : (
+        <ScrollView
+          automaticallyAdjustKeyboardInsets
+          contentContainerStyle={styles.content}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          ref={scrollRef}
+          showsVerticalScrollIndicator={false}
+        >
+          <ModuleScreen
+            localData={localData}
+            module={activeModule}
+            onClearLocalData={onClearLocalData}
+            onResetDemoData={onResetDemoData}
+            onSelectModule={onSelectModule}
+            onSignOut={onSignOut}
+            onUpdateLocalData={onUpdateLocalData}
+            profile={profile}
+          />
+        </ScrollView>
+      )}
 
       <BottomNavigation activeModule={activeModule.id} onSelectModule={onSelectModule} />
     </View>

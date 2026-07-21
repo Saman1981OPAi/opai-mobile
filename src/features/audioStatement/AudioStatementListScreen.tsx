@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { PrimaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -110,17 +111,17 @@ const styles = StyleSheet.create({
   card: { alignItems: "center", backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, flexDirection: "row", gap: spacing.sm, minHeight: 88, padding: spacing.md },
   cardIcon: { alignItems: "center", backgroundColor: "rgba(10,132,255,0.13)", borderRadius: radius.md, height: 48, justifyContent: "center", width: 48 },
   cardMeta: { color: colors.textMuted, fontSize: typography.caption, marginTop: spacing.xs },
-  cardTitle: { color: colors.textPrimary, fontSize: typography.h3, fontWeight: "900" },
+  cardTitle: { color: colors.textPrimary, fontSize: typography.h3, fontWeight: "700" },
   grow: { flex: 1, minWidth: 0 },
   hero: { alignItems: "center", backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.25)", borderRadius: radius.xl, borderWidth: 1, flexDirection: "row", flexWrap: "wrap", gap: spacing.md, padding: spacing.md },
   heroIcon: { alignItems: "center", borderColor: colors.primaryBlue, borderRadius: radius.lg, borderWidth: 1, height: 60, justifyContent: "center", width: 60 },
   list: { gap: spacing.sm },
   localBadge: { alignItems: "center", backgroundColor: "rgba(127,255,212,0.08)", borderColor: "rgba(127,255,212,0.28)", borderRadius: radius.full, borderWidth: 1, flexDirection: "row", gap: spacing.xs, minHeight: 34, paddingHorizontal: spacing.sm },
-  localBadgeText: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "900" },
+  localBadgeText: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "700" },
   pressed: { opacity: 0.74 },
-  status: { color: colors.accentBlue, fontSize: typography.caption, fontWeight: "800", marginTop: spacing.xs },
+  status: { color: colors.accentBlue, fontSize: typography.caption, fontWeight: "700", marginTop: spacing.xs },
   statusComplete: { color: colors.ptsdGreen },
   subtitle: { color: colors.textMuted, fontSize: typography.small, marginTop: spacing.xs },
-  title: { color: colors.textPrimary, fontSize: typography.h1, fontWeight: "900" },
+  title: { color: colors.textPrimary, fontSize: typography.h1, fontWeight: "700" },
   wrap: { gap: spacing.md }
 });

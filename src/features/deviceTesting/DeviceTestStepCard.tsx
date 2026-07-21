@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import type { DeviceTestStep } from "@/features/deviceTesting/deviceTestingTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
 
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   detailsText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   header: {
     alignItems: "center",
@@ -106,30 +107,30 @@ const styles = StyleSheet.create({
   instruction: {
     color: colors.textPrimary,
     fontSize: typography.body,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 23
   },
   kicker: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   source: {
     color: colors.textMuted,
     fontSize: typography.tiny,
-    fontWeight: "800",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   title: {
     color: colors.textPrimary,
     fontSize: typography.h3,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   warning: {
     color: colors.warning,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 18
   }
 });

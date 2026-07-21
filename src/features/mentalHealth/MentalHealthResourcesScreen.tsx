@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CrisisSupportNotice } from "@/features/mentalHealth/CrisisSupportNotice";

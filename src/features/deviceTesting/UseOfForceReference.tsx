@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { openExternalUrl } from "@/config/externalLinks";
 import { useOfForceNotice } from "@/features/deviceTesting/deviceTestingGuardrails";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   coreText: {
     color: colors.textPrimary,
     fontSize: typography.h3,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   domain: {
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   domainTitle: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   grid: {
     flexDirection: "row",
@@ -103,12 +104,12 @@ const styles = StyleSheet.create({
   linkText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   notice: {
     color: colors.warning,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 18
   },
   wrap: {

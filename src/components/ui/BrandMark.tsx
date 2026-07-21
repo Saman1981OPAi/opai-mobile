@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type BrandMarkProps = {
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
   logo: {
     color: colors.textPrimary,
     fontSize: 30,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 34
   },
   logoBlue: {
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   subline: {
     color: colors.primaryBlue,
     fontSize: 15,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: 6
   },
   wrap: {

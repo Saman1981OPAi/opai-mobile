@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { WeatherCityPickerModal } from "@/components/weather/WeatherCityPickerModal";
 import { WeatherDetailModal } from "@/components/weather/WeatherDetailModal";
-import { getTodayContext, startMinuteTicker, type TodayContext } from "@/services/timeService";
+import { getTimeAwareGreeting, getTodayContext, startMinuteTicker, type TodayContext } from "@/services/timeService";
 import { weatherService } from "@/services/weather/weatherService";
 import type { WeatherAttribution, WeatherCity, WeatherSnapshot } from "@/services/weather/weatherTypes";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
 
-export function TodayContextCard() {
+export function TodayContextCard({ firstName }: { firstName: string }) {
   const [today, setToday] = useState<TodayContext>(() => getTodayContext());
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
   const [attribution, setAttribution] = useState<WeatherAttribution | null>(null);
@@ -73,6 +74,9 @@ export function TodayContextCard() {
 
   return (
     <View style={styles.card}>
+      <Text numberOfLines={1} adjustsFontSizeToFit style={styles.greeting}>
+        {getTimeAwareGreeting(firstName)}
+      </Text>
       <View style={styles.primaryRow}>
         <View style={styles.copy}>
           <Text numberOfLines={1} adjustsFontSizeToFit style={styles.time}>{today.timeLabel}</Text>
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
   actionText: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   actions: {
     flexDirection: "row",
@@ -182,11 +186,16 @@ const styles = StyleSheet.create({
   date: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800",
+    fontWeight: "700",
     marginTop: 2
   },
   disabled: {
     opacity: 0.55
+  },
+  greeting: {
+    color: colors.textPrimary,
+    fontSize: typography.h2,
+    fontWeight: "700"
   },
   pressed: {
     opacity: 0.72
@@ -200,13 +209,13 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: 34,
     fontVariant: ["tabular-nums"],
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 38
   },
   weatherMeta: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   weatherPill: {
     alignItems: "center",
@@ -229,11 +238,11 @@ const styles = StyleSheet.create({
     color: colors.ptsdGreen,
     fontSize: typography.caption,
     fontVariant: ["tabular-nums"],
-    fontWeight: "900"
+    fontWeight: "700"
   },
   weatherTitle: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   }
 });

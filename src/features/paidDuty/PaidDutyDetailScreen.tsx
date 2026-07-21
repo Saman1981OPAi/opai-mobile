@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   fact: { alignItems: "flex-start", flexDirection: "row", gap: spacing.sm },
   grow: { flex: 1, minWidth: 0 },
-  label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
+  label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
   panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.md, padding: spacing.md },
   value: { color: colors.textPrimary, fontSize: typography.body, lineHeight: 22, marginTop: spacing.xs },
   wrap: { gap: spacing.md }

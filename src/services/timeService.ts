@@ -27,6 +27,21 @@ export function getTodayContext(date = new Date()): TodayContext {
   };
 }
 
+export function getTimeAwareGreeting(firstName: string, date = new Date()) {
+  const hour = date.getHours();
+  const period =
+    hour >= 5 && hour < 12
+      ? "Good morning"
+      : hour >= 12 && hour < 17
+        ? "Good afternoon"
+        : hour >= 17 && hour < 22
+          ? "Good evening"
+          : "Good night";
+  const displayName = firstName.trim() || "Officer";
+
+  return `${period} ${displayName}`;
+}
+
 export function startMinuteTicker(onTick: (context: TodayContext) => void) {
   onTick(getTodayContext());
   return setInterval(() => onTick(getTodayContext()), 60_000);

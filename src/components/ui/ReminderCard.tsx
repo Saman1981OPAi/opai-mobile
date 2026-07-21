@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type ReminderCardProps = {
@@ -61,6 +62,6 @@ const styles = StyleSheet.create({
   title: {
     color: colors.textPrimary,
     fontSize: 17,
-    fontWeight: "900"
+    fontWeight: "700"
   }
 });

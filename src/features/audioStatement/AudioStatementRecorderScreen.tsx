@@ -1,14 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-  useAudioRecorder,
-  useAudioRecorderState
+  RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync, useAudioRecorder, useAudioRecorderState
 } from "expo-audio";
 import * as FileSystem from "expo-file-system/legacy";
 import { useEffect, useState } from "react";
-import { Alert, Platform, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
 import type { AudioStatementRecording } from "@/features/audioStatement/audioStatementTypes";
@@ -153,7 +150,7 @@ const styles = StyleSheet.create({
   hero: { alignItems: "center", backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.25)", borderRadius: radius.xl, borderWidth: 1, gap: spacing.sm, padding: spacing.xl },
   mic: { alignItems: "center", borderColor: colors.primaryBlue, borderRadius: radius.full, borderWidth: 2, height: 92, justifyContent: "center", width: 92 },
   micActive: { backgroundColor: colors.primaryBlue },
-  status: { color: colors.textMuted, fontSize: typography.small, fontWeight: "900", textTransform: "uppercase" },
-  timer: { color: colors.textPrimary, fontSize: 38, fontVariant: ["tabular-nums"], fontWeight: "900" },
+  status: { color: colors.textMuted, fontSize: typography.small, fontWeight: "700", textTransform: "uppercase" },
+  timer: { color: colors.textPrimary, fontSize: 38, fontVariant: ["tabular-nums"], fontWeight: "700" },
   wrap: { gap: spacing.md }
 });

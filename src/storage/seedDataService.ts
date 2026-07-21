@@ -10,7 +10,7 @@ import type {
   LocalNoteFileMetadata,
   LocalReminderCard
 } from "@/storage/storageTypes";
-import type { AICategoryId, AIConversation, AIPreferences } from "@/types/ai";
+import type { AIConversation, AIPreferences } from "@/types/ai";
 import type { IncidentNotes } from "@/types/incident";
 import type { NotificationCategory, NotificationPreference, ScheduledReminder } from "@/types/notifications";
 import type {
@@ -623,8 +623,8 @@ export function createDefaultTranslationPreferences(): TranslationPreferences {
 
 export function createDefaultAIPreferences(): AIPreferences {
   return {
-    lastSelectedCategory: "general",
     lastUpdatedAt: nowIso(),
+    protectedStorageVersion: 1,
     saveHistory: true
   };
 }
@@ -635,33 +635,12 @@ type LegacyAIHistoryItem = Partial<AIConversation> & {
   title?: string;
 };
 
-function normalizeAICategory(category?: string): AICategoryId {
-  const allowed: AICategoryId[] = [
-    "general",
-    "shift_readiness",
-    "report_review",
-    "incident_summary",
-    "follow_up",
-    "court",
-    "calendar",
-    "training",
-    "translation",
-    "legal_reference_placeholder",
-    "policy_placeholder",
-    "ptsd_stress_support",
-    "wellness"
-  ];
-
-  return allowed.includes(category as AICategoryId) ? category as AICategoryId : "general";
-}
-
 export function normalizeAIHistory(history: LegacyAIHistoryItem[] | undefined): AIConversation[] {
   const createdAt = nowIso();
   const items: LegacyAIHistoryItem[] = history ?? createHistory().aiHistory;
 
   return items.map((item, index) => {
     const conversation: AIConversation = {
-      category: normalizeAICategory(item.category),
       createdAt: item.createdAt ?? createdAt,
       id: item.id ?? `ai-history-${index + 1}`,
       mockResponse:

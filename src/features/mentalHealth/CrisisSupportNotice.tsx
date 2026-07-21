@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { confirm988Choice, confirmMentalHealthAction } from "@/features/mentalHealth/mentalHealthResourceActions";
 import { colors, radius, spacing } from "@/theme/tokens";
@@ -44,5 +45,5 @@ const styles = StyleSheet.create({
     padding: spacing.md
   },
   text: { color: colors.textSecondary, fontSize: 15, lineHeight: 22, marginTop: spacing.xs },
-  title: { color: colors.ptsdGreenSoft, fontSize: 20, fontWeight: "900" }
+  title: { color: colors.ptsdGreenSoft, fontSize: 20, fontWeight: "700" }
 });

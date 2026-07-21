@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import {
   deviceTestingCoreNotice,
   deviceTestingFailureNotice,
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
   fail: {
     color: colors.warning,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 18
   },
   header: {
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     color: colors.ptsdGreen,
     flexShrink: 1,
     fontSize: typography.small,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   }
 });

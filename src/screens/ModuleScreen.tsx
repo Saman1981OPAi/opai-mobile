@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Alert, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import { Alert, Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
+import { AppText as Text, AppInputText as TextInput } from "@/components/ui/Typography";
 import { TodayContextCard } from "@/components/TodayContextCard";
-import { AIInputBar } from "@/components/ui/AIInputBar";
 import { AppHeader } from "@/components/ui/AppHeader";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Buttons";
 import { DisclaimerBanner } from "@/components/ui/DisclaimerBanner";
@@ -21,11 +21,10 @@ import { CanvassListScreen } from "@/features/canvass/CanvassListScreen";
 import { PaidDutyListScreen } from "@/features/paidDuty/PaidDutyListScreen";
 import { MentalHealthHomeCard } from "@/features/mentalHealth/MentalHealthHomeCard";
 import { MentalHealthResourcesScreen } from "@/features/mentalHealth/MentalHealthResourcesScreen";
-import { aiService } from "@/services/aiService";
+import { AssistantScreen } from "@/features/assistant/AssistantScreen";
 import { aiApi } from "@/services/api/aiApi";
-import type { AIRequestMode, AIUsageResponse } from "@/services/api/apiTypes";
+import type { AIUsageResponse } from "@/services/api/apiTypes";
 import { dashboardService } from "@/services/dashboardService";
-import { incidentService } from "@/services/incidentService";
 import {
   attachmentTypes,
   followUpTaskOptions,
@@ -44,7 +43,6 @@ import { notificationScheduler } from "@/services/notificationScheduler";
 import type { LocalAppData, LocalIncidentDraft } from "@/storage/storageTypes";
 import { workflowService } from "@/services/workflowService";
 import { colors, layout, radius, spacing, typography } from "@/theme/tokens";
-import type { AICategoryId, AIConversation } from "@/types/ai";
 import type { MockUserProfile } from "@/types/auth";
 import type { AppModule, ModuleId } from "@/types/navigation";
 import type { NotificationCategory, NotificationLeadTime, NotificationPreference, ScheduledReminder } from "@/types/notifications";
@@ -129,6 +127,9 @@ const requalificationCategoryOptions: RequalificationCategory[] = [
 type SettingsViewId =
   | "overview"
   | "profile"
+  | "more"
+  | "usage"
+  | "accessibility"
   | "consent"
   | "data"
   | "dataSources"
@@ -271,9 +272,16 @@ const settingsMenuSections: Array<{
   {
     items: [
       { icon: "account-circle-outline", id: "profile", subtitle: "Profile and account details", title: "Profile" },
-      { icon: "shield-account-outline", id: "overview", subtitle: "Session and app information", title: "Account Status" }
+      { icon: "shield-account-outline", id: "overview", subtitle: "Session and app information", title: "Account Status" },
+      { icon: "chart-donut", id: "usage", subtitle: "Current AI service usage", title: "Usage" }
     ],
     title: "Account"
+  },
+  {
+    items: [
+      { icon: "view-grid-outline", id: "more", subtitle: "Operational tools and resources", title: "More" }
+    ],
+    title: "Tools"
   },
   {
     items: [
@@ -288,7 +296,8 @@ const settingsMenuSections: Array<{
   {
     items: [
       { icon: "bell-ring-outline", id: "notifications", subtitle: "Local reminders only", title: "Notifications" },
-      { icon: "tune-variant", id: "preferences", subtitle: "Language and wellness", title: "App Preferences" }
+      { icon: "tune-variant", id: "preferences", subtitle: "Language and wellness", title: "App Preferences" },
+      { icon: "human", id: "accessibility", subtitle: "System accessibility support", title: "Accessibility" }
     ],
     title: "Notifications & Preferences"
   },
@@ -319,13 +328,25 @@ const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data
   { getCount: (data) => data.followUpWorkflowReminders.length, icon: "clipboard-check-outline", title: "Follow-ups" },
   { getCount: (data) => data.incidentDrafts.length, icon: "file-document-edit-outline", title: "Report drafts" },
   { getCount: (data) => data.translationHistory.length, icon: "translate", title: "Translation history" },
-  { getCount: (data) => data.aiHistory.length, icon: "brain", title: "AI history" },
+  { getCount: () => "protected", icon: "brain", title: "AI history" },
   { getCount: (data) => data.audioStatements.length, icon: "microphone-outline", title: "Audio Statements" },
   { getCount: (data) => data.paidDuties.length, icon: "briefcase-clock-outline", title: "Paid Duties" },
   { getCount: (data) => data.canvassSessions.length, icon: "home-search-outline", title: "Canvass sessions" },
   { getCount: (data) => data.canvassEntries.length, icon: "home-outline", title: "Canvass entries" },
   { getCount: (data) => data.structuredNotes.length, icon: "note-text-outline", title: "Notes" },
   { getCount: (data) => data.fileMetadataPlaceholders.length, icon: "file-cabinet", title: "File references" }
+];
+
+const settingsMoreModules: { id: ModuleId; icon: MciIcon; label: string }[] = [
+  { icon: "home-outline", id: "dashboard", label: "Home" },
+  { icon: "shield-check-outline", id: "shift", label: "Start Shift" },
+  { icon: "microphone-outline", id: "audioStatement", label: "Audio" },
+  { icon: "briefcase-clock-outline", id: "paidDuty", label: "Paid Duty" },
+  { icon: "home-search-outline", id: "canvass", label: "Canvass" },
+  { icon: "scale-balance", id: "court", label: "Court" },
+  { icon: "school-outline", id: "training", label: "Training" },
+  { icon: "note-text-outline", id: "notes", label: "Notes & Files" },
+  { icon: "heart-pulse", id: "mentalHealth", label: "Mental Health" }
 ];
 
 const notificationPreferenceRows: Array<{
@@ -417,6 +438,7 @@ export function ModuleScreen({
         localData={localData}
         onSelectItem={selectItem}
         onSelectModule={onSelectModule}
+        profile={profile}
         selectedItem={selectedItem}
       />
     );
@@ -506,14 +528,18 @@ export function ModuleScreen({
   }
 
   if (module.id === "ai") {
+    const userId = profile?.userId ?? localData.auth.profile?.userId ?? "";
     return (
-      <AIAssistantScreen
-        isTablet={isTablet}
-        localData={localData}
-        onSelectItem={selectItem}
-        onSelectModule={onSelectModule}
-        onUpdateLocalData={onUpdateLocalData}
-        selectedItem={selectedItem}
+      <AssistantScreen
+        legacyHistory={localData.aiHistory}
+        onLegacyMigrationVerified={() =>
+          onUpdateLocalData((current) => ({
+            ...current,
+            aiHistory: [],
+            updatedAt: timestamp()
+          }))
+        }
+        userId={userId}
       />
     );
   }
@@ -641,19 +667,21 @@ function ScreenFrame({
   );
 }
 
-const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "audioStatement", "paidDuty", "canvass", "translation", "calendar", "ai"];
+const primaryHomeActionIds: ModuleId[] = ["shift", "incident", "audioStatement", "paidDuty", "canvass", "translation", "calendar"];
 
 function HomeDashboardScreen({
   isTablet,
   localData,
   onSelectItem,
   onSelectModule,
+  profile,
   selectedItem
 }: {
   isTablet: boolean;
   localData: LocalAppData;
   onSelectItem: (label: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  profile: MockUserProfile | null;
   selectedItem: string;
 }) {
   const dashboard = dashboardService.getDashboard(localData);
@@ -664,9 +692,8 @@ function HomeDashboardScreen({
 
   return (
     <ScreenFrame activeModule="dashboard" isTablet={isTablet} onSelectModule={onSelectModule}>
-      <AppHeader title="Home" />
-      <HomeHeroCard />
-      <TodayContextCard />
+      <AppHeader compact title="Home" />
+      <TodayContextCard firstName={profile?.firstName ?? "Officer"} />
 
       <View style={[styles.homeActionGrid, isTablet ? styles.homeActionGridTablet : null]}>
         {primaryActions.map((feature) => (
@@ -705,38 +732,9 @@ function HomeDashboardScreen({
       </View>
 
       <MentalHealthHomeCard onViewResources={() => onSelectModule("mentalHealth")} />
-      <AIInputBar onPress={() => onSelectModule("ai")} placeholder="Ask OPAi..." />
       <PrototypeSelection label={selectedItem} />
       <CoreDisclaimer />
     </ScreenFrame>
-  );
-}
-
-function HomeHeroCard() {
-  const chips = [
-    { icon: "file-document-outline" as MciIcon, label: "Report" },
-    { icon: "weather-partly-cloudy" as MciIcon, label: "Weather" },
-    { icon: "bell-outline" as MciIcon, label: "Reminders" },
-    { icon: "microphone-outline" as MciIcon, label: "Audio" }
-  ];
-
-  return (
-    <View style={styles.homeHero}>
-      <View style={styles.homeHeroCopy}>
-        <Text numberOfLines={2} adjustsFontSizeToFit style={styles.homeHeroTitle}>Ready for duty</Text>
-        <View style={styles.homeHeroChips}>
-          {chips.map((chip) => (
-            <View key={chip.label} style={styles.homeHeroChip}>
-              <MaterialCommunityIcons name={chip.icon} size={14} color={colors.accentBlue} />
-              <Text numberOfLines={1} style={styles.homeHeroChipText}>{chip.label}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-      <View style={styles.homeHeroMark}>
-        <MaterialCommunityIcons name="shield-star-outline" size={38} color={colors.primaryBlue} />
-      </View>
-    </View>
   );
 }
 
@@ -1398,412 +1396,9 @@ function NewIncidentScreen({
     </ScreenFrame>
   );
 }
-function AIAssistantScreen({
-  isTablet,
-  localData,
-  onSelectItem,
-  onSelectModule,
-  onUpdateLocalData,
-  selectedItem
-}: {
-  isTablet: boolean;
-  localData: LocalAppData;
-  onSelectItem: (label: string) => void;
-  onSelectModule: (module: ModuleId) => void;
-  onUpdateLocalData: (updater: (current: LocalAppData) => LocalAppData) => void;
-  selectedItem: string;
-}) {
-  const categories = aiService.getAICategories().filter((category) => !category.placeholderOnly);
-  const actions = aiService.getSuggestedActions().filter((action) =>
-    categories.some((category) => category.id === action.category)
-  );
-  const [selectedCategory, setSelectedCategory] = useState<AICategoryId>(localData.aiPreferences.lastSelectedCategory);
-  const [historyFilter, setHistoryFilter] = useState<AICategoryId | "all">("all");
-  const [prompt, setPrompt] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [usage, setUsage] = useState<AIUsageResponse | null>(null);
-  const [latestConversation, setLatestConversation] = useState<AIConversation | null>(localData.aiHistory[0] ?? null);
-  const [selectedIncidentId, setSelectedIncidentId] = useState(localData.incidentDrafts[0]?.id ?? "");
-  const selectedCategoryMeta = categories.find((category) => category.id === selectedCategory) ?? {
-    description: "General assistance for productivity and organization.",
-    icon: "chat-processing-outline",
-    id: "general" as const,
-    label: "General Support",
-    shortLabel: "General"
-  };
-  const selectedIncident = localData.incidentDrafts.find((draft) => draft.id === selectedIncidentId);
-  const filteredHistory = aiService.getAIHistory(localData, historyFilter);
-  const promptSuggestions = aiService.getPromptSuggestions(selectedCategory);
-
-  const updateAIPreferences = (category: AICategoryId, saveHistory = localData.aiPreferences.saveHistory) => {
-    onUpdateLocalData((current) =>
-      aiService.saveAIPreferences(current, {
-        lastSelectedCategory: category,
-        lastUpdatedAt: new Date().toISOString(),
-        saveHistory
-      })
-    );
-  };
-
-  const runAIPrompt = async (nextPrompt: string, category = selectedCategory) => {
-    const trimmedPrompt = nextPrompt.trim();
-
-    if (!trimmedPrompt) {
-      Alert.alert("OPAi Assistant", "Enter a prompt first.");
-      return;
-    }
-    setIsSending(true);
-    let conversation: AIConversation;
-    try {
-      const response = await aiApi.chat({
-        message: trimmedPrompt,
-        mode: aiModeForCategory(category),
-        ...(latestConversation?.id ? { conversationId: latestConversation.id } : {})
-      });
-      setUsage(await aiApi.getAIUsage().catch(() => null));
-      conversation = aiService.createLiveConversation({
-        category,
-        prompt: trimmedPrompt,
-        response,
-        ...(selectedIncidentId ? { relatedIncidentId: selectedIncidentId } : {})
-      });
-    } catch (error) {
-      Alert.alert("Assistant unavailable", error instanceof Error ? error.message : "Try again later.");
-      return;
-    } finally {
-      setIsSending(false);
-    }
-
-    setLatestConversation(conversation);
-    setPrompt("");
-    onSelectItem(conversation.prompt);
-
-    onUpdateLocalData((current) => {
-      const withPrefs = aiService.saveAIPreferences(current, {
-        lastSelectedCategory: category,
-        lastUpdatedAt: new Date().toISOString(),
-        saveHistory: current.aiPreferences.saveHistory
-      });
-
-      return withPrefs.aiPreferences.saveHistory ? aiService.saveAIConversation(withPrefs, conversation) : withPrefs;
-    });
-  };
-
-  const deleteHistoryItem = (conversationId: string) => {
-    onUpdateLocalData((current) => aiService.deleteAIConversation(current, conversationId));
-  };
-
-  const clearHistory = () => {
-    Alert.alert("Clear AI History", "Clear all locally saved AI history from this device?", [
-      { style: "cancel", text: "Cancel" },
-      {
-        onPress: () => {
-          onUpdateLocalData((current) => aiService.clearAIHistory(current));
-          setLatestConversation(null);
-        },
-        style: "destructive",
-        text: "Clear"
-      }
-    ]);
-  };
-
-  const saveLatestToNotes = () => {
-    if (!latestConversation) {
-      Alert.alert("OPAi Assistant", "Create an AI response first.");
-      return;
-    }
-
-    onUpdateLocalData((current) => aiService.saveAIResponseToNote(aiService.saveAIConversation(current, latestConversation), latestConversation));
-    Alert.alert("Saved Locally", "AI response saved as a local note.");
-  };
-
-  const attachLatestToIncident = () => {
-    if (!latestConversation || !selectedIncidentId) {
-      Alert.alert("OPAi Assistant", "Create an AI response and select a local report draft first.");
-      return;
-    }
-
-    onUpdateLocalData((current) =>
-      aiService.attachAIResponseToIncidentDraft(aiService.saveAIConversation(current, latestConversation), latestConversation, selectedIncidentId)
-    );
-    Alert.alert("Attached Locally", "AI response attached to the local report draft.");
-  };
-
-  return (
-    <ScreenFrame activeModule="ai" isTablet={isTablet} onSelectModule={onSelectModule}>
-      <AppHeader title="OPAi Assistant" />
-      <View style={styles.aiPanel}>
-        <View style={styles.aiOrb}>
-          <MaterialCommunityIcons name="brain" size={34} color={colors.primaryBlue} />
-        </View>
-        <View style={styles.aiHeroCopy}>
-          <Text numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78} style={styles.aiHeroTitle}>
-            OPAi Assistant
-          </Text>
-          <Text numberOfLines={1} style={styles.aiHeroSub}>Secure AI assistance</Text>
-        </View>
-        <View style={styles.mockBadge}>
-          <Text style={styles.mockBadgeText}>AI</Text>
-        </View>
-      </View>
-
-      <AIPrototypeBanner />
-      <AISafetyNotice />
-      {usage ? <Text style={styles.workflowMeta}>Daily usage: AI {usage.ai_requests}/{usage.ai_limit} - Translation {usage.translation_requests}/{usage.translation_limit}</Text> : null}
-
-      <SectionHeader icon="shape-outline" title="Categories" />
-      <View style={styles.filterRow}>
-        {categories.map((category) => (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected: selectedCategory === category.id }}
-            key={category.id}
-            onPress={() => {
-              setSelectedCategory(category.id);
-              updateAIPreferences(category.id);
-              onSelectItem(category.label);
-            }}
-            style={({ pressed }) => [
-              styles.categoryChip,
-              selectedCategory === category.id ? styles.categoryChipActive : null,
-              pressed ? styles.pressed : null
-            ]}
-          >
-            <MaterialCommunityIcons name={category.icon} size={18} color={selectedCategory === category.id ? colors.textPrimary : colors.primaryBlue} />
-            <Text numberOfLines={1} style={styles.categoryChipText}>{category.shortLabel}</Text>
-          </Pressable>
-        ))}
-      </View>
-      <View style={styles.reviewPanel}>
-        <Text style={styles.profileName}>{selectedCategoryMeta.label}</Text>
-        <Text style={styles.workflowSubtitle}>{selectedCategoryMeta.description}</Text>
-        {selectedCategoryMeta.wellnessOnly ? <WellnessDisclaimer /> : null}
-      </View>
-
-      <SectionHeader icon="lightbulb-on-outline" title="Prompt Chips" />
-      <View style={styles.reviewPanel}>
-        <Text style={styles.workflowSubtitle}>Tap a prompt for the selected category.</Text>
-        <View style={styles.filterRow}>
-          {promptSuggestions.map((suggestion) => (
-            <Pressable
-              accessibilityLabel={`Run prompt: ${suggestion.label}`}
-              accessibilityRole="button"
-              key={suggestion.id}
-              onPress={() => void runAIPrompt(suggestion.prompt, suggestion.category)}
-              style={({ pressed }) => [styles.promptChip, pressed ? styles.pressed : null]}
-            >
-              <MaterialCommunityIcons name="lightning-bolt-outline" size={16} color={colors.ptsdGreen} />
-              <Text numberOfLines={1} style={styles.promptChipText}>{suggestion.label}</Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-
-      <SectionHeader icon="star-four-points-outline" title="Suggested Actions" />
-      <View style={[styles.reminderGrid, isTablet ? styles.reminderGridTablet : null]}>
-        {actions.map((action) => (
-          <ReminderCard
-            active={selectedItem === action.title}
-            icon={action.icon}
-            key={action.id}
-            onPress={() => {
-              setSelectedCategory(action.category);
-              updateAIPreferences(action.category);
-              void runAIPrompt(action.prompt, action.category);
-            }}
-            subtitle={action.subtitle}
-            title={action.title}
-          />
-        ))}
-      </View>
-
-      <SectionHeader icon="chat-processing-outline" title="Assistant" />
-      <WorkflowFormPanel icon="robot-outline" title="Secure Prompt">
-        <View style={styles.formRow}>
-          <WorkflowField
-            label="Prompt"
-            multiline
-            onChangeText={setPrompt}
-            value={prompt}
-          />
-        </View>
-        <View style={styles.formRow}>
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Optional Report Draft</Text>
-            <View style={styles.filterRow}>
-              {localData.incidentDrafts.slice(0, 4).map((draft) => (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: selectedIncidentId === draft.id }}
-                  key={draft.id}
-                  onPress={() => setSelectedIncidentId(draft.id)}
-                  style={({ pressed }) => [
-                    styles.stepPill,
-                    selectedIncidentId === draft.id ? styles.stepPillActive : null,
-                    pressed ? styles.pressed : null
-                  ]}
-                >
-                  <Text numberOfLines={1} style={styles.stepPillText}>{draft.incidentType}</Text>
-                </Pressable>
-              ))}
-            </View>
-            <Text style={styles.workflowMeta}>
-              {selectedIncident ? `Selected local draft: ${selectedIncident.incidentType}` : "No local incident draft selected."}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.actionRow}>
-          <PrimaryButton label={isSending ? "Sending..." : "Send"} loading={isSending} onPress={() => void runAIPrompt(prompt)}>
-            <MaterialCommunityIcons name="send-outline" size={20} color={colors.textPrimary} />
-          </PrimaryButton>
-          <SecondaryButton
-            label={localData.aiPreferences.saveHistory ? "History On" : "History Off"}
-            onPress={() => {
-              const nextValue = !localData.aiPreferences.saveHistory;
-              updateAIPreferences(selectedCategory, nextValue);
-            }}
-          >
-            <MaterialCommunityIcons name="history" size={20} color={colors.primaryBlue} />
-          </SecondaryButton>
-        </View>
-      </WorkflowFormPanel>
-
-      {latestConversation ? (
-        <View style={styles.chatCard}>
-          <View style={styles.chatBubbleUser}>
-            <Text style={styles.chatLabel}>Prompt</Text>
-            <Text style={styles.chatText}>{latestConversation.prompt}</Text>
-          </View>
-          <View style={styles.chatBubbleAssistant}>
-            <View style={styles.localDataHeader}>
-              <MaterialCommunityIcons name="robot-outline" size={22} color={colors.ptsdGreen} />
-              <Text style={styles.profileName}>AI Response</Text>
-            </View>
-            <Text style={styles.chatText}>{latestConversation.mockResponse}</Text>
-            {latestConversation.summary ? <Text style={styles.workflowMeta}>Summary: {latestConversation.summary}</Text> : null}
-            {latestConversation.refusalReason ? <Text style={styles.workflowMeta}>Refusal: {latestConversation.refusalReason}</Text> : null}
-            {latestConversation.warnings?.map((warning) => <Text key={warning} style={styles.workflowMeta}>- {warning}</Text>)}
-            {latestConversation.missingInformation?.map((item) => <Text key={item} style={styles.workflowMeta}>Missing: {item}</Text>)}
-            {latestConversation.sources?.map((source) => <Text key={`${source.title}-${source.url ?? "local"}`} style={styles.workflowMeta}>Source: {source.title}</Text>)}
-            {latestConversation.verificationRequired ? <DisclaimerBanner message="AI-generated response. Verify all information before use." /> : null}
-            <View style={styles.actionRow}>
-              <SecondaryButton label="Save Note" onPress={saveLatestToNotes}>
-                <MaterialCommunityIcons name="note-plus-outline" size={20} color={colors.primaryBlue} />
-              </SecondaryButton>
-              <SecondaryButton label="Attach Draft" onPress={attachLatestToIncident}>
-                <MaterialCommunityIcons name="link-variant" size={20} color={colors.primaryBlue} />
-              </SecondaryButton>
-              <SecondaryButton label="Clear Chat" onPress={() => setLatestConversation(null)}>
-                <MaterialCommunityIcons name="broom" size={20} color={colors.primaryBlue} />
-              </SecondaryButton>
-            </View>
-          </View>
-        </View>
-      ) : (
-        <EmptyState
-          icon="robot-outline"
-          message="Tap a suggested action or enter a prompt."
-          title="No active chat"
-        />
-      )}
-
-      <DisclaimerBanner message="AI assistance does not replace official police reports, notebook requirements, RMS, supervision, policy, legal advice, or professional judgment." />
-
-      <SectionHeader icon="history" title="History" />
-      <View style={styles.filterRow}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: historyFilter === "all" }}
-          onPress={() => setHistoryFilter("all")}
-          style={({ pressed }) => [
-            styles.categoryChip,
-            historyFilter === "all" ? styles.categoryChipActive : null,
-            pressed ? styles.pressed : null
-          ]}
-        >
-          <MaterialCommunityIcons name="history" size={18} color={historyFilter === "all" ? colors.textPrimary : colors.primaryBlue} />
-          <Text style={styles.categoryChipText}>All</Text>
-        </Pressable>
-        {categories.slice(0, 6).map((category) => (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected: historyFilter === category.id }}
-            key={category.id}
-            onPress={() => setHistoryFilter(category.id)}
-            style={({ pressed }) => [
-              styles.categoryChip,
-              historyFilter === category.id ? styles.categoryChipActive : null,
-              pressed ? styles.pressed : null
-            ]}
-          >
-            <Text numberOfLines={1} style={styles.categoryChipText}>{category.shortLabel}</Text>
-          </Pressable>
-        ))}
-      </View>
-      <DisclaimerBanner message={authorizedDataDisclaimer} />
-      <View style={styles.stack}>
-        {filteredHistory.length > 0 ? (
-          filteredHistory.map((item) => (
-            <View key={item.id} style={styles.workflowCard}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => {
-                  setLatestConversation(item);
-                  onSelectItem(item.prompt);
-                }}
-                style={({ pressed }) => [styles.workflowCardHeader, pressed ? styles.pressed : null]}
-              >
-                <View style={styles.summaryIcon}>
-                  <MaterialCommunityIcons name="history" size={22} color={colors.primaryBlue} />
-                </View>
-                <View style={styles.profileCopy}>
-                  <Text numberOfLines={1} style={styles.workflowTitle}>{item.prompt}</Text>
-                  <Text numberOfLines={2} style={styles.workflowMeta}>{item.mockResponse}</Text>
-                </View>
-                <Text style={styles.statusBadge}>{categories.find((category) => category.id === item.category)?.shortLabel ?? "AI"}</Text>
-              </Pressable>
-              <View style={styles.workflowCardFooter}>
-                <Text style={styles.reminderStatusText}>{new Date(item.createdAt).toLocaleDateString()}</Text>
-                <Pressable accessibilityRole="button" onPress={() => deleteHistoryItem(item.id)} style={styles.iconAction}>
-                  <MaterialCommunityIcons name="delete-outline" size={18} color={colors.danger} />
-                  <Text style={styles.iconActionLabel}>Delete</Text>
-                </Pressable>
-              </View>
-            </View>
-          ))
-        ) : (
-          <EmptyState
-            actionLabel="Start Conversation"
-            icon="history"
-            message="AI conversations saved on this device will appear here."
-            onAction={() => setSelectedCategory("general")}
-            title="No AI history"
-          />
-        )}
-      </View>
-      <SecondaryButton label="Clear AI History" onPress={clearHistory}>
-        <MaterialCommunityIcons name="delete-sweep-outline" size={20} color={colors.danger} />
-      </SecondaryButton>
-
-      <PrototypeSelection label={selectedItem} />
-      <LocalPrototypeWarning />
-      <CoreDisclaimer />
-    </ScreenFrame>
-  );
-}
-
 function cycleOption<T extends string>(options: T[], current: T): T {
   const next = options[(options.indexOf(current) + 1) % options.length];
   return next ?? current;
-}
-
-function aiModeForCategory(category: AICategoryId): AIRequestMode {
-  if (category === "training") return "training";
-  if (category === "calendar" || category === "court" || category === "follow_up") return "calendar";
-  if (category === "wellness" || category === "ptsd_stress_support") return "wellness";
-  if (category === "translation") return "translation_support";
-  if (category === "report_review" || category === "incident_summary") return "report_writing";
-  return "general";
 }
 
 function newWorkflowId(prefix: string) {
@@ -3322,6 +2917,19 @@ function SettingsScreen({
   selectedItem: string;
 }) {
   const notificationPreference = localData.notificationPreference;
+  const [usage, setUsage] = useState<AIUsageResponse | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
+
+  const loadUsage = async () => {
+    setUsageLoading(true);
+    try {
+      setUsage(await aiApi.getAIUsage());
+    } catch (error) {
+      Alert.alert("Usage unavailable", error instanceof Error ? error.message : "Try again later.");
+    } finally {
+      setUsageLoading(false);
+    }
+  };
 
   const togglePreference = (
     key: "biometricEnabled" | "notificationsEnabled" | "ptsdRemindersEnabled"
@@ -3619,6 +3227,39 @@ function SettingsScreen({
         </SettingsPanel>
       ) : null}
 
+      {activeSettingsView === "more" ? (
+        <SettingsPanel icon="view-grid-outline" title="More">
+          <View style={styles.actionRow}>
+            {settingsMoreModules.map((item) => (
+              <SecondaryButton key={item.id} label={item.label} onPress={() => onSelectModule(item.id)}>
+                <MaterialCommunityIcons color={colors.primaryBlue} name={item.icon} size={20} />
+              </SecondaryButton>
+            ))}
+          </View>
+          <DisclaimerBanner message="Mental-health resources include Canadian crisis and peer-support contacts. Call emergency services when immediate help is required." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "usage" ? (
+        <SettingsPanel icon="chart-donut" title="Usage">
+          {usage ? (
+            <>
+              <SettingsFact label="AI requests today" value={`${usage.ai_requests} of ${usage.ai_limit}`} />
+              <SettingsFact label="Translation requests today" value={`${usage.translation_requests} of ${usage.translation_limit}`} />
+            </>
+          ) : (
+            <Text style={styles.profileMeta}>Load the current authenticated usage snapshot.</Text>
+          )}
+          <SecondaryButton
+            label={usageLoading ? "Loading..." : "Refresh Usage"}
+            loading={usageLoading}
+            onPress={() => void loadUsage()}
+          >
+            <MaterialCommunityIcons color={colors.primaryBlue} name="refresh" size={20} />
+          </SecondaryButton>
+        </SettingsPanel>
+      ) : null}
+
       {activeSettingsView === "profile" ? (
         <SettingsPanel icon="account-circle-outline" title="Account">
           <SettingsFact label="Name" value={profile ? `${profile.firstName} ${profile.lastName}` : "Signed out"} />
@@ -3764,6 +3405,16 @@ function SettingsScreen({
             <SecondaryButton label={`PTSD Reminders ${localData.preferences.ptsdRemindersEnabled ? "On" : "Off"}`} onPress={() => togglePreference("ptsdRemindersEnabled")} />
           </View>
           <DisclaimerBanner message="App preferences are stored locally on this device." />
+        </SettingsPanel>
+      ) : null}
+
+      {activeSettingsView === "accessibility" ? (
+        <SettingsPanel icon="human" title="Accessibility">
+          <SettingsFact label="Text scaling" value="Uses supported device text-size settings" />
+          <SettingsFact label="Screen reader labels" value="Available on primary controls" />
+          <SettingsFact label="Motion" value="No essential action depends on animation" />
+          <SettingsFact label="Colour" value="Status is not communicated by colour alone" />
+          <DisclaimerBanner message="Accessibility preferences are managed through iOS or Android system settings." />
         </SettingsPanel>
       ) : null}
 
@@ -3951,35 +3602,6 @@ function LegalDocumentPanel({ document }: { document: LegalDocument }) {
 function LocalPrototypeWarning() {
   return (
     <DisclaimerBanner message="Some app data is stored locally on this device. Use only information you are authorized to process and follow service policy for official records and evidence." />
-  );
-}
-
-function AIPrototypeBanner() {
-  return (
-    <View style={styles.prototypeBanner}>
-      <MaterialCommunityIcons name="shield-lock-outline" size={20} color={colors.ptsdGreen} />
-      <Text style={styles.prototypeBannerText}>
-        Secure AI processing. Prompts are processed through OPAi&apos;s backend and are not stored by the AI provider.
-      </Text>
-    </View>
-  );
-}
-
-function AISafetyNotice() {
-  return (
-    <View style={styles.disclaimerStack}>
-      <DisclaimerBanner message="OPAi Police does not provide legal advice, medical advice, operational direction, or emergency support. Follow service policy, law, training, and supervisor direction." />
-      <DisclaimerBanner message="OPAi Police is a productivity and AI assistance tool. AI-generated responses may be incomplete, inaccurate, or inappropriate for a specific situation and must be verified by the user." />
-      <DisclaimerBanner message="OPAi Police does not replace official police systems, service policy, supervision, training, legal advice, court requirements, or professional judgment." />
-      <DisclaimerBanner message="PTSD awareness content is educational only and is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support." />
-      <DisclaimerBanner message={authorizedDataDisclaimer} />
-    </View>
-  );
-}
-
-function WellnessDisclaimer() {
-  return (
-    <DisclaimerBanner message="PTSD awareness content is educational and supportive only. It is not medical diagnosis, treatment, therapy, crisis intervention, or emergency support. If you are in immediate danger or crisis, contact local emergency services or a qualified crisis support service." />
   );
 }
 
@@ -4244,14 +3866,14 @@ const styles = StyleSheet.create({
   aiHeroSub: {
     color: colors.textMuted,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     marginTop: spacing.xs
   },
   aiHeroTitle: {
     color: colors.textPrimary,
     flexShrink: 1,
     fontSize: 29,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 33
   },
   aiPanel: {
@@ -4286,7 +3908,7 @@ const styles = StyleSheet.create({
   categoryChipText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   centerHero: {
     alignItems: "center",
@@ -4316,7 +3938,7 @@ const styles = StyleSheet.create({
   chatLabel: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   chatText: {
@@ -4364,17 +3986,17 @@ const styles = StyleSheet.create({
   communityLinkText: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   communityMeta: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   communityTitle: {
     color: colors.textPrimary,
     fontSize: typography.h3,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   contentTablet: {
     alignSelf: "center",
@@ -4425,62 +4047,9 @@ const styles = StyleSheet.create({
   homeActionTitle: {
     color: colors.textPrimary,
     fontSize: typography.h3,
-    fontWeight: "900",
+    fontWeight: "700",
     maxWidth: "100%",
     textAlign: "center"
-  },
-  homeHero: {
-    alignItems: "center",
-    backgroundColor: "rgba(6,29,56,0.56)",
-    borderColor: "rgba(77,163,255,0.22)",
-    borderRadius: radius.xxl,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: spacing.md,
-    overflow: "hidden",
-    padding: spacing.md
-  },
-  homeHeroChip: {
-    alignItems: "center",
-    backgroundColor: "rgba(10,132,255,0.12)",
-    borderColor: "rgba(77,163,255,0.28)",
-    borderRadius: radius.full,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: spacing.xs,
-    minHeight: 30,
-    paddingHorizontal: spacing.sm
-  },
-  homeHeroChips: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-    marginTop: spacing.base
-  },
-  homeHeroChipText: {
-    color: colors.textSecondary,
-    fontSize: typography.caption,
-    fontWeight: "900"
-  },
-  homeHeroCopy: {
-    flex: 1,
-    minWidth: 0
-  },
-  homeHeroMark: {
-    alignItems: "center",
-    backgroundColor: "rgba(10,132,255,0.14)",
-    borderColor: "rgba(77,163,255,0.32)",
-    borderRadius: radius.xxl,
-    borderWidth: 1,
-    height: 82,
-    justifyContent: "center",
-    width: 82
-  },
-  homeHeroTitle: {
-    color: colors.textPrimary,
-    fontSize: 36,
-    fontWeight: "900",
-    lineHeight: 40
   },
   hero: {
     alignItems: "center",
@@ -4529,7 +4098,7 @@ const styles = StyleSheet.create({
   mockBadgeText: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   notificationPreferenceRow: {
@@ -4549,7 +4118,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     flexShrink: 1,
     fontSize: 30,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 35
   },
   reminderGrid: {
@@ -4568,7 +4137,7 @@ const styles = StyleSheet.create({
   reminderStatusText: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   reviewPanel: {
     backgroundColor: "rgba(10,132,255,0.10)",
@@ -4604,7 +4173,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   filterRow: {
@@ -4633,7 +4202,7 @@ const styles = StyleSheet.create({
   iconActionLabel: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   pressed: {
     opacity: 0.76,
@@ -4653,7 +4222,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: typography.h3,
     flexShrink: 1,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   profilePanel: {
     alignItems: "center",
@@ -4680,7 +4249,7 @@ const styles = StyleSheet.create({
   promptChipText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     maxWidth: 170
   },
   prototypeBanner: {
@@ -4697,7 +4266,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     flex: 1,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 20
   },
   secondaryMenu: {
@@ -4727,7 +4296,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     flex: 1,
     fontSize: 14,
-    fontWeight: "900",
+    fontWeight: "700",
     minWidth: 0
   },
   selectionBanner: {
@@ -4744,7 +4313,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     flex: 1,
     fontSize: 13,
-    fontWeight: "800"
+    fontWeight: "700"
   },
   screen: {
     backgroundColor: colors.background,
@@ -4777,12 +4346,12 @@ const styles = StyleSheet.create({
   stepPillText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   statusBadge: {
     flexShrink: 0,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     maxWidth: 96,
     minWidth: 58,
     textAlign: "right",
@@ -4823,7 +4392,7 @@ const styles = StyleSheet.create({
   summaryTitle: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900",
+    fontWeight: "700",
     flexShrink: 1
   },
   workflowActions: {
@@ -4866,7 +4435,7 @@ const styles = StyleSheet.create({
   workflowMeta: {
     color: colors.textMuted,
     fontSize: typography.caption,
-    fontWeight: "800",
+    fontWeight: "700",
     flexShrink: 1
   },
   workflowPanel: {
@@ -4886,7 +4455,7 @@ const styles = StyleSheet.create({
   workflowTitle: {
     color: colors.textPrimary,
     fontSize: typography.h3,
-    fontWeight: "900",
+    fontWeight: "700",
     flexShrink: 1
   }
 });

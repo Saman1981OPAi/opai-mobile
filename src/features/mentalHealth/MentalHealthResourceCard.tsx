@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { SecondaryButton } from "@/components/ui/Buttons";
 import { confirmMentalHealthAction } from "@/features/mentalHealth/mentalHealthResourceActions";
 import type { MentalHealthResource } from "@/features/mentalHealth/mentalHealthResourceTypes";
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm
   },
   fact: { color: colors.textSecondary, fontSize: 14, lineHeight: 20 },
-  factLabel: { color: colors.textPrimary, fontWeight: "800" },
+  factLabel: { color: colors.textPrimary, fontWeight: "700" },
   facts: { gap: spacing.xs },
   heading: { alignItems: "flex-start", flexDirection: "row", gap: spacing.base },
   iconWrap: {
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 44
   },
-  number: { color: colors.ptsdGreenSoft, fontSize: 18, fontWeight: "900" },
-  organization: { color: colors.textPrimary, fontSize: 18, fontWeight: "900", lineHeight: 23 },
+  number: { color: colors.ptsdGreenSoft, fontSize: 18, fontWeight: "700" },
+  organization: { color: colors.textPrimary, fontSize: 18, fontWeight: "700", lineHeight: 23 },
   service: { color: colors.textSecondary, fontSize: 14, lineHeight: 20, marginTop: spacing.xs }
 });

@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { openExternalUrl } from "@/config/externalLinks";
 import { getSuggestedFollowUps } from "@/features/deviceTesting/deviceTestingAssistantService";
 import { DeviceTestStepCard } from "@/features/deviceTesting/DeviceTestStepCard";
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   actionText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   actions: {
     flexDirection: "row",
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
   backText: {
     color: colors.primaryBlue,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   badge: {
     backgroundColor: "rgba(127,255,212,0.10)",
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
   badgeText: {
     color: colors.ptsdGreen,
     fontSize: typography.tiny,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   bullet: {
@@ -240,12 +241,12 @@ const styles = StyleSheet.create({
   chipText: {
     color: colors.textPrimary,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   fail: {
     color: colors.warning,
     fontSize: typography.caption,
-    fontWeight: "900",
+    fontWeight: "700",
     lineHeight: 18
   },
   followUps: {
@@ -272,13 +273,13 @@ const styles = StyleSheet.create({
   metaTitle: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   personal: {
     color: colors.ptsdGreen,
     fontSize: typography.caption,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   row: {
     alignItems: "flex-start",
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
   sourceText: {
     color: colors.textPrimary,
     fontSize: typography.small,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   stack: {
     gap: spacing.sm
@@ -328,13 +329,13 @@ const styles = StyleSheet.create({
   subtitle: {
     color: colors.textMuted,
     fontSize: typography.small,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 20
   },
   title: {
     color: colors.textPrimary,
     fontSize: typography.h2,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   titleCopy: {
     flex: 1,

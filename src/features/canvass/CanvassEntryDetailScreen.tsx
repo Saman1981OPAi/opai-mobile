@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { SecondaryButton } from "@/components/ui/Buttons";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import type { CanvassEntry } from "@/features/canvass/canvassTypes";
@@ -12,4 +13,4 @@ export function CanvassEntryDetailScreen({ entry, onBack, onDelete, onEdit }: { 
 
 function Fact({ label, value }: { label: string; value: string }) { return <View><Text style={styles.label}>{label}</Text><Text selectable style={styles.value}>{value}</Text></View>; }
 
-const styles = StyleSheet.create({ actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" }, panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.md, padding: spacing.md }, value: { color: colors.textPrimary, fontSize: typography.body, lineHeight: 22, marginTop: spacing.xs }, wrap: { gap: spacing.md } });
+const styles = StyleSheet.create({ actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, label: { color: colors.textMuted, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" }, panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.md, padding: spacing.md }, value: { color: colors.textPrimary, fontSize: typography.body, lineHeight: 22, marginTop: spacing.xs }, wrap: { gap: spacing.md } });

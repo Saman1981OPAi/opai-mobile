@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { AppText as Text } from "@/components/ui/Typography";
 import { SecondaryButton } from "@/components/ui/Buttons";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { colors, radius, spacing, typography } from "@/theme/tokens";
@@ -69,11 +70,11 @@ export function AudioStatementTranslationPanel({
 const styles = StyleSheet.create({
   chip: { borderColor: "rgba(77,163,255,0.25)", borderRadius: radius.full, borderWidth: 1, justifyContent: "center", minHeight: 40, paddingHorizontal: spacing.base },
   chipActive: { backgroundColor: "rgba(10,132,255,0.22)", borderColor: colors.primaryBlue },
-  chipText: { color: colors.textPrimary, fontSize: typography.caption, fontWeight: "900" },
+  chipText: { color: colors.textPrimary, fontSize: typography.caption, fontWeight: "700" },
   languageRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
   notice: { color: colors.warning, fontSize: typography.caption, lineHeight: 18 },
   output: { backgroundColor: "rgba(127,255,212,0.06)", borderColor: "rgba(127,255,212,0.24)", borderRadius: radius.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
-  outputLabel: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "900", textTransform: "uppercase" },
+  outputLabel: { color: colors.ptsdGreen, fontSize: typography.caption, fontWeight: "700", textTransform: "uppercase" },
   outputText: { color: colors.textPrimary, fontSize: typography.body, lineHeight: 24 },
   panel: { backgroundColor: "rgba(6,29,56,0.72)", borderColor: "rgba(77,163,255,0.24)", borderRadius: radius.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.md }
 });
