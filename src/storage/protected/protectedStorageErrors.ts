@@ -17,4 +17,3 @@ export class ProtectedStorageError extends Error {
     if (cause !== undefined) this.cause = cause;
   }
 }
-

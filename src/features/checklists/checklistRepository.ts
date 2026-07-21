@@ -17,4 +17,3 @@ export const checklistRepository = {
     await this.save(userId, [instance, ...instances.filter((item) => item.id !== instance.id)]);
   }
 };
-

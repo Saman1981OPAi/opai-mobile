@@ -36,4 +36,3 @@ export function validateNotebookEntry(entry: ShiftNotebookEntry) {
   if (entry.body.length > 50_000) throw new Error("Note must be 50,000 characters or fewer.");
   return entry;
 }
-

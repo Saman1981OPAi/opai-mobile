@@ -17,4 +17,3 @@ export function toNatoPhonetic(input: string) {
     return character;
   }).join(" - ");
 }
-

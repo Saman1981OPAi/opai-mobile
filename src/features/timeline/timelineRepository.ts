@@ -21,4 +21,3 @@ export const timelineRepository = {
     await this.save(userId, [timeline, ...timelines.filter((item) => item.id !== timeline.id)]);
   }
 };
-

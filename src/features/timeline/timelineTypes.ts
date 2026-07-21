@@ -25,4 +25,3 @@ export type TimelineStore = {
   userId: string;
   version: typeof TIMELINE_SCHEMA_VERSION;
 };
-

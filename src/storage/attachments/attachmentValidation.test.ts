@@ -45,4 +45,3 @@ test("attachment validation rejects remote and oversized content", () => {
     )
   );
 });
-

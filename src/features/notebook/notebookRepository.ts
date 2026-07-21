@@ -33,4 +33,3 @@ export const notebookRepository = {
     await this.save(userId, [entry, ...entries.filter((item) => item.id !== entry.id)]);
   }
 };
-

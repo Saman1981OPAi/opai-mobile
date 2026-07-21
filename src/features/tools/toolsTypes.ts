@@ -9,4 +9,3 @@ export type ToolDefinition = {
   label: string;
   summary: string;
 };
-

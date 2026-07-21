@@ -22,4 +22,3 @@ export function PhoneticScreen({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({ content: { gap: spacing.md, padding: spacing.md }, input: { backgroundColor: colors.panel, borderColor: colors.borderStrong, borderRadius: radius.lg, borderWidth: 1, color: colors.textPrimary, fontSize: typography.h3, minHeight: 120, padding: spacing.md, textAlignVertical: "top" }, large: { fontSize: 30, lineHeight: 42 }, output: { backgroundColor: colors.panel, borderColor: colors.primaryBlue, borderRadius: radius.lg, borderWidth: 1, minHeight: 160, padding: spacing.lg }, outputText: { color: colors.textPrimary, fontSize: typography.h3, lineHeight: 32 }, row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm } });
-

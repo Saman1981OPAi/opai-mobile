@@ -23,4 +23,3 @@ export const demonstrationChecklists: ChecklistDefinition[] = [
     version: "demo-1"
   }
 ];
-

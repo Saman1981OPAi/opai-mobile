@@ -7,4 +7,3 @@ export function searchNotebook(entries: ShiftNotebookEntry[], query: string, sho
     .filter((entry) => !normalized || `${entry.title}\n${entry.body}`.toLocaleLowerCase("en-CA").includes(normalized))
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
 }
-

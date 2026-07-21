@@ -8,4 +8,3 @@ export const protectedStorage = createProtectedStorageEngine({
   keyProvider: protectedKeyService,
   randomBytes: getRandomBytesAsync
 });
-

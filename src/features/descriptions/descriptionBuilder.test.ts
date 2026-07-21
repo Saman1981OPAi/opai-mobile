@@ -20,4 +20,3 @@ test("vehicle description preserves uncertainty and partial plate", () => {
   assert.match(value, /possibly Honda Civic/);
   assert.match(value, /partial plate ABC/);
 });
-

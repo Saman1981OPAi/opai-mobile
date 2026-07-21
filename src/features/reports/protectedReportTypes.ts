@@ -23,4 +23,3 @@ export type ReportMigrationResult = {
   protectedWriteVerified: boolean;
   retainLegacyPlaintext: boolean;
 };
-

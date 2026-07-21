@@ -61,4 +61,3 @@ test("protected envelope rejects tampering", () => {
     (error) => error instanceof ProtectedStorageError && error.code === "CORRUPTED_DATA"
   );
 });
-

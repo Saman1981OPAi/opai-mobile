@@ -41,4 +41,3 @@ test("protected report schema rejects invalid status values", () => {
     false
   );
 });
-

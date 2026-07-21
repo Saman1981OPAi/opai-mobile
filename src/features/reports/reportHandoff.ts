@@ -43,4 +43,3 @@ export function appendToolTextToReport(report: LocalIncidentDraft, text: string)
     updatedAt: new Date().toISOString()
   };
 }
-

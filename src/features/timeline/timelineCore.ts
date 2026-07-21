@@ -29,4 +29,3 @@ export function timelineToText(title: string, events: TimelineEvent[]) {
     return `${time} - ${event.description.trim()}`;
   })].join("\n");
 }
-

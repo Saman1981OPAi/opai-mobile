@@ -35,4 +35,3 @@ export function buildVehicleDescription(input: VehicleDescriptionInput) {
     input.lastSeenAt?.trim() ? `at ${input.lastSeenAt.trim()}` : ""
   ]);
 }
-

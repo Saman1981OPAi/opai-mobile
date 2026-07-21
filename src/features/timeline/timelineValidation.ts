@@ -17,4 +17,3 @@ export function isOperationalTimeline(value: unknown): value is OperationalTimel
 export function isTimelineStore(value: unknown): value is TimelineStore {
   return isRecord(value) && value.version === TIMELINE_SCHEMA_VERSION && typeof value.userId === "string" && Array.isArray(value.timelines) && value.timelines.every(isOperationalTimeline);
 }
-

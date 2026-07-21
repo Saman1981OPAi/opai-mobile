@@ -9,4 +9,3 @@ export const toolsRegistry: ToolDefinition[] = [
   { id: "checklists", icon: "clipboard-check-outline", label: "Checklists", summary: "Demonstration framework" },
   { id: "calendar", icon: "calendar-month-outline", label: "Calendar", summary: "Events and reminders" }
 ];
-

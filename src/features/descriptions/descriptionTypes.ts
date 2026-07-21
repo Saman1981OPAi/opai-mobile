@@ -36,4 +36,3 @@ export type SavedDescription = {
 };
 
 export type DescriptionStore = { descriptions: SavedDescription[]; userId: string; version: 1 };
-

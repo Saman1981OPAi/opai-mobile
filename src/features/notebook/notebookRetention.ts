@@ -12,4 +12,3 @@ export function isNotebookEntryExpired(entry: ShiftNotebookEntry, now = Date.now
   const deadline = notebookRetentionDeadline(entry);
   return deadline ? new Date(deadline).getTime() <= now : false;
 }
-

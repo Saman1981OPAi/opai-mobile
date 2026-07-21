@@ -6,4 +6,3 @@ export async function clearAttachmentTemporaryFiles() {
   if (!FileSystem.cacheDirectory) return;
   await FileSystem.deleteAsync(temporaryRoot, { idempotent: true }).catch(() => undefined);
 }
-

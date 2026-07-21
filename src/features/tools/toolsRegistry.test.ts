@@ -7,4 +7,3 @@ test("Tools contains only the approved entries without duplicates", () => {
   assert.equal(new Set(toolsRegistry.map((tool) => tool.id)).size, toolsRegistry.length);
   assert.equal(toolsRegistry.some((tool) => /location|distance|email/i.test(tool.label)), false);
 });
-

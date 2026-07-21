@@ -36,4 +36,3 @@ export type ProtectedKeyProvider = {
 };
 
 export type ProtectedRandomSource = (length: number) => Promise<Uint8Array>;
-

@@ -265,10 +265,10 @@ const legalDocuments: LegalDocument[] = [
   }
 ];
 
-const settingsMenuSections: Array<{
+const settingsMenuSections: {
   title: string;
-  items: Array<{ id: SettingsViewId; icon: MciIcon; title: string; subtitle: string }>;
-}> = [
+  items: { id: SettingsViewId; icon: MciIcon; title: string; subtitle: string }[];
+}[] = [
   {
     items: [
       { icon: "account-circle-outline", id: "profile", subtitle: "Profile and account details", title: "Profile" },
@@ -316,7 +316,7 @@ const settingsMenuSections: Array<{
   }
 ];
 
-const storageCategoryRows: Array<{ icon: MciIcon; title: string; getCount: (data: LocalAppData) => number | string }> = [
+const storageCategoryRows: { icon: MciIcon; title: string; getCount: (data: LocalAppData) => number | string }[] = [
   { getCount: (data) => (data.auth.profile ? 1 : 0), icon: "account-outline", title: "User profile" },
   { getCount: (data) => Object.values(data.auth.consent).filter(Boolean).length, icon: "file-check-outline", title: "Consent status" },
   { getCount: () => "local", icon: "tune-variant", title: "Preferences" },
@@ -349,7 +349,7 @@ const settingsMoreModules: { id: ModuleId; icon: MciIcon; label: string }[] = [
   { icon: "heart-pulse", id: "mentalHealth", label: "Mental Health" }
 ];
 
-const notificationPreferenceRows: Array<{
+const notificationPreferenceRows: {
   key: keyof Pick<
     NotificationPreference,
     | "calendarEventRemindersEnabled"
@@ -361,7 +361,7 @@ const notificationPreferenceRows: Array<{
   >;
   label: string;
   type: NotificationCategory;
-}> = [
+}[] = [
   { key: "courtRemindersEnabled", label: "Court", type: "courtReminder" },
   { key: "trainingRemindersEnabled", label: "Training", type: "trainingReminder" },
   { key: "requalificationRemindersEnabled", label: "Requalification", type: "requalificationReminder" },
@@ -1703,7 +1703,7 @@ function CalendarScreen({
 
       <SectionHeader icon="filter-outline" title="Filters" />
       <View style={styles.filterRow}>
-        {(["All", ...calendarTypeOptions] as Array<CalendarWorkflowType | "All">).map((option) => (
+        {(["All", ...calendarTypeOptions] as (CalendarWorkflowType | "All")[]).map((option) => (
           <SecondaryButton key={option} label={option} onPress={() => setFilter(option)}>
             <MaterialCommunityIcons name={filter === option ? "check-circle-outline" : "circle-outline"} size={18} color={colors.primaryBlue} />
           </SecondaryButton>
@@ -2560,7 +2560,7 @@ function NotesFilesScreen({
           <Pressable
             accessibilityRole="button"
             onPress={() => {
-              const options: Array<LocalNoteCategory | "All"> = ["All", ...noteCategories];
+              const options: (LocalNoteCategory | "All")[] = ["All", ...noteCategories];
               const next = options[(options.indexOf(filters.category) + 1) % options.length] ?? "All";
               setFilters((current) => ({ ...current, category: next }));
             }}
@@ -2586,7 +2586,7 @@ function NotesFilesScreen({
           <Pressable
             accessibilityRole="button"
             onPress={() => {
-              const options: Array<LocalLinkedItemType | "All"> = ["All", ...linkedTypeOptions];
+              const options: (LocalLinkedItemType | "All")[] = ["All", ...linkedTypeOptions];
               const next = options[(options.indexOf(filters.linkedType) + 1) % options.length] ?? "All";
               setFilters((current) => ({ ...current, linkedType: next }));
             }}

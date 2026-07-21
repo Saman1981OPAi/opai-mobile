@@ -20,4 +20,3 @@ export const descriptionRepository = {
     await this.save(userId, [description, ...descriptions.filter((item) => item.id !== description.id)]);
   }
 };
-

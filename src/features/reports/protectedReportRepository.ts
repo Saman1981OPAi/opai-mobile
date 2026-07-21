@@ -41,4 +41,3 @@ export const protectedReportRepository = {
     await protectedStorage.save(options(store.userId), store);
   }
 };
-

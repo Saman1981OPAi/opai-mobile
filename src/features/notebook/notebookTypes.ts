@@ -19,4 +19,3 @@ export type NotebookStore = {
   userId: string;
   version: typeof NOTEBOOK_SCHEMA_VERSION;
 };
-

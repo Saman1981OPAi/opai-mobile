@@ -24,4 +24,3 @@ function isInstance(value: unknown): value is ChecklistInstance {
 export function isChecklistStore(value: unknown): value is ChecklistStore {
   return isRecord(value) && value.version === CHECKLIST_STORE_VERSION && typeof value.userId === "string" && Array.isArray(value.instances) && value.instances.every(isInstance);
 }
-
