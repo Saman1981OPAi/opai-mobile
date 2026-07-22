@@ -27,6 +27,7 @@ export function AudioStatementRecorderScreen({
   onSave: (recording: AudioStatementRecording) => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [readyToSave, setReadyToSave] = useState(false);
   const recorder = useAudioRecorder(recordingOptions, (status) => {
     if (status.isFinished && status.url) setReadyToSave(true);
@@ -62,12 +63,23 @@ export function AudioStatementRecorderScreen({
       });
       await recorder.prepareToRecordAsync();
       setReadyToSave(false);
+      setPaused(false);
       recorder.record({ forDuration: apiConfig.maxAudioSeconds });
     } catch {
       Alert.alert("Recording unavailable", "The microphone could not start. Check device permissions and try again.");
     } finally {
       setBusy(false);
     }
+  };
+
+  const pause = () => {
+    recorder.pause();
+    setPaused(true);
+  };
+
+  const resume = () => {
+    recorder.record({ forDuration: apiConfig.maxAudioSeconds });
+    setPaused(false);
   };
 
   const stop = async () => {
@@ -113,7 +125,7 @@ export function AudioStatementRecorderScreen({
           <MaterialCommunityIcons name={state.isRecording ? "waveform" : "microphone-outline"} size={44} color={state.isRecording ? colors.textPrimary : colors.primaryBlue} />
         </View>
         <Text accessibilityLiveRegion="polite" style={styles.timer}>{formatDuration(state.durationMillis)}</Text>
-        <Text style={styles.status}>{state.isRecording ? "Recording" : readyToSave ? "Ready to save" : "Ready"}</Text>
+        <Text style={styles.status}>{state.isRecording ? "Recording" : paused ? "Paused" : readyToSave ? "Ready to save" : "Ready"}</Text>
       </View>
 
       <View style={styles.actions}>
@@ -123,9 +135,24 @@ export function AudioStatementRecorderScreen({
           </PrimaryButton>
         ) : null}
         {state.isRecording ? (
-          <PrimaryButton label="Stop" loading={busy} onPress={() => void stop()}>
-            <MaterialCommunityIcons name="stop" size={22} color={colors.textPrimary} />
-          </PrimaryButton>
+          <>
+            <SecondaryButton label="Pause" onPress={pause}>
+              <MaterialCommunityIcons name="pause" size={22} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <PrimaryButton label="Stop" loading={busy} onPress={() => void stop()}>
+              <MaterialCommunityIcons name="stop" size={22} color={colors.textPrimary} />
+            </PrimaryButton>
+          </>
+        ) : null}
+        {paused ? (
+          <>
+            <SecondaryButton label="Resume" onPress={resume}>
+              <MaterialCommunityIcons name="play" size={22} color={colors.primaryBlue} />
+            </SecondaryButton>
+            <PrimaryButton label="Stop" loading={busy} onPress={() => void stop()}>
+              <MaterialCommunityIcons name="stop" size={22} color={colors.textPrimary} />
+            </PrimaryButton>
+          </>
         ) : null}
         {readyToSave ? (
           <PrimaryButton label="Save" loading={busy} onPress={() => void save()}>

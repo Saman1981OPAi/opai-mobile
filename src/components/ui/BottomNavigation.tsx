@@ -15,7 +15,7 @@ const items: NavItem[] = [
   { id: "ai", label: "OPAi", icon: "sparkles-outline" },
   { id: "incident", label: "Report", icon: "document-text-outline" },
   { id: "translation", label: "Translate", icon: "language-outline" },
-  { id: "calendar", label: "Calendar", icon: "calendar-outline" },
+  { id: "tools", label: "Tools", icon: "grid-outline" },
   { id: "settings", label: "Settings", icon: "settings-outline" }
 ];
 
@@ -28,7 +28,7 @@ export function BottomNavigation({ activeModule, onSelectModule }: BottomNavigat
   return (
     <View style={styles.wrap}>
       {items.map((item) => {
-        const active = activeModule === item.id;
+        const active = activeModule === item.id || (item.id === "tools" && activeModule === "calendar");
         return (
           <Pressable
             accessibilityLabel={`${item.label} tab`}

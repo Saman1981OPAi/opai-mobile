@@ -434,7 +434,7 @@ function createNotesFiles(): LocalNoteFileMetadata[] {
 
 export function createDefaultNoteFolders(): LocalNoteFolder[] {
   const createdAt = nowIso();
-  const folders: Array<Pick<LocalNoteFolder, "color" | "description" | "icon" | "id" | "name">> = [
+  const folders: Pick<LocalNoteFolder, "color" | "description" | "icon" | "id" | "name">[] = [
     { color: "#7FFFD4", description: "General notes stored locally on this device.", icon: "note-text-outline", id: "folder-general-notes", name: "General Notes" },
     { color: "#0A84FF", description: "Report draft notes. Not official RMS.", icon: "file-document-outline", id: "folder-incident-drafts", name: "Report Drafts" },
     { color: "#B56CFF", description: "Court preparation references.", icon: "scale-balance", id: "folder-court-preparation", name: "Court Preparation" },
@@ -455,7 +455,7 @@ export function createDefaultNoteFolders(): LocalNoteFolder[] {
 
 export function createDefaultStructuredNotes(): LocalStructuredNote[] {
   const createdAt = nowIso();
-  const notes: Array<Omit<LocalStructuredNote, "createdAt" | "updatedAt">> = [
+  const notes: Omit<LocalStructuredNote, "createdAt" | "updatedAt">[] = [
     {
       archived: false,
       body: "Sample shift reminder note. Verify official obligations through authorized systems and supervisors.",
@@ -511,7 +511,7 @@ export function createDefaultStructuredNotes(): LocalStructuredNote[] {
 
 export function createDefaultFileMetadataPlaceholders(): LocalFileMetadataPlaceholder[] {
   const createdAt = nowIso();
-  const items: Array<Omit<LocalFileMetadataPlaceholder, "createdAt" | "metadataOnly" | "updatedAt">> = [
+  const items: Omit<LocalFileMetadataPlaceholder, "createdAt" | "metadataOnly" | "updatedAt">[] = [
     {
       category: "Photo Metadata",
       description: "Metadata only. No photo is uploaded, stored, opened, or processed.",

@@ -18,7 +18,7 @@ export const homeFeatures: Feature[] = [
   { id: "paidDuty", icon: "briefcase-clock-outline", title: "Paid Duty", subtitle: "Schedule" },
   { id: "canvass", icon: "home-search-outline", title: "Canvass", subtitle: "Notes" },
   { id: "translation", icon: "translate", title: "Translate", subtitle: "Voice" },
-  { id: "calendar", icon: "calendar-month-outline", title: "Calendar", subtitle: "Events" },
+  { id: "tools", icon: "view-grid-outline", title: "Tools", subtitle: "Daily" },
   { id: "ai", icon: "message-text-outline", title: "OPAi", subtitle: "Ask" },
   { id: "court", icon: "scale-balance", title: "Court", subtitle: "Dates" },
   { id: "training", icon: "school-outline", title: "Training", subtitle: "Renewals" },

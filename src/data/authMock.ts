@@ -10,7 +10,7 @@ export const emptyConsentState: ConsentState = {
   terms: false
 };
 
-export const consentItems: Array<{ key: ConsentKey; title: string; description: string }> = [
+export const consentItems: { key: ConsentKey; title: string; description: string }[] = [
   {
     key: "terms",
     title: "Terms of Use",

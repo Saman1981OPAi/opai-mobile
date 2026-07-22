@@ -24,12 +24,13 @@ function uploadForm(statement: AudioStatement, sourceLanguage?: string) {
 }
 
 export const audioStatementService = {
-  transcribe(statement: AudioStatement, sourceLanguage?: string) {
+  transcribe(statement: AudioStatement, sourceLanguage?: string, signal?: AbortSignal) {
     return apiClient.post<AudioStatementTranscriptionResponse>(
       "/audio-statements/transcribe",
       uploadForm(statement, sourceLanguage),
       {
         headers: { "Idempotency-Key": statement.transcriptionRequestKey },
+        ...(signal ? { signal } : {}),
         timeoutMs: 60_000
       }
     );
