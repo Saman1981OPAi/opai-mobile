@@ -40,6 +40,13 @@ One inherited moderate `xcode`/`uuid` build-tool advisory remains tracked in iss
 
 ## EAS Capacity And Device Gate
 
+- Certification profile: `pr43-certification`
+- Profile inheritance: `base` (Node 22.23.1, pnpm 11.9.0)
+- Distribution: internal development client
+- Environment: staging
+- Android artifact type: APK
+- Automatic submission: absent
+- Auto-increment: absent
 - Expo plan: Free
 - Billing estimate before certification builds: USD 0.00
 - iOS usage before build: 13 of 15 included builds; 2 remain
@@ -49,6 +56,7 @@ One inherited moderate `xcode`/`uuid` build-tool advisory remains tracked in iss
 - Queue: low-priority Free-plan queue
 - Registered Apple internal-distribution devices: 0
 - Apple device decision: blocked until both a physical iPhone and a physical iPad are registered
+- Production iOS remote build baseline after all checks: 26 (unchanged)
 
 ## Build Records
 
