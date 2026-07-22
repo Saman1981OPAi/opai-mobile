@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 import { AppText as Text } from "@/components/ui/Typography";
 import { BrandMark } from "@/components/ui/BrandMark";
+import { resolveAppRuntimeEnvironment } from "@/config/runtimeEnvironment";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type AppHeaderProps = {
@@ -11,6 +12,8 @@ type AppHeaderProps = {
 };
 
 export function AppHeader({ compact = false, eyebrow = "Canadian Police", title }: AppHeaderProps) {
+  const isInternalCertification = resolveAppRuntimeEnvironment() === "staging";
+
   return (
     <View style={[styles.wrap, compact ? styles.wrapCompact : null]}>
       <View style={styles.brandSide}>
@@ -22,6 +25,9 @@ export function AppHeader({ compact = false, eyebrow = "Canadian Police", title 
           <MaterialCommunityIcons name="leaf-maple" size={14} color={colors.canadianRed} />
           <Text numberOfLines={1} adjustsFontSizeToFit style={styles.badgeText}>{eyebrow}</Text>
         </View>
+        {isInternalCertification ? (
+          <Text accessibilityRole="text" style={styles.certificationText}>Internal Certification</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -49,6 +55,11 @@ const styles = StyleSheet.create({
   badgeText: {
     color: colors.textSecondary,
     fontSize: 10.5,
+    fontWeight: "700"
+  },
+  certificationText: {
+    color: colors.warning,
+    fontSize: 9.5,
     fontWeight: "700"
   },
   brandSide: {

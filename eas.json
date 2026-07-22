@@ -17,8 +17,9 @@
         "resourceClass": "m-medium"
       }
     },
-    "internal-staging": {
+    "pr43-certification": {
       "extends": "base",
+      "developmentClient": true,
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_APP_ENV": "staging",

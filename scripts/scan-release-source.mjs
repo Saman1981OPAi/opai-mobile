@@ -43,8 +43,23 @@ for (const file of sourceFiles) {
   if (/OPENAI_API_KEY\s*[:=]\s*["'][^"']+["']/.test(content)) {
     findings.push(`${file}: populated OpenAI key variable`);
   }
+  if (file !== "eas.json" && /opai-backend-staging\.onrender\.com/i.test(content)) {
+    findings.push(`${file}: Render staging URL outside the certification profile`);
+  }
 }
 assert.deepEqual(findings, [], `Release source scan failed:\n${findings.join("\n")}`);
+
+const easSource = readFileSync("eas.json", "utf8");
+assert.equal(
+  easSource.match(/opai-backend-staging\.onrender\.com/gi)?.length,
+  1,
+  "Render staging URL must occur exactly once in EAS configuration",
+);
+assert.match(
+  easSource,
+  /"pr43-certification"[\s\S]*"EXPO_PUBLIC_OPAI_API_BASE_URL": "https:\/\/opai-backend-staging\.onrender\.com"/,
+  "Render staging URL must be scoped to pr43-certification",
+);
 
 const reachableUserFacingFiles = [
   "src/screens/AuthFlow.tsx",

@@ -35,7 +35,7 @@ function resolveProfile(name, path = []) {
   return mergeProfile(resolveProfile(profile.extends, [...path, name]), profile);
 }
 
-for (const profileName of ["development", "internal-staging", "production", "testflight"]) {
+for (const profileName of ["development", "pr43-certification", "production", "testflight"]) {
   const profile = resolveProfile(profileName);
   assert.equal(profile.node, "22.23.1", `${profileName} must use Node 22.23.1`);
   assert.equal(profile.pnpm, "11.9.0", `${profileName} must use pnpm 11.9.0`);
@@ -56,8 +56,34 @@ for (const profileName of ["production", "testflight"]) {
   assert.ok(!/localhost|127\.0\.0\.1|\[::1\]/i.test(apiUrl), `${profileName} must not use a local API`);
 }
 
-const staging = resolveProfile("internal-staging");
-assert.equal(staging.distribution, "internal", "Internal staging must not be publicly distributed");
-assert.equal(staging.env?.EXPO_PUBLIC_APP_ENV, "staging", "Internal staging must identify itself as staging");
+assert.equal(profiles["internal-staging"], undefined, "Legacy staging profile must remain unavailable");
+
+const certificationProfileName = "pr43-certification";
+const certificationSource = profiles[certificationProfileName];
+const certification = resolveProfile(certificationProfileName);
+const certificationUrl = "https://opai-backend-staging.onrender.com";
+
+assert.equal(certificationSource.extends, "base", "Certification must inherit only the audited base profile");
+assert.equal(certification.developmentClient, true, "Certification must use a development client");
+assert.equal(certification.distribution, "internal", "Certification must not be publicly distributed");
+assert.equal(certification.android?.buildType, "apk", "Android certification output must be an APK");
+assert.equal(certification.env?.EXPO_PUBLIC_APP_ENV, "staging", "Certification must identify itself as staging");
+assert.equal(
+  certification.env?.EXPO_PUBLIC_OPAI_API_BASE_URL,
+  certificationUrl,
+  "Certification must use the approved Render staging endpoint",
+);
+assert.equal(certification.autoIncrement, undefined, "Certification must not increment the production build baseline");
+assert.equal(certificationSource.autoSubmit, undefined, "Certification must not auto-submit");
+
+const serializedProfiles = JSON.stringify(profiles);
+assert.equal(
+  serializedProfiles.split(certificationUrl).length - 1,
+  1,
+  "Render must appear in exactly one EAS build profile",
+);
+
+const submitProfiles = JSON.stringify(eas.submit ?? {});
+assert.ok(!/onrender\.com/i.test(submitProfiles), "Render must never appear in submit profiles");
 
 console.log("Release profiles verified.");

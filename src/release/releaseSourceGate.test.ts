@@ -22,6 +22,13 @@ test("Device Testing remains hidden", () => {
   );
 });
 
+test("internal certification label is gated by the staging environment", () => {
+  const header = read("src/components/ui/AppHeader.tsx");
+
+  assert.match(header, /resolveAppRuntimeEnvironment\(\) === "staging"/);
+  assert.match(header, /Internal Certification/);
+});
+
 test("clean-install seed construction gates every synthetic operational collection", () => {
   const source = read("src/storage/seedDataService.ts");
   const defaultData = source.slice(source.indexOf("export function createDefaultLocalAppData"));
