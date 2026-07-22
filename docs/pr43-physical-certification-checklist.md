@@ -6,8 +6,8 @@ Backend testing used the temporary Render staging environment and does not const
 
 ## Devices
 
-- [ ] Register a physical iPhone with the EAS Apple team. Current registered count: 0.
-- [ ] Register a physical iPad with the EAS Apple team. Current registered count: 0.
+- [x] Register a physical iPhone with the EAS Apple team. One enabled iPhone verified without recording its UDID.
+- [ ] Register a physical iPad with the EAS Apple team. No iPad is currently listed.
 - [ ] Physical iPhone installed from the private internal distribution.
 - [ ] Physical iPad installed from the private internal distribution.
 - [ ] Physical Android device installed from the private APK distribution.

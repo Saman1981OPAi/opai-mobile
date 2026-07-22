@@ -54,8 +54,8 @@ One inherited moderate `xcode`/`uuid` build-tool advisory remains tracked in iss
 - Authorized build count: one iOS/iPadOS development client and one Android internal APK
 - Expected incremental EAS charge: USD 0.00
 - Queue: low-priority Free-plan queue
-- Registered Apple internal-distribution devices: 0
-- Apple device decision: blocked until both a physical iPhone and a physical iPad are registered
+- Registered Apple internal-distribution devices: one enabled iPhone
+- Apple device decision: blocked until a physical iPad is also registered
 - Production iOS remote build baseline after all checks: 26 (unchanged)
 
 ## Build Records
@@ -71,7 +71,7 @@ No internal artifact has been generated. No production build number has been inc
 
 ## Release Decision
 
-- Internal build creation: BLOCKED pending Apple device registration
+- Internal build creation: BLOCKED pending physical iPad registration
 - PR #43 merge: NO-GO
 - Build 27 production generation: NO-GO
 - Public submission: NO-GO

@@ -31,7 +31,7 @@ It is not authorized for production, TestFlight, App Review, Google Play, or pub
 - [x] Release scans prove Render is isolated to `pr43-certification`.
 - [x] EAS quota and charge check passes.
 - [x] PR #43 Mobile CI run 107 passes for `ef4d88a`.
-- [ ] Physical iPhone and iPad are registered for internal distribution. EAS currently reports zero registered devices for Apple team `4Q9G8QBF37`.
+- [ ] Physical iPhone and iPad are registered for internal distribution. EAS lists one enabled iPhone under Apple team `4Q9G8QBF37`; an iPad is still required.
 - [ ] Physical Android device is available.
 - [ ] One iOS/iPadOS development client completes.
 - [ ] One Android APK development client completes.
@@ -39,7 +39,7 @@ It is not authorized for production, TestFlight, App Review, Google Play, or pub
 
 ## Release Decision
 
-- Internal build creation: BLOCKED pending registration of both an iPhone and an iPad.
+- Internal build creation: BLOCKED pending physical iPad registration.
 - PR #43 merge: NO-GO
 - Build 27 production generation: NO-GO
 - Public submission: NO-GO
